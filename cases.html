@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T.E.C-OS // 案件档案库</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #e0e0e0;
+            color: #000000;
+            font-family: "Arial", "Helvetica", sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 标题栏 */
+        header {
+            background: #e0e0e0;
+            border-bottom: 2px outset #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0066cc;
+        }
+        
+        .header-path {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 主内容区 */
+        main {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        /* 档案网格 */
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            max-width: 900px;
+        }
+        
+        .case-card {
+            background: #f5f5f5;
+            border: 1px solid #b0b0b0;
+            border-left: 4px solid #0066cc;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .case-card:hover {
+            background: #fff;
+            border-color: #0066cc;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .case-card.active {
+            background: #fff;
+            border-color: #003366;
+            box-shadow: 3px 3px 12px rgba(0,0,0,0.15);
+        }
+        
+        .case-id {
+            font-size: 10px;
+            color: #999;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        
+        .case-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        .case-desc {
+            font-size: 11px;
+            color: #777;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+        
+        .case-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            color: #555;
+            font-weight: bold;
+        }
+        
+        .tag.high { background: #cc0000; color: #fff; }
+        .tag.medium { background: #0066cc; color: #fff; }
+        .tag.low { background: #666; color: #fff; }
+        
+        /* 底部 */
+        footer {
+            border-top: 2px inset #808080;
+            background: #e0e0e0;
+            padding: 15px 20px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-title">案件档案库</div>
+        <div class="header-path">T.E.C-OS // ARCHIVE</div>
+    </header>
+    
+    <main>
+        <div class="cases-grid" id="cases-grid">
+            <!-- 档案将通过 JS 动态加载 -->
+        </div>
+    </main>
+    
+    <footer>
+        共 <span id="case-count">0</span> 条档案
+    </footer>
+    
+    <script>
+        // 案件配置 - 在此添加新案件
+        const cases = [
+            {
+                id: 'CASE_001',
+                title: '异动区域已被锁定',
+                file: 'index.html',
+                desc: '因果系统锁定事件调查',
+                level: '高级'
+            },
+            {
+                id: 'CASE_002',
+                title: '测试案件 #002',
+                file: 'case002.html',
+                desc: '档案待更新',
+                level: '中级'
+            }
+        ];
+        
+        const grid = document.getElementById('cases-grid');
+        const caseCount = document.getElementById('case-count');
+        let selectedCard = null;
+        
+        caseCount.textContent = cases.length;
+        
+        cases.forEach(c => {
+            const card = document.createElement('div');
+            card.className = 'case-card';
+            
+            const levelClass = c.level === '高级' ? 'high' : c.level === '中级' ? 'medium' : 'low';
+            
+            card.innerHTML = `
+                <div class="case-id">${c.id}</div>
+                <div class="case-title">${c.title}</div>
+                <div class="case-desc">${c.desc}</div>
+                <div class="case-tags">
+                    <span class="tag ${levelClass}">权限: ${c.level}</span>
+                </div>
+            `;
+            
+            card.onclick = () => {
+                if (selectedCard) selectedCard.classList.remove('active');
+                selectedCard = card;
+                card.classList.add('active');
+            };
+            
+            card.ondblclick = () => location.href = c.file;
+            
+            grid.appendChild(card);
+        });
+    </script>
+</body>
+</html>
