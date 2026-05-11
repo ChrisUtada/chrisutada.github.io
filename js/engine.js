@@ -710,8 +710,118 @@ function createEngine(projectData) {
          * 执行出示
          */
         executePresent(content) {
-            // 简化版出示逻辑
-            this.addLog(`出示功能需要更多实现...`, "info");
+            const parts = content.trim().split(/\s+/);
+            
+            if (parts.length < 2) {
+                this.addLog(`出示指令格式：出示 [物品/角色] [物品]`, "info");
+                this.addLog(`示例：出示 黑影 手电筒`, "info");
+                return;
+            }
+            
+            const [arg1, arg2] = parts;
+            
+            // 收集所有可能的实体
+            const entities = {
+                arg1Inv: this.findItemInInventory(arg1),
+                arg2Inv: this.findItemInInventory(arg2),
+                arg1Scene: this.findSceneItem(arg1),
+                arg2Scene: this.findSceneItem(arg2),
+                arg1Char: this.findCharInScene(arg1),
+                arg2Char: this.findCharInScene(arg2)
+            };
+            
+            // 策略1: 向角色出示（背包物品 + 角色）
+            if (entities.arg1Inv && entities.arg2Char) {
+                this.executePresentToChar(entities.arg1Inv, entities.arg2Char);
+                return;
+            }
+            if (entities.arg2Inv && entities.arg1Char) {
+                this.executePresentToChar(entities.arg2Inv, entities.arg1Char);
+                return;
+            }
+            
+            // 策略2: 向场景物品出示（背包物品 + 场景物品）
+            if (entities.arg1Inv && entities.arg2Scene) {
+                this.executePresentToSceneItem(entities.arg1Inv, entities.arg2Scene);
+                return;
+            }
+            if (entities.arg2Inv && entities.arg1Scene) {
+                this.executePresentToSceneItem(entities.arg2Inv, entities.arg1Scene);
+                return;
+            }
+            
+            // 策略3: 都在背包中（查找场景中对应的物品来触发反应）
+            if (entities.arg1Inv && entities.arg2Inv) {
+                const sceneTarget = entities.arg1Scene || entities.arg2Scene;
+                if (sceneTarget) {
+                    this.executePresentToSceneItem(entities.arg1Inv, sceneTarget);
+                    return;
+                }
+                this.addLog(`无法在场景中找到可出示的目标。`, "error");
+                return;
+            }
+            
+            // 兜底：只有一个在背包
+            if (entities.arg1Inv) {
+                this.addLog(`当前场景中没有找到 "${escapeHtml(arg2)}"。`, "error");
+                return;
+            }
+            if (entities.arg2Inv) {
+                this.addLog(`你没有 "${escapeHtml(arg1)}"，无法执行出示操作。`, "error");
+                return;
+            }
+            
+            // 都没有找到
+            this.addLog(`"${escapeHtml(arg1)}" 和 "${escapeHtml(arg2)}" 都未找到。`, "error");
+        },
+        
+        /**
+         * 在背包中查找物品
+         */
+        findItemInInventory(keyword) {
+            for (const itemId of this.state.inventory) {
+                const item = this.state.data.items[itemId];
+                if (item && item.label === keyword) {
+                    return { id: itemId, data: item };
+                }
+            }
+            return null;
+        },
+        
+        /**
+         * 在当前场景中查找物品
+         */
+        findSceneItem(keyword) {
+            const scene = this.state.data.scenes[this.state.currentScene];
+            if (!scene) return null;
+            
+            for (const [itemId, item] of Object.entries(this.state.data.items)) {
+                if (item.label === keyword) {
+                    const content = scene.content || '';
+                    if (content.includes(`[item:${itemId}]`)) {
+                        return { id: itemId, data: item };
+                    }
+                }
+            }
+            return null;
+        },
+        
+        /**
+         * 在当前场景中查找角色
+         */
+        findCharInScene(keyword) {
+            const scene = this.state.data.scenes[this.state.currentScene];
+            if (!scene) return null;
+            
+            for (const [charId, char] of Object.entries(this.state.data.chars)) {
+                if (char.name === keyword) {
+                    const content = scene.content || '';
+                    if (content.includes(`[char:${charId}]`)) {
+                        return { id: charId, data: char };
+                    }
+                }
+            }
+            return null;
         },
 
         /**
