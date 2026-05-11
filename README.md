@@ -78,6 +78,69 @@ Set-Content "data\game.json" -Value $data -Encoding UTF8
 Write-Host "完成！"
 ```
 
+## 🎮 角色系统
+
+### 角色标签引用
+
+在场景内容中使用 `[char:XXX]` 标签引用场景中的角色：
+
+```
+content: "你看到了槿杉和陆珩松在交谈。[char:CHARS_JS] [char:CHARS_luhengs]"
+```
+
+### 角色配置
+
+角色配置存储在 `data/game.json` 的 `chars` 对象中：
+
+```json
+"CHARS_JS": {
+    "name": "槿杉",
+    "sceneRef": "[char:CHARS_JS]",
+    "itemReactions": {},
+    "reactions": {
+        "CLUE_js_m1": {
+            "text": "线索文本..."
+        }
+    }
+}
+```
+
+| 属性 | 说明 |
+|------|------|
+| `name` | 角色显示名称 |
+| `sceneRef` | 场景中引用该角色的标签格式 |
+| `itemReactions` | 物品反应配置（key: 物品ID, value: 反应文本/函数） |
+| `reactions` | 线索反应配置（key: 线索ID, value: 反应文本/函数） |
+
+### 已配置角色
+
+| 角色 | ID | 支持物品交互 | 支持线索交互 |
+|------|-----|------------|------------|
+| 槿杉 | CHARS_JS | ❌ | ✅ |
+| 陆珩松 | CHARS_luhengs | ✅ | ✅ |
+| 傅柏 | NPC_FB | ❌ | ✅ |
+| 朱穗 | CHARS_zs | ✅ | ✅ |
+| TEC | CHARS_TEC | ✅ | ❌ |
+
+### 向角色出示物品
+
+功能：`executePresentToChar(charId, itemId)`
+
+**工作条件**：
+1. 物品已在背包中（已记录）
+2. 角色在当前场景中被 `[char:XXX]` 引用
+3. 该角色配置了对应的 `itemReactions`
+
+**故障排查**：如果某角色无法响应，检查：
+- 该角色在该场景中是否被正确引用
+- 是否配置了相应的 `itemReactions`
+
+### 在场景中查找角色
+
+功能：`findCharInScene(charId)`
+
+在当前场景内容中查找是否有对应角色的 `[char:XXX]` 标签，返回布尔值。
+
 ## 🎯 模块化优势
 
 | 原始 (index.html) | 模块化 (index.modular.html) |
@@ -95,11 +158,29 @@ Write-Host "完成！"
 ```json
 "SCENE_NEW": {
     "title": "场景名称",
-    "content": "场景内容 [item:ITEM_id]...",
+    "content": "场景内容 [item:ITEM_id] [char:CHARS_xxx]...",
     "desc": "简短描述",
     "hiddenClue": {
         "text": "隐藏线索 [clue:CLUE_id]",
         "ids": ["CLUE_id"]
+    }
+}
+```
+
+### 添加新角色
+在 `data/game.json` 的 `chars` 对象中添加：
+
+```json
+"CHARS_NEW": {
+    "name": "新角色名称",
+    "sceneRef": "[char:CHARS_NEW]",
+    "itemReactions": {
+        "ITEM_id": "对该物品的反应..."
+    },
+    "reactions": {
+        "CLUE_id": {
+            "text": "对线索的反应..."
+        }
     }
 }
 ```
@@ -121,7 +202,6 @@ Write-Host "完成！"
 
 - **游戏版本**: v4.11.0
 - **重构日期**: 2026年5月11日
-- **原始文件大小**: ~10 MB
 - **模块化后 CSS**: ~15 KB
 - **模块化后 JS**: ~25 KB
 
