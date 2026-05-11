@@ -4,25 +4,26 @@
 
 ```
 tecats.github.io/
-├── index.html              # ✅ 原始文件（未修改）
-├── index.modular.html      # ✅ 新模块化入口
-├── README.md               # ✅ 本文档
+├── index.html                  # ✅ 主入口文件
+├── README.md                   # ✅ 本文档
 │
-├── css/                    # ✅ CSS目录
-│   └── main.css            # ✅ 抽取的样式文件
+├── assets/                     # ✅ 资源目录（图片/音频等）
 │
-├── js/                     # ✅ JavaScript目录
-│   ├── config.js           # ✅ 配置常量
-│   ├── utils.js           # ✅ 工具函数
-│   ├── gameplay.js         # ✅ 玩法管理器
-│   ├── engine.js           # ✅ 核心引擎
-│   └── main.js             # ✅ 主入口
+├── css/                        # ✅ CSS目录
+│   └── main.css               # ✅ 样式文件
 │
-├── data/                   # ⚠️ 游戏数据目录
-│   └── game.json           # ⚠️ 待填充的游戏数据
+├── js/                         # ✅ JavaScript目录
+│   ├── config.js              # ✅ 配置常量
+│   ├── utils.js              # ✅ 工具函数
+│   ├── gameplay.js           # ✅ 玩法管理器
+│   ├── engine.js             # ✅ 核心引擎
+│   └── main.js               # ✅ 主入口
 │
-└── scripts/                # ✅ 辅助脚本目录
-    └── extract-data.js     # ✅ 数据提取脚本（需要手动修复）
+├── data/                       # ✅ 游戏数据目录
+│   └── game.json             # ✅ 游戏数据
+│
+└── scripts/                   # ✅ 辅助脚本目录
+    └── extract-data.js        # ✅ 数据提取脚本
 ```
 
 ## 🚀 使用方法
@@ -54,11 +55,7 @@ npx serve .
 php -S localhost:8000
 ```
 
-然后访问 `http://localhost:8000/index.modular.html`
-
-### 备用方案: 继续使用原始文件
-
-直接使用 `index.html`，无需任何更改！
+然后访问 `http://localhost:8000/index.html` 
 
 ## 📝 手动提取命令 (PowerShell)
 
@@ -78,7 +75,39 @@ Set-Content "data\game.json" -Value $data -Encoding UTF8
 Write-Host "完成！"
 ```
 
-## 🎮 角色系统
+## 🎮 命令行系统
+
+### 支持的命令
+
+| 命令 | 说明 | 示例 |
+|------|------|------|
+| `查询 [关键字]` | 搜索线索/物品/场景/角色 | `查询 手电筒` |
+| `查询 物品档案` | 查看当前背包物品 | `查询 物品档案` |
+| `前往 [场景名]` | 切换到指定场景 | `前往 便利店` |
+| `捕获 [目标]` | 捕获场景/物品/角色的隐藏线索 | `捕获 黑影` |
+| `出示 [物品] [目标]` | 向角色或场景物品出示物品 | `出示 手电筒 黑影` |
+| `检查更新` / `更新` | 手动检查编辑器更新 | `检查更新` |
+
+### 出示物品功能
+
+**格式**: `出示 [物品名] [目标名]`
+
+**支持的出示组合**:
+1. **向角色出示** - 背包物品 + 场景中的角色
+2. **向场景物品出示** - 背包物品 + 场景中的物品
+
+**示例**:
+```
+出示 手电筒 黑影      # 向"黑影"这个角色出示手电筒
+出示 钥匙 保险箱      # 向"保险箱"这个场景物品出示钥匙
+```
+
+**故障排查**:
+- 确保物品已在背包中（需要先"记录"物品）
+- 确保目标在当前场景中
+- 确保目标配置了对应的反应
+
+## 👤 角色系统
 
 ### 角色标签引用
 
@@ -109,8 +138,26 @@ content: "你看到了槿杉和陆珩松在交谈。[char:CHARS_JS] [char:CHARS_
 |------|------|
 | `name` | 角色显示名称 |
 | `sceneRef` | 场景中引用该角色的标签格式 |
-| `itemReactions` | 物品反应配置（key: 物品ID, value: 反应文本/函数） |
-| `reactions` | 线索反应配置（key: 线索ID, value: 反应文本/函数） |
+| `itemReactions` | 物品反应配置（key: 物品ID, value: 反应对象） |
+| `reactions` | 线索/通用反应配置 |
+
+### 物品反应配置
+
+```json
+"itemReactions": {
+    "ITEM_id": {
+        "text": "对该物品的反应文本...",
+        "image": "可选的图片URL",
+        "audio": "可选的音频URL",
+        "results": {
+            "flags": ["FLAG_ID"],
+            "scene": "SCENE_ID",
+            "items": ["ITEM_ID"],
+            "message": "可选的提示消息"
+        }
+    }
+}
+```
 
 ### 已配置角色
 
@@ -122,24 +169,36 @@ content: "你看到了槿杉和陆珩松在交谈。[char:CHARS_JS] [char:CHARS_
 | 朱穗 | CHARS_zs | ✅ | ✅ |
 | TEC | CHARS_TEC | ✅ | ❌ |
 
-### 向角色出示物品
+## 📦 场景物品系统
 
-功能：`executePresentToChar(charId, itemId)`
+### 场景物品反应
 
-**工作条件**：
-1. 物品已在背包中（已记录）
-2. 角色在当前场景中被 `[char:XXX]` 引用
-3. 该角色配置了对应的 `itemReactions`
+场景物品也可以配置 `presentReactions` 来响应出示的物品：
 
-**故障排查**：如果某角色无法响应，检查：
-- 该角色在该场景中是否被正确引用
-- 是否配置了相应的 `itemReactions`
+```json
+"ITEM_safe": {
+    "label": "保险箱",
+    "desc": "一个老旧的保险箱",
+    "presentReactions": {
+        "ITEM_key": {
+            "text": "钥匙插入锁孔，发出咔嗒声...",
+            "results": {
+                "flags": ["safe_opened"],
+                "items": ["ITEM_document"]
+            }
+        }
+    }
+}
+```
 
-### 在场景中查找角色
+## 🔄 编辑器同步
 
-功能：`findCharInScene(charId)`
+游戏支持与外部编辑器实时同步数据：
 
-在当前场景内容中查找是否有对应角色的 `[char:XXX]` 标签，返回布尔值。
+- 使用 `BroadcastChannel` 实时推送更新
+- 降级支持 `localStorage` 检查更新
+- 检测到更新后会提示用户是否加载
+- 命令行输入 `检查更新` 可手动检查
 
 ## 🎯 模块化优势
 
@@ -158,7 +217,7 @@ content: "你看到了槿杉和陆珩松在交谈。[char:CHARS_JS] [char:CHARS_
 ```json
 "SCENE_NEW": {
     "title": "场景名称",
-    "content": "场景内容 [item:ITEM_id] [char:CHARS_xxx]...",
+    "content": "场景内容 [item:ITEM_id] [char:CHARS_xxx] [loc:LOC_id]...",
     "desc": "简短描述",
     "hiddenClue": {
         "text": "隐藏线索 [clue:CLUE_id]",
@@ -175,7 +234,10 @@ content: "你看到了槿杉和陆珩松在交谈。[char:CHARS_JS] [char:CHARS_
     "name": "新角色名称",
     "sceneRef": "[char:CHARS_NEW]",
     "itemReactions": {
-        "ITEM_id": "对该物品的反应..."
+        "ITEM_id": {
+            "text": "对该物品的反应...",
+            "results": {}
+        }
     },
     "reactions": {
         "CLUE_id": {
@@ -195,6 +257,23 @@ content: "你看到了槿杉和陆珩松在交谈。[char:CHARS_JS] [char:CHARS_
     "recipe": ["CLUE_ID_1", "CLUE_ID_2"],
     "isTrueCapture": false,
     "message": "结局剧情描述..."
+}
+```
+
+### 添加真结局
+设置 `isTrueCapture: true`，并添加 `lines` 数组：
+
+```json
+{
+    "id": "END_TRUE",
+    "name": "真相",
+    "recipe": ["CLUE_TRUE_1", "CLUE_TRUE_2"],
+    "isTrueCapture": true,
+    "lines": [
+        { "text": "第一行文字", "delay": 0 },
+        { "text": "第二行文字", "delay": 2000 }
+    ],
+    "message": "结局结语..."
 }
 ```
 
