@@ -99,7 +99,7 @@ async function initGame() {
 
     // 恢复boot标题
     if (bootTitle) {
-        bootTitle.textContent = 'T.E.C-OS [V4.11.0]';
+        bootTitle.textContent = 'T.E.C-OS [V5.0.0]';
     }
 
     // 绑定Tab切换功能
