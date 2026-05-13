@@ -7,7 +7,6 @@ tecats.github.io/
 ├── index.html              # ✅ 新网站入口（原 welcome.html）
 ├── cases.html             # ✅ 案件档案库页面
 ├── garden.html            # ✅ A-001 游戏页面（原 index.html）
-├── 剧情编辑工具ver2.0.html # ✅ 剧情编辑器
 ├── README.md               # ✅ 本文档
 │
 ├── css/                    # ✅ CSS目录
