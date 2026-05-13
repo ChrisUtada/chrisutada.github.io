@@ -6,6 +6,24 @@
 import { createEngine } from './engine.js';
 import { CONFIG } from './config.js';
 
+// ========================== URL参数解析 ==========================
+
+/**
+ * 解析URL参数
+ */
+function parseUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        caseId: params.get('case') || 'default',
+        fresh: params.get('fresh') === '1'
+    };
+}
+
+// 存储URL参数供Engine使用
+const urlParams = parseUrlParams();
+window.__GAME_CASE_ID__ = urlParams.caseId;
+window.__GAME_FRESH__ = urlParams.fresh;
+
 // ========================== 游戏数据加载器 ==========================
 
 /**

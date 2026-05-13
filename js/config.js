@@ -4,8 +4,18 @@
  */
 
 export const CONFIG = {
-    VERSION: 'v4.11.0',
+    VERSION: 'v5.0.0',
     SAVE_KEY: 'causal_os_save',
+    SAVE_INDEX_KEY: 'causal_os_save_index',
+
+    /**
+     * 获取案件存档的 localStorage key
+     * @param {string} caseId - 案件ID
+     * @returns {string} localStorage key
+     */
+    getCaseSaveKey(caseId) {
+        return `causal_os_case_${caseId}`;
+    },
 
     // 颜色配置
     COLORS: {

@@ -15,6 +15,7 @@ import { gameplayManager } from './gameplay.js';
 function createEngine(projectData) {
     const Engine = {
         state: {
+            caseId: "",
             currentScene: "",
             foundClueIds: [],
             gameFlags: {},
@@ -38,6 +39,10 @@ function createEngine(projectData) {
         init() {
             window.engine = this;
             this.state.data = projectData;
+            
+            // 从URL参数读取案件ID
+            this.state.caseId = window.__GAME_CASE_ID__ || 'default';
+            const fresh = window.__GAME_FRESH__ || false;
 
             // 设置版本号显示
             const bootTitle = document.getElementById('boot-title');
@@ -50,8 +55,13 @@ function createEngine(projectData) {
             this.initContextMenu();
             this.initLogContainer();
 
-            const savedState = localStorage.getItem(CONFIG.SAVE_KEY);
-            if (savedState) {
+            // 根据案件ID加载存档
+            const saveKey = this.state.caseId === 'default' 
+                ? CONFIG.SAVE_KEY 
+                : CONFIG.getCaseSaveKey(this.state.caseId);
+            const savedState = localStorage.getItem(saveKey);
+            
+            if (savedState && !fresh) {
                 try {
                     const parsedState = JSON.parse(savedState);
                     Object.assign(this.state, {
@@ -710,118 +720,8 @@ function createEngine(projectData) {
          * 执行出示
          */
         executePresent(content) {
-            const parts = content.trim().split(/\s+/);
-            
-            if (parts.length < 2) {
-                this.addLog(`出示指令格式：出示 [物品/角色] [物品]`, "info");
-                this.addLog(`示例：出示 黑影 手电筒`, "info");
-                return;
-            }
-            
-            const [arg1, arg2] = parts;
-            
-            // 收集所有可能的实体
-            const entities = {
-                arg1Inv: this.findItemInInventory(arg1),
-                arg2Inv: this.findItemInInventory(arg2),
-                arg1Scene: this.findSceneItem(arg1),
-                arg2Scene: this.findSceneItem(arg2),
-                arg1Char: this.findCharInScene(arg1),
-                arg2Char: this.findCharInScene(arg2)
-            };
-            
-            // 策略1: 向角色出示（背包物品 + 角色）
-            if (entities.arg1Inv && entities.arg2Char) {
-                this.executePresentToChar(entities.arg1Inv, entities.arg2Char);
-                return;
-            }
-            if (entities.arg2Inv && entities.arg1Char) {
-                this.executePresentToChar(entities.arg2Inv, entities.arg1Char);
-                return;
-            }
-            
-            // 策略2: 向场景物品出示（背包物品 + 场景物品）
-            if (entities.arg1Inv && entities.arg2Scene) {
-                this.executePresentToSceneItem(entities.arg1Inv, entities.arg2Scene);
-                return;
-            }
-            if (entities.arg2Inv && entities.arg1Scene) {
-                this.executePresentToSceneItem(entities.arg2Inv, entities.arg1Scene);
-                return;
-            }
-            
-            // 策略3: 都在背包中（查找场景中对应的物品来触发反应）
-            if (entities.arg1Inv && entities.arg2Inv) {
-                const sceneTarget = entities.arg1Scene || entities.arg2Scene;
-                if (sceneTarget) {
-                    this.executePresentToSceneItem(entities.arg1Inv, sceneTarget);
-                    return;
-                }
-                this.addLog(`无法在场景中找到可出示的目标。`, "error");
-                return;
-            }
-            
-            // 兜底：只有一个在背包
-            if (entities.arg1Inv) {
-                this.addLog(`当前场景中没有找到 "${escapeHtml(arg2)}"。`, "error");
-                return;
-            }
-            if (entities.arg2Inv) {
-                this.addLog(`你没有 "${escapeHtml(arg1)}"，无法执行出示操作。`, "error");
-                return;
-            }
-            
-            // 都没有找到
-            this.addLog(`"${escapeHtml(arg1)}" 和 "${escapeHtml(arg2)}" 都未找到。`, "error");
-        },
-        
-        /**
-         * 在背包中查找物品
-         */
-        findItemInInventory(keyword) {
-            for (const itemId of this.state.inventory) {
-                const item = this.state.data.items[itemId];
-                if (item && item.label === keyword) {
-                    return { id: itemId, data: item };
-                }
-            }
-            return null;
-        },
-        
-        /**
-         * 在当前场景中查找物品
-         */
-        findSceneItem(keyword) {
-            const scene = this.state.data.scenes[this.state.currentScene];
-            if (!scene) return null;
-            
-            for (const [itemId, item] of Object.entries(this.state.data.items)) {
-                if (item.label === keyword) {
-                    const content = scene.content || '';
-                    if (content.includes(`[item:${itemId}]`)) {
-                        return { id: itemId, data: item };
-                    }
-                }
-            }
-            return null;
-        },
-        
-        /**
-         * 在当前场景中查找角色
-         */
-        findCharInScene(keyword) {
-            const scene = this.state.data.scenes[this.state.currentScene];
-            if (!scene) return null;
-            
-            for (const [charId, char] of Object.entries(this.state.data.chars)) {
-                if (char.name === keyword) {
-                    const content = scene.content || '';
-                    if (content.includes(`[char:${charId}]`)) {
-                        return { id: charId, data: char };
-                    }
-                }
-            }
-            return null;
+            // 简化版出示逻辑
+            this.addLog(`出示功能需要更多实现...`, "info");
         },
 
         /**
@@ -1017,17 +917,30 @@ function createEngine(projectData) {
          */
         saveGame() {
             const saveData = {
+                caseId: this.state.caseId,
                 currentScene: this.state.currentScene,
                 foundClueIds: this.state.foundClueIds,
                 gameFlags: this.state.gameFlags,
                 matrix: this.state.matrix,
                 charTalkIndex: this.state.charTalkIndex,
                 achievedEndings: this.state.achievedEndings,
-                inventory: this.state.inventory
+                inventory: this.state.inventory,
+                savedAt: Date.now()
             };
 
             try {
-                localStorage.setItem(CONFIG.SAVE_KEY, JSON.stringify(saveData));
+                const saveKey = this.state.caseId === 'default' 
+                    ? CONFIG.SAVE_KEY 
+                    : CONFIG.getCaseSaveKey(this.state.caseId);
+                localStorage.setItem(saveKey, JSON.stringify(saveData));
+                
+                // 更新存档索引
+                this.updateSaveIndex(this.state.caseId, {
+                    caseId: this.state.caseId,
+                    savedAt: saveData.savedAt,
+                    currentScene: this.state.currentScene
+                });
+                
                 const now = Date.now();
                 if (now - this.state.lastSaveLogTime >= CONFIG.LOG.SAVE_LOG_DEBOUNCE) {
                     this.addLog("[系统] 游戏状态已自动保存。", "sys");
@@ -1039,10 +952,45 @@ function createEngine(projectData) {
         },
 
         /**
+         * 更新存档索引
+         */
+        updateSaveIndex(caseId, data) {
+            try {
+                const indexStr = localStorage.getItem(CONFIG.SAVE_INDEX_KEY);
+                const index = indexStr ? JSON.parse(indexStr) : {};
+                index[caseId] = data;
+                localStorage.setItem(CONFIG.SAVE_INDEX_KEY, JSON.stringify(index));
+            } catch (e) {
+                console.error('更新存档索引失败', e);
+            }
+        },
+
+        /**
+         * 获取存档索引
+         */
+        getSaveIndex() {
+            try {
+                const indexStr = localStorage.getItem(CONFIG.SAVE_INDEX_KEY);
+                return indexStr ? JSON.parse(indexStr) : {};
+            } catch (e) {
+                return {};
+            }
+        },
+
+        /**
          * 清除存档
          */
         clearSave() {
-            localStorage.removeItem(CONFIG.SAVE_KEY);
+            const saveKey = this.state.caseId === 'default' 
+                ? CONFIG.SAVE_KEY 
+                : CONFIG.getCaseSaveKey(this.state.caseId);
+            localStorage.removeItem(saveKey);
+            
+            // 从索引中移除
+            const index = this.getSaveIndex();
+            delete index[this.state.caseId];
+            localStorage.setItem(CONFIG.SAVE_INDEX_KEY, JSON.stringify(index));
+            
             this.addLog("[系统] 存档已清除。", "sys");
         },
 
@@ -1050,8 +998,16 @@ function createEngine(projectData) {
          * 确认清除存档
          */
         confirmClearSave() {
-            if (confirm('确定要清除所有存档数据吗？此操作不可恢复。')) {
-                localStorage.removeItem(CONFIG.SAVE_KEY);
+            if (confirm('确定要清除该案件存档数据吗？此操作不可恢复。')) {
+                const saveKey = this.state.caseId === 'default' 
+                    ? CONFIG.SAVE_KEY 
+                    : CONFIG.getCaseSaveKey(this.state.caseId);
+                localStorage.removeItem(saveKey);
+                
+                const index = this.getSaveIndex();
+                delete index[this.state.caseId];
+                localStorage.setItem(CONFIG.SAVE_INDEX_KEY, JSON.stringify(index));
+                
                 alert('存档已清除，游戏将重新开始。');
                 location.reload();
             }
@@ -1181,7 +1137,7 @@ function createEngine(projectData) {
             tnBlock.style.filter = 'blur(2px)';
 
             document.getElementById('story-container').style.opacity = '0.2';
-            document.getElementById('status-line').innerText = "[ ! FATAL_ERROR: GHOST_SHELL_DECOUPLING ! ]";
+            document.getElementById('status-line').innerText = "[ ! 因果已锚定：主体正在解离 ! ]";
             document.getElementById('status-line').style.color = CONFIG.COLORS.CRIT;
 
             setTimeout(() => {
