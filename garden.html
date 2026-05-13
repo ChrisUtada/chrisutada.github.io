@@ -183,7 +183,7 @@
                     document.getElementById('clear-btn').style.display = 'block';
                     document.getElementById('back-btn').style.display = 'block';
                     console.log('[系统] 引擎初始化完成，按钮已启用');
-                } else if (checkCount > 50) {
+                } else if (checkCount > 150) {
                     clearInterval(checkEngine);
                     document.getElementById('boot-title').textContent = 'T.E.C-OS [ERROR]';
                     document.getElementById('loading-status').textContent = '引擎初始化失败，请检查控制台错误';
