@@ -698,6 +698,59 @@ function createEngine(projectData) {
         },
 
         /**
+         * 查找物品（支持ID和名称）
+         */
+        findItem(nameOrId) {
+            const items = this.state.data.items || {};
+            // 先按ID查找
+            if (items[nameOrId]) {
+                return { id: nameOrId, data: items[nameOrId] };
+            }
+            // 再按名称查找
+            for (const [id, item] of Object.entries(items)) {
+                if (item.label === nameOrId) {
+                    return { id, data: item };
+                }
+            }
+            return null;
+        },
+
+        /**
+         * 查找角色（支持ID和名称）
+         */
+        findCharacter(nameOrId) {
+            const chars = this.state.data.chars || {};
+            // 先按ID查找
+            if (chars[nameOrId]) {
+                return { id: nameOrId, data: chars[nameOrId] };
+            }
+            // 再按名称查找
+            for (const [id, char] of Object.entries(chars)) {
+                if (char.name === nameOrId) {
+                    return { id, data: char };
+                }
+            }
+            return null;
+        },
+
+        /**
+         * 查找场景物品
+         */
+        findSceneItem(name) {
+            const scene = this.state.data.scenes[this.state.currentScene];
+            if (!scene) return null;
+
+            // 在场景内容中查找
+            const items = this.state.data.items || {};
+            for (const [id, item] of Object.entries(items)) {
+                if (item.label === name) {
+                    return { id, data: item };
+                }
+            }
+            return null;
+        },
+
+        /**
          * 执行捕获
          */
         executeCapture(targetName) {
@@ -718,10 +771,66 @@ function createEngine(projectData) {
 
         /**
          * 执行出示
+         * 格式：出示 [物品] [目标] 或 出示 [目标] [物品]
          */
         executePresent(content) {
-            // 简化版出示逻辑
-            this.addLog(`出示功能需要更多实现...`, "info");
+            // 解析输入：尝试两种格式
+            const parts = content.split(/\s+/);
+            if (parts.length < 2) {
+                this.addLog(`指令格式错误。正确格式：出示 [物品] [目标]`, "error");
+                return;
+            }
+
+            let itemName, targetName;
+            let itemObj = null, targetObj = null;
+            let isTargetChar = false;
+
+            // 尝试格式1：出示 物品 目标
+            itemName = parts[0];
+            targetName = parts.slice(1).join(' ');
+            
+            // 查找物品
+            itemObj = this.findItem(itemName);
+            
+            if (!itemObj) {
+                // 尝试格式2：出示 目标 物品
+                itemName = parts[parts.length - 1];
+                targetName = parts.slice(0, -1).join(' ');
+                itemObj = this.findItem(itemName);
+            }
+
+            if (!itemObj) {
+                this.addLog(`未找到物品 "${escapeHtml(itemName)}"。`, "error");
+                return;
+            }
+
+            // 检查是否有这个物品
+            if (!this.state.foundClueIds.includes(itemObj.id) && 
+                !this.state.inventory.includes(itemObj.id)) {
+                this.addLog(`你还没有 "${escapeHtml(itemObj.data.label)}"。`, "error");
+                return;
+            }
+
+            // 查找目标（优先角色）
+            targetObj = this.findCharacter(targetName);
+            if (targetObj) {
+                isTargetChar = true;
+            } else {
+                // 查找场景物品
+                targetObj = this.findSceneItem(targetName);
+            }
+
+            if (!targetObj) {
+                this.addLog(`未找到目标 "${escapeHtml(targetName)}"。`, "error");
+                return;
+            }
+
+            // 执行出示
+            if (isTargetChar) {
+                this.executePresentToChar(itemObj, targetObj);
+            } else {
+                this.executePresentToSceneItem(itemObj, targetObj);
+            }
         },
 
         /**
