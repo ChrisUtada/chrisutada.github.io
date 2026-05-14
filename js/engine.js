@@ -524,6 +524,7 @@ function createEngine(projectData) {
                 this.renderMatrixSlot(clue.type);
                 document.getElementById(`clue-node-${CSS.escape(id)}`).classList.add('hidden');
                 this.saveGame();
+                this.analyzeMatrixState();
             }
         },
 
@@ -541,9 +542,97 @@ function createEngine(projectData) {
                     this.state.matrix[type] = this.state.matrix[type].filter(cid => cid !== id);
                     this.renderMatrixSlot(type);
                     document.getElementById(`clue-node-${CSS.escape(id)}`).classList.remove('hidden');
+                    this.analyzeMatrixState();
                 };
                 container.appendChild(div);
             });
+        },
+
+        /**
+         * 分析矩阵状态并生成提示
+         */
+        analyzeMatrixState() {
+            const matrix = this.state.matrix;
+            const senseTypes = ['vision', 'hearing', 'touch', 'smell', 'taste'];
+            const senseLabels = { vision: '视觉', hearing: '听觉', touch: '触觉', smell: '嗅觉', taste: '味觉' };
+
+            const currentIds = Object.values(matrix).flat();
+
+            let hintMsg = '[逻辑节点同步完成]';
+
+            const canInfer = this.state.data.endings.some(ending => {
+                if (ending.recipe.length !== currentIds.length) return false;
+                const sortedRecipe = [...ending.recipe].sort();
+                const sortedCurrent = [...currentIds].sort();
+                return sortedRecipe.every((val, index) => val === sortedCurrent[index]);
+            });
+
+            if (canInfer) {
+                hintMsg += '<br>→ 因果链路已闭合，可执行「SYNC_MATRIX_INFERENCE」';
+                this.addLog(hintMsg, 'sys');
+                return;
+            }
+
+            const trueEnding = this.state.data.endings.find(e => e.id === 'TRUE_E');
+            if (trueEnding) {
+                const matchedClues = currentIds.filter(id => trueEnding.recipe.includes(id));
+                const matchedCount = matchedClues.length;
+                const totalRequired = trueEnding.recipe.length;
+
+                const requiredTypes = trueEnding.recipe.map(id => this.state.data.clues[id]?.type).filter(Boolean);
+                const matchedTypes = matchedClues.map(id => this.state.data.clues[id]?.type).filter(Boolean);
+
+                const typeCount = {};
+                requiredTypes.forEach(t => typeCount[t] = (typeCount[t] || 0) + 1);
+                matchedTypes.forEach(t => typeCount[t] = (typeCount[t] || 0) - 1);
+
+                const unmatchedTypes = [];
+                Object.entries(typeCount).forEach(([type, count]) => {
+                    if (count > 0) {
+                        for (let i = 0; i < count; i++) {
+                            unmatchedTypes.push(type);
+                        }
+                    }
+                });
+
+                const typeStr = unmatchedTypes.length > 0 
+                    ? `未归因类型：${unmatchedTypes.map(t => senseLabels[t]).join('、')}` 
+                    : '已完全归因';
+
+                hintMsg += `<br>→ 真名捕获：${matchedCount}/${totalRequired}，${typeStr}`;
+            }
+
+            this.state.data.endings
+                .filter(e => e.id !== 'TRUE_E')
+                .forEach((ending, index) => {
+                    const matchedClues = currentIds.filter(id => ending.recipe.includes(id));
+                    const matchedCount = matchedClues.length;
+                    const totalRequired = ending.recipe.length;
+
+                    const requiredTypes = ending.recipe.map(id => this.state.data.clues[id]?.type).filter(Boolean);
+                    const matchedTypes = matchedClues.map(id => this.state.data.clues[id]?.type).filter(Boolean);
+
+                    const typeCount = {};
+                    requiredTypes.forEach(t => typeCount[t] = (typeCount[t] || 0) + 1);
+                    matchedTypes.forEach(t => typeCount[t] = (typeCount[t] || 0) - 1);
+
+                    const unmatchedTypes = [];
+                    Object.entries(typeCount).forEach(([type, count]) => {
+                        if (count > 0) {
+                            for (let i = 0; i < count; i++) {
+                                unmatchedTypes.push(type);
+                            }
+                        }
+                    });
+
+                    const typeStr = unmatchedTypes.length > 0 
+                        ? `未归因类型：${unmatchedTypes.map(t => senseLabels[t]).join('、')}` 
+                        : '已完全归因';
+
+                    hintMsg += `<br>→ 因果链#${index + 1}：${matchedCount}/${totalRequired}，${typeStr}`;
+                });
+
+            this.addLog(hintMsg, 'sys');
         },
 
         /**

@@ -126,6 +126,46 @@ Write-Host "完成！"
 }
 ```
 
+### 创建新案件
+
+#### 步骤1：准备数据
+```
+1. 使用剧情编辑工具读取现有的 data/game.json
+2. 修改或添加新的场景、物品、角色、线索、结局
+3. 导出为新的 JSON 文件（如 data/game-a002.json）
+```
+
+#### 步骤2：创建案件页面
+复制 `garden.html` 并重命名为 `case-a002.html`，修改数据加载部分：
+
+```html
+<script type="module">
+import { Engine } from './js/engine.js';
+
+// 修改数据路径
+const data = await fetch('./data/game-a002.json').then(r => r.json());
+
+// 修改案件ID
+const game = new Engine(data, { caseId: 'A-002' });
+</script>
+```
+
+#### 步骤3：更新案件档案库
+在 `cases.html` 中添加新案件入口：
+
+```html
+<div class="case-item" onclick="selectCase('A-002')">
+    <div class="case-id">A-002</div>
+    <div class="case-title">新案件名称</div>
+    <div class="case-status unlocked">已解密</div>
+</div>
+```
+
+#### 数据关联流程
+```
+剧情编辑工具 → 导出 JSON → data/game-a002.json → case-a002.html → cases.html
+```
+
 ## 📋 版本信息
 
 - **游戏版本**: v5.0.0
@@ -155,6 +195,22 @@ Write-Host "完成！"
 - ✅ 支持多案件独立页面
 - ✅ 存档通过 `caseId` 区分，互不干扰
 - ✅ URL 参数：`?case=A-001&fresh=1`
+
+### 矩阵状态提示优化
+- ✅ 新增 `analyzeMatrixState()` 方法，实时分析矩阵状态
+- ✅ 线索放入/移除时自动显示进度提示
+- ✅ 显示各结局的匹配进度和未归因类型
+- ✅ 真名捕获始终显示在第一位
+- ✅ 支持重复类型提示（如"未归因类型：视觉、视觉"）
+- ✅ 文案优化："五感已完全归因" → "已完全归因"
+
+**提示格式示例**：
+```
+[逻辑节点同步完成]
+→ 真名捕获：2/5，未归因类型：触觉、嗅觉、味觉
+→ 因果链#1：1/3，未归因类型：视觉
+→ 因果链#2：2/5，未归因类型：听觉、触觉、嗅觉
+```
 
 ## ⚠️ 已知问题
 
