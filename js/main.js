@@ -94,9 +94,6 @@ async function initGame() {
     // 创建并初始化引擎
     const Engine = createEngine(gameData);
 
-    // 绑定全局Engine对象 (关键！)
-    window.Engine = Engine;
-
    // 初始化引擎 (关键！之前缺少这一步)
     Engine.init();
 
