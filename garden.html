@@ -55,7 +55,7 @@
         <div id="boot-title">T.E.C-OS [LOADING...]</div>
         <div style="font-size: 13px; margin: 16px 0; color: #666; letter-spacing: 2px;">异动区域已被锁定 // 因果重建已完成 // 权限等级已确认</div>
         <div id="loading-status" style="margin: 16px 0; color: #999; font-size: 12px;">正在初始化系统组件...</div>
-        <button class="boot-btn" style="display: none;" id="connect-btn" onclick="Engine && Engine.init()">接入因果核心</button>
+        <button class="boot-btn" style="display: none;" id="connect-btn" onclick="Engine && Engine.startGame()">接入因果核心</button>
         <button class="boot-btn" style="display: none; margin-top: 12px;" id="clear-btn" onclick="Engine && Engine.confirmClearSave()">清除存档</button>
         <button class="boot-btn" style="display: none; margin-top: 12px;" id="back-btn" onclick="location.href='cases.html'">返回档案库</button>
     </div>
@@ -180,8 +180,17 @@
                     document.getElementById('boot-title').textContent = 'T.E.C-OS [V5.0.0]';
                     document.getElementById('loading-status').style.display = 'none';
                     document.getElementById('connect-btn').style.display = 'block';
-                    document.getElementById('clear-btn').style.display = 'block';
                     document.getElementById('back-btn').style.display = 'block';
+                    
+                    // 只有存在存档时才显示清除按钮
+                    const saveKey = window.Engine.state.caseId === 'default' 
+                        ? 'TEC_SAVE_DEFAULT' 
+                        : 'TEC_SAVE_' + window.Engine.state.caseId;
+                    const savedState = localStorage.getItem(saveKey);
+                    if (savedState) {
+                        document.getElementById('clear-btn').style.display = 'block';
+                    }
+                    
                     console.log('[系统] 引擎初始化完成，按钮已启用');
                 } else if (checkCount > 150) {
                     clearInterval(checkEngine);

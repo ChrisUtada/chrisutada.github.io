@@ -34,15 +34,15 @@ function createEngine(projectData) {
         timeIntervalId: null,
 
         /**
-         * 初始化引擎
+         * 初始化引擎（基础初始化，不自动进入游戏）
          */
         init() {
-            window.engine = this;
+            window.Engine = this;
             this.state.data = projectData;
             
             // 从URL参数读取案件ID
             this.state.caseId = window.__GAME_CASE_ID__ || 'default';
-            const fresh = window.__GAME_FRESH__ || false;
+            this.state.fresh = window.__GAME_FRESH__ || false;
 
             // 设置版本号显示
             const bootTitle = document.getElementById('boot-title');
@@ -55,15 +55,49 @@ function createEngine(projectData) {
             this.initContextMenu();
             this.initLogContainer();
 
-            // 根据案件ID加载存档
+            // 根据案件ID加载存档（仅读取，不自动恢复）
             const saveKey = this.state.caseId === 'default' 
                 ? CONFIG.SAVE_KEY 
                 : CONFIG.getCaseSaveKey(this.state.caseId);
-            const savedState = localStorage.getItem(saveKey);
+            this.savedState = localStorage.getItem(saveKey);
+
+            // 显示启动界面按钮
+            this.showBootButtons();
+
+            this.checkEditorUpdate();
+        },
+
+        /**
+         * 显示启动界面按钮
+         */
+        showBootButtons() {
+            const connectBtn = document.getElementById('connect-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const backBtn = document.getElementById('back-btn');
+            const loadingStatus = document.getElementById('loading-status');
+
+            if (loadingStatus) {
+                loadingStatus.textContent = '系统初始化完成';
+            }
+
+            if (connectBtn) connectBtn.style.display = 'block';
+            if (backBtn) backBtn.style.display = 'block';
             
-            if (savedState && !fresh) {
+            // 只有存在存档时才显示清除按钮
+            if (clearBtn && this.savedState) {
+                clearBtn.style.display = 'block';
+            }
+        },
+
+        /**
+         * 开始游戏（用户点击"接入因果核心"按钮后调用）
+         */
+        startGame() {
+            const fresh = this.state.fresh;
+            
+            if (this.savedState && !fresh) {
                 try {
-                    const parsedState = JSON.parse(savedState);
+                    const parsedState = JSON.parse(this.savedState);
                     Object.assign(this.state, {
                         currentScene: parsedState.currentScene,
                         foundClueIds: parsedState.foundClueIds || [],
@@ -87,8 +121,6 @@ function createEngine(projectData) {
             } else {
                 this.startFresh();
             }
-
-            this.checkEditorUpdate();
         },
 
         /**
