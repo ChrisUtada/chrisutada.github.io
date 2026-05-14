@@ -97,6 +97,9 @@ async function initGame() {
     // 绑定全局Engine对象 (关键！)
     window.Engine = Engine;
 
+   // 初始化引擎 (关键！之前缺少这一步)
+    Engine.init();
+
     // 恢复boot标题
     if (bootTitle) {
         bootTitle.textContent = 'T.E.C-OS [V5.0.0]';
