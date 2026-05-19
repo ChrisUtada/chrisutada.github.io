@@ -804,15 +804,32 @@
             showToast('头像已移除（请保存后同步到游戏）');
         }
         
-        // 处理图片/音频上传（转换为Base64）
+        // 更新图片路径
+        function updateImagePath(cat, targetId, path) {
+            try {
+                if (!projectData[cat] || !projectData[cat][targetId]) {
+                    alert('数据异常，请刷新页面后重试');
+                    return;
+                }
+                if (path && path.trim()) {
+                    projectData[cat][targetId].image = path.trim();
+                    showToast('图片路径已更新（请将图片文件放入images/文件夹后保存）');
+                } else {
+                    delete projectData[cat][targetId].image;
+                    showToast('图片已移除');
+                }
+                renderCurrentTab();
+            } catch (err) {
+                console.error('更新图片路径失败:', err);
+                alert('更新失败，请重试');
+            }
+        }
+        
+        // 处理媒体上传（仅音频）
         function handleMediaUpload(input, cat, targetId, field) {
             const file = input.files[0];
             if (!file) return;
             
-            if (field === 'image' && file.size > 5 * 1024 * 1024) {
-                alert('图片大小不能超过5MB');
-                return;
-            }
             if (field === 'audio' && file.size > 10 * 1024 * 1024) {
                 alert('音频大小不能超过10MB');
                 return;
@@ -827,7 +844,7 @@
                     }
                     projectData[cat][targetId][field] = e.target.result;
                     renderCurrentTab();
-                    showToast(`${field === 'image' ? '图片' : '音频'}已上传（请保存后同步到游戏）`);
+                    showToast('音频已上传（请保存后同步到游戏）');
                 } catch (err) {
                     console.error('媒体上传后处理失败:', err);
                     alert('上传处理失败，请重试');
@@ -1090,10 +1107,10 @@
                             <div>
                                 <label style="color:#66ccff;">配图 (IMAGE)</label>
                                 <div class="media-upload-preview" style="width:100%; height:120px; border:2px dashed #444; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; background:#111;" onclick="document.getElementById('media-img-${cat}-${id}').click()">
-                                    ${entry.image ? `<img src="${escapeHtml(entry.image)}" style="max-width:100%; max-height:100%; object-fit:contain;">` : '<span style="color:#555;">+ 添加配图</span>'}
+                                    ${entry.image ? `<img src="${escapeHtml(entry.image)}" style="max-width:100%; max-height:100px; object-fit:contain;" onerror="this.style.display='none'">` : ''}
                                 </div>
-                                <input type="file" id="media-img-${cat}-${id}" accept="image/*" style="display:none" onchange="handleMediaUpload(this, '${cat}', '${escapeHtml(id)}', 'image')">
-                                ${entry.image ? `<button class="btn btn-danger btn-small" style="width:100%; margin-top:5px;" onclick="removeMedia('${cat}', '${escapeHtml(id)}', 'image')">移除图片</button>` : ''}
+                                <input type="text" class="image-path-input" value="${escapeHtml(entry.image || '')}" placeholder="images/xxx.png" style="width:100%; margin-top:5px; background:#111; border:1px solid #444; color:white; padding:8px; border-radius:4px;" onchange="updateImagePath('${cat}', '${escapeHtml(id)}', this.value)">
+                                <div style="font-size:10px; color:#888; margin-top:2px;">图片路径，相对于项目根目录</div>
                             </div>
                             <div>
                                 <label style="color:#66ffcc;">背景音 (AUDIO)</label>
@@ -1624,10 +1641,10 @@
                             <div>
                                 <label style="color:#66ccff;">配图 (IMAGE)</label>
                                 <div class="media-upload-preview" style="width:100%; height:120px; border:2px dashed #444; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; background:#111;" onclick="document.getElementById('media-img-chars-${id}').click()">
-                                    ${c.image ? `<img src="${escapeHtml(c.image)}" style="max-width:100%; max-height:100%; object-fit:contain;">` : '<span style="color:#555;">+ 添加配图</span>'}
+                                    ${c.image ? `<img src="${escapeHtml(c.image)}" style="max-width:100%; max-height:80px; object-fit:contain;" onerror="this.style.display='none'">` : ''}
                                 </div>
-                                <input type="file" id="media-img-chars-${id}" accept="image/*" style="display:none" onchange="handleMediaUpload(this, 'chars', '${escapeHtml(id)}', 'image')">
-                                ${c.image ? `<button class="btn btn-danger btn-small" style="width:100%; margin-top:5px;" onclick="removeMedia('chars', '${escapeHtml(id)}', 'image')">移除图片</button>` : ''}
+                                <input type="text" class="image-path-input" value="${escapeHtml(c.image || '')}" placeholder="images/xxx.png" style="width:100%; margin-top:5px; background:#111; border:1px solid #444; color:white; padding:8px; border-radius:4px;" onchange="updateImagePath('chars', '${escapeHtml(id)}', this.value)">
+                                <div style="font-size:10px; color:#888; margin-top:2px;">图片路径</div>
                             </div>
                             <div>
                                 <label style="color:#66ffcc;">背景音 (AUDIO)</label>
@@ -1914,11 +1931,11 @@
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
                             <div>
                                 <label style="color:#66ccff;">配图 (IMAGE)</label>
-                                <div class="media-upload-preview" style="width:100%; height:100px; border:2px dashed #444; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; background:#111;" onclick="document.getElementById('media-img-clues-${id}').click()">
-                                    ${c.image ? `<img src="${escapeHtml(c.image)}" style="max-width:100%; max-height:100%; object-fit:contain;">` : '<span style="color:#555; font-size:12px;">+ 添加配图</span>'}
+                                <div class="media-upload-preview" style="width:100%; height:80px; border:2px dashed #444; border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#111;">
+                                    ${c.image ? `<img src="${escapeHtml(c.image)}" style="max-width:100%; max-height:80px; object-fit:contain;" onerror="this.style.display='none'">` : '<span style="color:#555; font-size:12px;">无配图</span>'}
                                 </div>
-                                <input type="file" id="media-img-clues-${id}" accept="image/*" style="display:none" onchange="handleMediaUpload(this, 'clues', '${escapeHtml(id)}', 'image')">
-                                ${c.image ? `<button class="btn btn-danger btn-small" style="width:100%; margin-top:5px;" onclick="removeMedia('clues', '${escapeHtml(id)}', 'image')">移除图片</button>` : ''}
+                                <input type="text" class="image-path-input" value="${escapeHtml(c.image || '')}" placeholder="images/xxx.png" style="width:100%; margin-top:5px; background:#111; border:1px solid #444; color:white; padding:8px; border-radius:4px;" onchange="updateImagePath('clues', '${escapeHtml(id)}', this.value)">
+                                <div style="font-size:10px; color:#888; margin-top:2px;">图片路径</div>
                             </div>
                             <div>
                                 <label style="color:#66ffcc;">音频 (AUDIO)</label>

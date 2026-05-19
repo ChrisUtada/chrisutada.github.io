@@ -24,11 +24,75 @@ tecats.github.io/
 │   ├── game.json           # ⚠️ A-001 游戏数据
 │   └── game01.json         # ⚠️ A-002 游戏数据
 │
+├── images/                  # ✅ 游戏图片目录
+│   ├── scenes/             # ✅ 场景图片
+│   ├── clues/              # ✅ 线索图片
+│   └── chars/              # ✅ 角色图片
+│
 ├── server.js               # ✅ 本地服务器脚本
 │
 └── scripts/                # ✅ 辅助脚本目录
     └── extract-data.js     # ✅ 数据提取脚本
 ```
+
+## 🖼️ 图片管理
+
+### 图片分离架构
+
+为了优化性能和可维护性，游戏图片不再嵌入JSON数据中，而是存储在独立的 `images/` 文件夹中。
+
+**JSON数据格式**：
+```json
+{
+  "scenes": {
+    "S_ENTRANCE": {
+      "title": "入口",
+      "image": "images/scenes/entrance.png",
+      "content": "..."
+    }
+  },
+  "clues": {
+    "CLUE_001": {
+      "name": "神秘钥匙",
+      "image": "images/clues/key.png"
+    }
+  }
+}
+```
+
+### 目录结构建议
+
+```
+images/
+├── scenes/
+│   ├── entrance.png
+│   ├── corridor.png
+│   └── ...
+├── clues/
+│   ├── key.png
+│   ├── note.png
+│   └── ...
+└── chars/
+    ├── character_1.png
+    └── ...
+```
+
+### 优势
+
+| 方面 | 内嵌Base64 | 独立图片文件 |
+|------|-----------|-------------|
+| JSON文件大小 | 很大 | 小很多 |
+| 浏览器缓存 | ❌ 无效 | ✅ 可独立缓存 |
+| 按需加载 | ❌ 一次性加载 | ✅ 可按需加载 |
+| 可维护性 | ❌ 难以管理 | ✅ 易于管理 |
+| CDN支持 | ❌ 不支持 | ✅ 可使用CDN |
+
+### 编辑工具使用
+
+在剧情编辑工具中配置图片：
+1. 将图片文件放入 `images/` 文件夹
+2. 在编辑工具中填写图片路径（如 `images/scenes/entrance.png`）
+3. 保存后导出JSON
 
 ## 🚀 使用方法
 

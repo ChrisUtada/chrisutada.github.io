@@ -31,12 +31,14 @@ window.__GAME_FRESH__ = urlParams.fresh;
  */
 function getDataFileName() {
     const pathname = window.location.pathname;
-    const filename = pathname.split('/').pop();
+    const parts = pathname.split('/').filter(p => p.length > 0);
+    const filename = parts[parts.length - 1] || 'garden.html';
     
     // 根据HTML文件名映射到对应的数据文件
     const dataMap = {
         'garden.html': 'game.json',
-        'unknown.html': 'game01.json'
+        'unknown.html': 'game01.json',
+        'index.html': 'game.json'
     };
     
     return dataMap[filename] || 'game.json';
@@ -49,20 +51,49 @@ function getDataFileName() {
 async function loadGameData() {
     // 根据当前HTML文件名确定数据文件
     const dataFile = getDataFileName();
-    const dataPath = `./data/${dataFile}`;
+    
+    // 构建数据路径（支持多种路径格式）
+    const basePath = window.location.pathname;
+    const lastSlash = basePath.lastIndexOf('/');
+    const dirPath = basePath.substring(0, lastSlash + 1);
+    const dataPath = dirPath + `data/${dataFile}`;
+    
+    console.log('[游戏] 当前路径:', window.location.pathname);
+    console.log('[游戏] 数据文件:', dataFile);
+    console.log('[游戏] 数据路径:', dataPath);
     
     // 尝试从外部JSON文件加载
     try {
         const response = await fetch(dataPath);
+        console.log('[游戏] 请求状态:', response.status, response.statusText);
+        
         if (response.ok) {
             const text = await response.text();
             const data = JSON.parse(text);
             console.log('[游戏] 已从外部文件加载游戏数据:', dataFile);
             console.log('[游戏] 场景数量:', Object.keys(data.scenes || {}).length);
             return data;
+        } else {
+            console.warn('[游戏] 数据文件请求失败:', response.status, response.statusText);
         }
     } catch (e) {
-        console.warn('[游戏] 外部数据加载失败:', e.message);
+        console.error('[游戏] 外部数据加载异常:', e.message);
+    }
+
+    // 尝试使用相对路径
+    const relativePath = `./data/${dataFile}`;
+    console.log('[游戏] 尝试相对路径:', relativePath);
+    
+    try {
+        const response = await fetch(relativePath);
+        if (response.ok) {
+            const text = await response.text();
+            const data = JSON.parse(text);
+            console.log('[游戏] 使用相对路径加载成功:', relativePath);
+            return data;
+        }
+    } catch (e) {
+        console.warn('[游戏] 相对路径加载失败:', e.message);
     }
 
     // 回退到内联数据（如果存在）
@@ -71,7 +102,7 @@ async function loadGameData() {
         return window.GAME_DATA;
     }
 
-    console.error('[游戏] 无法加载游戏数据');
+    console.error('[游戏] 无法加载游戏数据 - 所有路径都失败');
     return null;
 }
 
