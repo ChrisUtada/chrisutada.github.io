@@ -1,0 +1,2075 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CAUSAL-OS 剧情编辑器 v1.5</title>
+    <style>
+        :root {
+            --accent: #00ff41;
+            --bg: #1a1a1a;
+            --panel: #2a2a2a;
+            --text: #e0e0e0;
+        }
+        body { font-family: 'Cascadia Code', 'Courier New', monospace; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* 布局 */
+        .sidebar { width: 220px; background: #111; border-right: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .toolbar { padding: 15px; background: #222; border-bottom: 1px solid #333; display: flex; gap: 10px; align-items: center; }
+        
+        /* 导航 */
+        .nav-item { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #222; transition: 0.2s; font-size: 14px; }
+        .nav-item:hover { background: #333; }
+        .nav-item.active { background: var(--accent); color: black; font-weight: bold; }
+        
+        /* 编辑区 */
+        .editor-container { flex: 1; padding: 25px; overflow-y: auto; }
+        .card { background: var(--panel); border-radius: 4px; padding: 20px; margin-bottom: 25px; border-left: 4px solid var(--accent); position: relative; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+        input, textarea, select { width: 100%; background: #111; border: 1px solid #444; color: white; padding: 10px; border-radius: 4px; font-family: inherit; box-sizing: border-box; }
+        textarea { height: 80px; resize: vertical; }
+        
+        /* 按钮 */
+        .btn { padding: 10px 18px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; font-family: inherit; }
+        .btn-primary { background: var(--accent); color: black; }
+        .btn-danger { background: #ff3333; color: white; }
+        .btn-ghost { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+        .btn-small { padding: 5px 10px; font-size: 11px; }
+        .btn:hover { opacity: 0.8; transform: translateY(-1px); }
+
+        .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        
+        .opt-toggle { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 4px; margin-top: 15px; border: 1px dashed #444; }
+        .config-section { margin-top: 10px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 4px; }
+        .logic-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-start; }
+
+        /* 保存提示弹窗 */
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--accent); color: black; padding: 10px 30px; border-radius: 20px; font-weight: bold; display: none; z-index: 1000; box-shadow: 0 4px 15px rgba(0,255,65,0.3); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .view-section { animation: fadeIn 0.3s ease; }
+
+        /* 实时预览样式 */
+        .preview-box {
+            margin-top: 8px;
+            padding: 10px;
+            background: #111;
+            border: 1px dashed #444;
+            border-radius: 4px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #888;
+        }
+        .preview-label {
+            font-size: 10px;
+            color: #555;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .preview-box .ref-char { color: var(--accent); font-weight: bold; }
+        .preview-box .ref-item { color: #ffcc00; font-weight: bold; }
+        .preview-box .ref-loc { color: #ff66cc; font-weight: bold; }
+        .preview-box .ref-clue { color: #66ccff; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="toast">数据已同步</div>
+
+    <div class="sidebar">
+        <div style="padding:25px; font-weight: bold; color: var(--accent); border-bottom: 1px solid #333; letter-spacing: 1px;">CAUSAL_OS<br><span style="font-size:10px; opacity:0.6;">EDITOR_CORE v1.5</span></div>
+        <div class="nav-item active" id="nav-scenes" onclick="showTab('scenes')">场景 (Scenes)</div>
+        <div class="nav-item" id="nav-items" onclick="showTab('items')">物品 (Items)</div>
+        <div class="nav-item" id="nav-chars" onclick="showTab('chars')">角色 (Chars)</div>
+        <div class="nav-item" id="nav-clues" onclick="showTab('clues')">线索 (Clues)</div>
+        <div class="nav-item" id="nav-endings" onclick="showTab('endings')">结局 (Endings)</div>
+        <div style="flex:1"></div>
+        <div style="padding:20px; font-size: 10px; color:#555;">CORE_STRUCTURE_SYNC</div>
+    </div>
+
+    <div class="main-content">
+        <div class="toolbar">
+            <input type="file" id="upload" accept=".html" style="display:none" onchange="loadHTML(this)">
+            <button class="btn btn-ghost" onclick="document.getElementById('upload').click()">读取 HTML 源码</button>
+            <input type="file" id="upload-json" accept=".json" style="display:none" onchange="loadJSON(this)">
+            <button class="btn btn-ghost" onclick="document.getElementById('upload-json').click()">读取 JSON 数据</button>
+            <div style="flex:1"></div>
+            
+            <!-- 动态标签页按钮 -->
+            <div id="tab-buttons" style="display:none; gap:10px; align-items:center;">
+                <button class="btn btn-ghost" onclick="saveCurrentView()">保存当前页修改</button>
+                <button class="btn btn-primary" id="add-item-btn" style="display:none">+ 新增</button>
+            </div>
+            
+            <button class="btn btn-primary" onclick="exportHTML()">生成并下载新版本</button>
+            <button class="btn btn-primary" onclick="exportJSON()">导出 JSON 数据</button>
+        </div>
+
+        <div id="editor" class="editor-container">
+            <div style="text-align: center; margin-top: 150px; color: #555;">
+                <h2 style="color:var(--accent)">READY FOR CREATION</h2>
+                <p>请载入 CAUSAL-OS 源代码或 JSON 数据文件以开启进阶剧本编辑。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 版本号统一管理
+        const APP_VERSION = 'v5.0.0';
+        
+        let projectData = null;
+        let originalTemplate = "";
+        let originalFileName = "";
+        let currentTab = "scenes";
+
+        // 显示保存提示
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg || "数据已同步";
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 1500);
+        }
+        
+
+
+        // 将JavaScript对象字面量转换为标准JSON格式
+        function jsToJson(jsStr) {
+            // 处理模板字符串（反引号）为普通字符串
+            let result = jsStr.replace(/`([^`]*)`/g, (match, content) => {
+                // 转义字符串中的特殊字符
+                let escaped = content.replace(/\\/g, '\\\\')
+                                     .replace(/"/g, '\\"')
+                                     .replace(/\n/g, '\\n')
+                                     .replace(/\r/g, '\\r')
+                                     .replace(/\t/g, '\\t');
+                return '"' + escaped + '"';
+            });
+            
+            // 将未加引号的属性名转换为带引号的形式
+            // 匹配形如 { propName: 或 , propName: 或 (  propName: 的模式
+            // 其中 propName 是字母、数字、下划线或中文
+            result = result.replace(/([{,]\s*)([a-zA-Z_中文\u4e00-\u9fa5][a-zA-Z0-9_中文\u4e00-\u9fa5]*)\s*:/g, '$1"$2":');
+            
+            return result;
+        }
+        
+        function loadHTML(input) {
+            const file = input.files[0];
+            if (!file) return;
+            originalFileName = file.name.replace(/\.html$/i, '');
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const startMarker = 'const initialProjectData = ';
+                const startIdx = content.indexOf(startMarker);
+                if (startIdx !== -1) {
+                    try {
+                        // 找到匹配的开括号位置，通过括号匹配找到正确的结束位置
+                        const jsonStart = startIdx + startMarker.length;
+                        let braceCount = 0;
+                        let inString = false;
+                        let escapeNext = false;
+                        let jsonEnd = jsonStart;
+                        
+                        for (let i = jsonStart; i < content.length; i++) {
+                            const char = content[i];
+                            if (escapeNext) {
+                                escapeNext = false;
+                                continue;
+                            }
+                            if (char === '\\') {
+                                if (inString) escapeNext = true;
+                                continue;
+                            }
+                            if (char === '"') {
+                                inString = !inString;
+                                continue;
+                            }
+                            if (!inString) {
+                                if (char === '{' || char === '[') braceCount++;
+                                if (char === '}' || char === ']') braceCount--;
+                                if (braceCount === 0 && (char === '}' || char === ']')) {
+                                    jsonEnd = i + 1;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        const jsStr = content.substring(jsonStart, jsonEnd);
+                        // 将JavaScript格式转换为JSON格式后再解析
+                        const jsonStr = jsToJson(jsStr);
+                        projectData = JSON.parse(jsonStr); 
+                        originalTemplate = content;
+                        // 更新工具栏按钮
+                        updateToolbarButtons(currentTab);
+                        renderCurrentTab();
+                    } catch (err) {
+                        alert("数据解析失败！错误: " + err.message);
+                    }
+                } else {
+                    alert("未能在文件中找到数据节点。");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function loadJSON(input) {
+            const file = input.files[0];
+            if (!file) return;
+            originalFileName = file.name.replace(/\.json$/i, '');
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                try {
+                    projectData = JSON.parse(content);
+                    originalTemplate = content;
+                    updateToolbarButtons(currentTab);
+                    renderCurrentTab();
+                    showToast("JSON数据加载成功");
+                } catch (err) {
+                    alert("JSON解析失败！错误: " + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function exportJSON() {
+            if (!projectData) return alert("请先载入数据。");
+            saveCurrentView(false);
+            
+            const dataString = JSON.stringify(projectData, null, 4);
+            const blob = new Blob([dataString], { type: "application/json;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            a.download = `${originalFileName || 'game'}_edited_${timestamp}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast("JSON数据导出成功");
+        }
+        
+        function exportHTML() {
+            if (!projectData) return alert("请先载入数据。");
+            saveCurrentView(false);
+            
+            // 导出前进行验证
+            if (!validateGameplayConfig()) {
+                return; // 用户选择取消
+            }
+            
+            const dataString = JSON.stringify(projectData, null, 4);
+            
+            // 使用括号匹配找到正确的JSON结束位置
+            const startMarker = 'const initialProjectData = ';
+            const startIdx = originalTemplate.indexOf(startMarker);
+            if (startIdx === -1) return alert("模板格式错误，找不到数据节点。");
+            
+            const jsonStart = startIdx + startMarker.length;
+            let braceCount = 0;
+            let inString = false;
+            let escapeNext = false;
+            let jsonEnd = -1;
+            
+            for (let i = jsonStart; i < originalTemplate.length; i++) {
+                const char = originalTemplate[i];
+                if (escapeNext) {
+                    escapeNext = false;
+                    continue;
+                }
+                if (char === '\\') {
+                    if (inString) escapeNext = true;
+                    continue;
+                }
+                if (char === '"') {
+                    inString = !inString;
+                    continue;
+                }
+                if (!inString) {
+                    if (char === '{' || char === '[') braceCount++;
+                    if (char === '}' || char === ']') braceCount--;
+                    if (braceCount === 0 && (char === '}' || char === ']')) {
+                        jsonEnd = i + 1;
+                        break;
+                    }
+                }
+            }
+            
+            if (jsonEnd === -1) return alert("模板格式错误，无法解析数据边界。");
+            
+            const beforeData = originalTemplate.substring(0, jsonStart);
+            const afterData = originalTemplate.substring(jsonEnd);
+            const output = beforeData + dataString + afterData;
+            
+            const blob = new Blob([output], { type: "text/html" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            // 动态生成导出文件名：原文件名 + _edited
+            const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            a.download = `${originalFileName}_edited_${timestamp}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`nav-${tab}`).classList.add('active');
+            
+            // 更新工具栏按钮
+            updateToolbarButtons(tab);
+            
+            renderCurrentTab();
+        }
+        
+        function updateToolbarButtons(tab) {
+            const tabButtons = document.getElementById('tab-buttons');
+            const addItemBtn = document.getElementById('add-item-btn');
+            
+            if (!projectData) {
+                tabButtons.style.display = 'none';
+                return;
+            }
+            
+            // 显示标签页按钮区域
+            tabButtons.style.display = 'flex';
+            
+            // 更新新增按钮
+            if (tab === 'scenes') {
+                addItemBtn.innerHTML = '+ 新增场景';
+                addItemBtn.onclick = () => addItem('scenes');
+                addItemBtn.style.display = 'block';
+            } else if (tab === 'items') {
+                addItemBtn.innerHTML = '+ 新增物品';
+                addItemBtn.onclick = () => addItem('items');
+                addItemBtn.style.display = 'block';
+            } else if (tab === 'chars') {
+                addItemBtn.innerHTML = '+ 新增角色';
+                addItemBtn.onclick = () => addItem('chars');
+                addItemBtn.style.display = 'block';
+            } else if (tab === 'clues') {
+                addItemBtn.innerHTML = '+ 新增线索';
+                addItemBtn.onclick = () => addItem('clues');
+                addItemBtn.style.display = 'block';
+            } else if (tab === 'endings') {
+                addItemBtn.innerHTML = '+ 新增结局';
+                addItemBtn.onclick = () => addEnding();
+                addItemBtn.style.display = 'block';
+            } else {
+                addItemBtn.style.display = 'none';
+            }
+        }
+
+        // --- 验证函数 ---
+        function validateGameplayConfig() {
+            if (!projectData) return true;
+            
+            let hasWarnings = false;
+            const warnings = [];
+            
+            // 检查所有物品的玩法配置
+            for (const itemId in projectData.items) {
+                const item = projectData.items[itemId];
+                const commands = item.commands || [];
+                
+                for (const cmd of commands) {
+                    if (cmd.type === 'useItem' && cmd.requiredItem) {
+                        const requiredItem = projectData.items[cmd.requiredItem];
+                        // 检查所需物品是否存在
+                        if (!requiredItem) {
+                            warnings.push(`物品"${itemId}"中的"物品使用"玩法引用了不存在的物品"${cmd.requiredItem}"`);
+                            hasWarnings = true;
+                        }
+                        // 检查物品是否标记为可记录
+                        else if (!requiredItem.canBePicked) {
+                            warnings.push(`物品"${itemId}"中的"物品使用"玩法引用了不可记录的物品"${cmd.requiredItem}"（请在物品编辑中勾选"可记录"）`);
+                            hasWarnings = true;
+                        }
+                    }
+                    
+                    if (cmd.type === 'conditional' && cmd.conditions) {
+                        // 检查条件中引用的标记和线索
+                        for (const cond of cmd.conditions) {
+                            if (cond.flag) {
+                                // 可以在这里添加标记有效性检查
+                            }
+                            if (cond.clue && !projectData.clues?.[cond.clue]) {
+                                warnings.push(`物品"${itemId}"中的条件引用了不存在的线索"${cond.clue}"`);
+                                hasWarnings = true;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if (hasWarnings) {
+                const message = "发现以下配置问题：\n\n" + warnings.join("\n") + "\n\n建议修复这些问题，否则可能导致游戏运行错误。";
+                console.warn(message);
+                // 可选：显示警告弹窗
+                // if (confirm(message + "\n\n继续保存？")) {
+                //     return true;
+                // } else {
+                //     return false;
+                // }
+            }
+            
+            return true;
+        }
+
+        // --- 核心同步逻辑 ---
+        function saveCurrentView(notify = true) {
+            if (!projectData) return;
+            
+            if (currentTab === 'scenes' || currentTab === 'items') {
+                const cards = document.querySelectorAll('.card');
+                cards.forEach(card => {
+                    try {
+                        const id = card.getAttribute('data-id');
+                        if (!id) return; // 跳过没有ID的卡片
+                        
+                        const titleInput = card.querySelector('.input-title');
+                        if (!titleInput) return; // 跳过没有标题输入框的卡片
+                        const title = titleInput.value;
+                        
+                        // 场景使用 content，物品使用 desc
+                        const contentInput = card.querySelector('.input-content');
+                        const descInput = card.querySelector('.input-desc');
+                        
+                        if (currentTab === 'scenes') {
+                            projectData.scenes[id].title = title;
+                            projectData.scenes[id].content = contentInput ? contentInput.value : '';
+                            if (descInput) {
+                                projectData.scenes[id].desc = descInput.value;
+                            }
+                        } else {
+                            // 物品保存
+                            if (!projectData.items[id]) {
+                                console.warn('物品数据不存在:', id);
+                                return;
+                            }
+                            projectData.items[id].label = title;
+                            projectData.items[id].desc = descInput ? descInput.value : (contentInput ? contentInput.value : '');
+                            
+                            // 保存物品玩法配置
+                            const gameplayItems = card.querySelectorAll('.gameplay-item');
+                            if (gameplayItems.length > 0) {
+                                projectData.items[id].commands = [];
+                                gameplayItems.forEach(gpItem => {
+                                    try {
+                                        const typeEl = gpItem.querySelector('.gp-type');
+                                        const labelEl = gpItem.querySelector('.gp-label');
+                                        if (!typeEl || !labelEl) return;
+                                        
+                                        const type = typeEl.value;
+                                        const label = labelEl.value;
+                                        if (!type) return;
+                                        
+                                        const cmd = { type, label };
+                                        
+                                        if (type === 'password') {
+                                            cmd.value = gpItem.querySelector('.gp-value')?.value || '';
+                                            const digitsVal = gpItem.querySelector('.gp-digits')?.value;
+                                            if (digitsVal && parseInt(digitsVal) > 0) {
+                                                cmd.digits = parseInt(digitsVal);
+                                            }
+                                            const flags = gpItem.querySelector('.gp-flags')?.value.split(',').map(s=>s.trim()).filter(s=>s) || [];
+                                            const message = gpItem.querySelector('.gp-message')?.value || '';
+                                            const items = gpItem.querySelector('.gp-items')?.value.split(',').map(s=>s.trim()).filter(s=>s) || [];
+                                            if (flags.length > 0 || message || items.length > 0) {
+                                                cmd.onSuccess = {};
+                                                if (flags.length > 0) cmd.onSuccess.flags = flags;
+                                                if (message) cmd.onSuccess.message = message;
+                                                if (items.length > 0) cmd.onSuccess.items = items;
+                                            }
+                                        } else if (type === 'text') {
+                                            cmd.value = gpItem.querySelector('.gp-text')?.value || '';
+                                            const flags = gpItem.querySelector('.gp-flags')?.value.split(',').map(s=>s.trim()).filter(s=>s) || [];
+                                            if (flags.length > 0) {
+                                                cmd.results = { flags };
+                                            }
+                                        } else if (type === 'choice') {
+                                            cmd.title = gpItem.querySelector('.gp-title')?.value || '';
+                                            cmd.prompt = gpItem.querySelector('.gp-prompt')?.value || '';
+                                            const optionsText = gpItem.querySelector('.gp-options')?.value || '';
+                                            cmd.options = optionsText.split('\n').filter(l => l.trim()).map(line => {
+                                                const parts = line.split('|').map(s => s.trim());
+                                                return {
+                                                    label: parts[0] || '',
+                                                    results: parts[1] ? { scene: parts[1] } : {},
+                                                    message: parts[2] || ''
+                                                };
+                                            });
+                                        } else if (type === 'useItem') {
+                                            const requiredItem = gpItem.querySelector('.gp-required')?.value || '';
+                                            // 验证所需物品是否存在且可记录（改为警告而非弹窗阻塞）
+                                            if (requiredItem) {
+                                                const itemData = projectData.items?.[requiredItem];
+                                                if (!itemData) {
+                                                    console.warn(`物品"${requiredItem}"不存在`);
+                                                } else if (!itemData.canBePicked) {
+                                                    console.warn(`物品"${requiredItem}"未标记为可记录`);
+                                                }
+                                            }
+                                            cmd.requiredItem = requiredItem;
+                                            cmd.successMessage = gpItem.querySelector('.gp-message')?.value || '';
+                                            cmd.failMessage = gpItem.querySelector('.gp-fail-message')?.value || '';
+                                            const flags = gpItem.querySelector('.gp-flags')?.value.split(',').map(s=>s.trim()).filter(s=>s) || [];
+                                            if (flags.length > 0) {
+                                                cmd.onSuccess = {};
+                                                if (flags.length > 0) cmd.onSuccess.flags = flags;
+                                            }
+                                        } else if (type === 'conditional') {
+                                            cmd.successMessage = gpItem.querySelector('.gp-message')?.value || '';
+                                            const conditionsText = gpItem.querySelector('.gp-conditions')?.value || '';
+                                            cmd.conditions = conditionsText.split('\n').filter(l => l.trim()).map(line => {
+                                                const parts = line.split('|').map(s => s.trim());
+                                                const condPart = parts[0] || '';
+                                                const failMessage = parts[1] || '';
+                                                if (condPart.startsWith('flag:')) {
+                                                    return { flag: condPart.replace('flag:', ''), failMessage };
+                                                } else if (condPart.startsWith('clue:')) {
+                                                    return { clue: condPart.replace('clue:', ''), failMessage };
+                                                }
+                                                return null;
+                                            }).filter(c => c);
+                                            const flags = gpItem.querySelector('.gp-flags')?.value.split(',').map(s=>s.trim()).filter(s=>s) || [];
+                                            const onSuccessMessage = gpItem.querySelector('.gp-onsuccess-msg')?.value || '';
+                                            const gotoScene = gpItem.querySelector('.gp-goto-scene')?.value.trim() || '';
+                                            if (flags.length > 0 || onSuccessMessage || gotoScene) {
+                                                cmd.onSuccess = {};
+                                                if (flags.length > 0) cmd.onSuccess.flags = flags;
+                                                if (onSuccessMessage) cmd.onSuccess.message = onSuccessMessage;
+                                                if (gotoScene) cmd.onSuccess.gotoScene = gotoScene;
+                                            }
+                                        }
+                                        
+                                        projectData.items[id].commands.push(cmd);
+                                    } catch (e) {
+                                        console.error('保存玩法配置出错:', e);
+                                    }
+                                });
+                            } else {
+                                delete projectData.items[id].commands;
+                            }
+                            
+                            // 保存出示反应配置（含条件触发）
+                            const reactionItems = card.querySelectorAll('.present-reaction-item');
+                            if (reactionItems.length > 0) {
+                                projectData.items[id].presentReactions = {};
+                                projectData.items[id].conditionFlags = {};
+                                let hasConditionFlags = false;
+                                
+                                reactionItems.forEach(prItem => {
+                                    try {
+                                        const keyItemEl = prItem.querySelector('.pr-key-item');
+                                        const textEl = prItem.querySelector('.pr-text');
+                                        if (!keyItemEl || !textEl) return;
+
+                                        const keyItem = keyItemEl.value.trim();
+                                        if (!keyItem) return;
+
+                                        const text = textEl.value || '';
+                                        const flags = prItem.querySelector('.pr-flags')?.value.split(',').map(s=>s.trim()).filter(s=>s) || [];
+                                        const scene = prItem.querySelector('.pr-scene')?.value || '';
+                                        const message = prItem.querySelector('.pr-message')?.value || '';
+
+                                        const reaction = { text };
+                                        reaction.results = {};
+                                        if (flags.length > 0) reaction.results.flags = flags;
+                                        if (scene) reaction.results.scene = scene;
+                                        if (message) reaction.results.message = message;
+
+                                        // 如果results为空对象，则不设置
+                                        if (Object.keys(reaction.results).length === 0) {
+                                            delete reaction.results;
+                                        }
+
+                                        projectData.items[id].presentReactions[keyItem] = reaction;
+
+                                        // 保存条件触发配置（整合到同一循环中）
+                                        const flagEl = prItem.querySelector('.cf-flag');
+                                        const cfTextEl = prItem.querySelector('.cf-text');
+                                        const cfSceneEl = prItem.querySelector('.cf-scene');
+                                        if (flagEl) {
+                                            const flag = flagEl.value.trim();
+                                            const cfText = cfTextEl?.value || '';
+                                            const cfScene = cfSceneEl?.value || '';
+                                            if (flag) {
+                                                const conditionData = {
+                                                    flag: flag,
+                                                    text: cfText
+                                                };
+                                                if (cfScene) {
+                                                    conditionData.scene = cfScene;
+                                                }
+                                                projectData.items[id].conditionFlags[keyItem] = conditionData;
+                                                hasConditionFlags = true;
+                                            }
+                                        }
+                                    } catch (e) {
+                                        console.error('保存出示反应出错:', e);
+                                    }
+                                });
+
+                                // 如果没有条件标记配置，删除该字段
+                                if (!hasConditionFlags) {
+                                    delete projectData.items[id].conditionFlags;
+                                }
+                            } else {
+                                delete projectData.items[id].presentReactions;
+                                delete projectData.items[id].conditionFlags;
+                            }
+                        }
+                    } catch (e) {
+                        console.error('保存卡片出错:', e);
+                    }
+                });
+            } else if (currentTab === 'chars') {
+                const cards = document.querySelectorAll('.card');
+                cards.forEach(card => {
+                    const id = card.getAttribute('data-id');
+                    const char = projectData.chars[id];
+                    char.name = card.querySelector('.char-name').value;
+                    char.desc = card.querySelector('.char-desc').value;
+                    
+                    // 保存默认对话
+                    const defaultLineArea = card.querySelector('.default-dialogue-area');
+                    const defaultLinesArr = defaultLineArea.value.split('\n').filter(l => l.trim()).map(text => ({ text }));
+                    char.defaultTalks = defaultLinesArr;
+                    
+                    // 对话序列同步映射：统一更新 talkQueue (处理对象结构 {text: "..."})
+                    // 保持向后兼容
+                    char.talkQueue = defaultLinesArr;
+                    char.lines = [...defaultLinesArr];
+
+                    // 场景绑定对话
+                    const sceneTalkRows = card.querySelectorAll('.scene-talk-row');
+                    const newSceneTalks = {};
+                    sceneTalkRows.forEach(row => {
+                        const sceneId = row.querySelector('.scene-talk-key').value.trim();
+                        const talkText = row.querySelector('.scene-talk-val').value;
+                        if (sceneId) {
+                            const talkLines = talkText.split('\n').filter(l => l.trim()).map(text => ({ text }));
+                            newSceneTalks[sceneId] = talkLines;
+                        }
+                    });
+                    char.sceneTalks = newSceneTalks;
+
+                    // 线索反应同步映射：统一更新 reactions (处理对象结构 {text: "..."})
+                    const rows = card.querySelectorAll('.logic-row[data-reaction-preview]');
+                    const newReactions = {};
+                    rows.forEach(row => {
+                        const key = row.querySelector('.logic-key').value.trim();
+                        const val = row.querySelector('.logic-val').value;
+                        if (key) newReactions[key] = { text: val };
+                    });
+                    char.reactions = newReactions;
+                    char.logicResponse = { ...newReactions };
+                    
+                    // 物品反应映射：更新 itemReactions
+                    const itemReactionRows = card.querySelectorAll('.logic-row[data-item-reaction-preview]');
+                    const newItemReactions = {};
+                    itemReactionRows.forEach(row => {
+                        const key = row.querySelector('.item-reaction-key').value.trim();
+                        const val = row.querySelector('.item-reaction-val').value;
+                        if (key) newItemReactions[key] = { text: val };
+                    });
+                    char.itemReactions = newItemReactions;
+                });
+            } else if (currentTab === 'clues') {
+                const cards = document.querySelectorAll('.card');
+                cards.forEach(card => {
+                    const id = card.getAttribute('data-id');
+                    projectData.clues[id].label = card.querySelector('.clue-label').value;
+                    projectData.clues[id].type = card.querySelector('.clue-type').value;
+                    projectData.clues[id].desc = card.querySelector('.clue-desc').value;
+                });
+            } else if (currentTab === 'endings') {
+                const cards = document.querySelectorAll('.card');
+                cards.forEach((card, idx) => {
+                    projectData.endings[idx].id = card.querySelector('.end-id').value;
+                    projectData.endings[idx].name = card.querySelector('.end-name').value;
+                    projectData.endings[idx].recipe = card.querySelector('.end-recipe').value.split(',').map(s=>s.trim()).filter(s=>s);
+                    projectData.endings[idx].message = card.querySelector('.end-msg').value;
+                });
+            }
+
+            if (notify) showToast();
+            
+            // 同步到 localStorage，供游戏测试使用
+            syncToGame();
+        }
+        
+        // 同步数据到游戏，优先使用 BroadcastChannel，降级使用 localStorage
+        const SYNC_KEY = 'causal_os_editor_data';
+        const SYNC_TIMESTAMP_KEY = 'causal_os_editor_timestamp';
+        
+        function syncToGame() {
+            if (!projectData) return;
+            try {
+                // 创建 BroadcastChannel
+                const channel = new BroadcastChannel('causal_os_sync');
+                // 发送数据
+                channel.postMessage({
+                    type: 'sync_data',
+                    data: projectData,
+                    timestamp: Date.now()
+                });
+                channel.close();
+                console.log('[编辑器] 已通过 BroadcastChannel 同步数据');
+                showToast('数据已同步到游戏');
+            } catch (e) {
+                console.error('[编辑器] BroadcastChannel 同步失败:', e);
+                // 降级到 localStorage
+                try {
+                    const timestamp = Date.now();
+                    const dataStr = JSON.stringify(projectData);
+                    localStorage.setItem(SYNC_KEY, dataStr);
+                    localStorage.setItem(SYNC_TIMESTAMP_KEY, timestamp.toString());
+                    console.log('[编辑器] 已同步数据到 localStorage，时间戳:', timestamp);
+                    showToast('数据已同步到游戏');
+                } catch (e) {
+                    console.error('[编辑器] localStorage 同步也失败:', e);
+                    showToast('同步失败，请尝试导出 HTML');
+                }
+            }
+        }
+        
+        function renderCurrentTab() {
+            const container = document.getElementById('editor');
+            if (!projectData) return;
+            try {
+                container.innerHTML = `<div class="view-section" id="view-content"></div>`;
+                const view = document.getElementById('view-content');
+                switch(currentTab) {
+                    case 'scenes': renderCategory(view, 'scenes'); break;
+                    case 'items': renderCategory(view, 'items'); break;
+                    case 'chars': renderChars(view); break;
+                    case 'clues': renderClues(view); break;
+                    case 'endings': renderEndings(view); break;
+                }
+            } catch (err) {
+                console.error('渲染失败:', err);
+                container.innerHTML = `<div style="padding:20px; color:#ff6666;">渲染出错，请刷新页面重试</div>`;
+            }
+        }
+
+        // HTML转义函数，防止XSS
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+        
+        // 处理头像上传（转换为Base64）
+        function handleAvatarUpload(input, charId) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            if (file.size > 2 * 1024 * 1024) {
+                alert('图片大小不能超过2MB');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    if (!projectData.chars[charId]) {
+                        alert('数据异常，请刷新页面后重试');
+                        return;
+                    }
+                    projectData.chars[charId].avatar = e.target.result;
+                    renderCurrentTab();
+                    showToast('头像已上传（请保存后同步到游戏）');
+                } catch (err) {
+                    console.error('头像上传后处理失败:', err);
+                    alert('上传处理失败，请重试');
+                }
+            };
+            reader.onerror = function() {
+                alert('文件读取失败，请重试');
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // 移除头像
+        function removeAvatar(charId) {
+            if (!projectData.chars[charId]) return;
+            delete projectData.chars[charId].avatar;
+            renderCurrentTab();
+            showToast('头像已移除（请保存后同步到游戏）');
+        }
+        
+        // 处理图片/音频上传（转换为Base64）
+        function handleMediaUpload(input, cat, targetId, field) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            if (field === 'image' && file.size > 5 * 1024 * 1024) {
+                alert('图片大小不能超过5MB');
+                return;
+            }
+            if (field === 'audio' && file.size > 10 * 1024 * 1024) {
+                alert('音频大小不能超过10MB');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    if (!projectData[cat] || !projectData[cat][targetId]) {
+                        alert('数据异常，请刷新页面后重试');
+                        return;
+                    }
+                    projectData[cat][targetId][field] = e.target.result;
+                    renderCurrentTab();
+                    showToast(`${field === 'image' ? '图片' : '音频'}已上传（请保存后同步到游戏）`);
+                } catch (err) {
+                    console.error('媒体上传后处理失败:', err);
+                    alert('上传处理失败，请重试');
+                }
+            };
+            reader.onerror = function() {
+                alert('文件读取失败，请重试');
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // 移除媒体
+        function removeMedia(cat, targetId, field) {
+            try {
+                if (!projectData[cat] || !projectData[cat][targetId]) return;
+                delete projectData[cat][targetId][field];
+                renderCurrentTab();
+                showToast('已移除（请保存后同步到游戏）');
+            } catch (err) {
+                console.error('移除媒体失败:', err);
+            }
+        }
+
+        // 验证ID格式
+        function validateId(id) {
+            if (!id || typeof id !== 'string') return false;
+            // 允许字母、数字、下划线，长度3-50
+            return /^[A-Za-z0-9_]{3,50}$/.test(id);
+        }
+
+        // ========================== 实时预览功能 Start ==========================
+        // 渲染 ID 引用为可读文本
+        function renderPreview(text) {
+            if (!projectData || !text) return '<span style="color:#555;">预览区域...</span>';
+
+            let result = escapeHtml(text);
+
+            // 渲染角色引用 [char:ID]
+            result = result.replace(/\[char:([^\]]+)\]/g, (match, id) => {
+                const char = projectData.chars[id];
+                const name = char ? char.name : id;
+                return `<span class="ref-char">[角色] ${escapeHtml(name)}</span>`;
+            });
+
+            // 渲染物品引用 [item:ID]
+            result = result.replace(/\[item:([^\]]+)\]/g, (match, id) => {
+                const item = projectData.items[id];
+                const name = item ? item.label : id;
+                return `<span class="ref-item">[物品] ${escapeHtml(name)}</span>`;
+            });
+
+            // 渲染场景引用 [loc:ID]
+            result = result.replace(/\[loc:([^\]]+)\]/g, (match, id) => {
+                const scene = projectData.scenes[id];
+                const name = scene ? scene.title : id;
+                return `<span class="ref-loc">[场景] ${escapeHtml(name)}</span>`;
+            });
+
+            // 渲染线索引用 [clue:ID]
+            result = result.replace(/\[clue:([^\]]+)\]/g, (match, id) => {
+                const clue = projectData.clues[id];
+                const name = clue ? clue.label : id;
+                return `<span class="ref-clue">[线索] ${escapeHtml(name)}</span>`;
+            });
+
+            // 处理换行
+            result = result.replace(/\n/g, '<br>');
+
+            return result;
+        }
+
+        // 为输入框绑定预览功能
+        function bindPreview(input, previewEl) {
+            input.addEventListener('input', () => {
+                previewEl.innerHTML = renderPreview(input.value);
+            });
+            // 初始化预览
+            previewEl.innerHTML = renderPreview(input.value);
+        }
+        
+        // 绑定物品玩法配置中的所有预览
+        function bindGameplayPreviews(card, itemId) {
+            try {
+                const gameplayItems = card.querySelectorAll('.gameplay-item');
+                gameplayItems.forEach((gpItem, idx) => {
+                    try {
+                        const previewBase = gpItem.getAttribute('data-preview-base');
+                        if (!previewBase) return;
+                        
+                        // 绑定文本字段预览 - 修正选择器逻辑
+                        const textField = gpItem.querySelector('textarea.gp-text');
+                        if (textField) {
+                            const previewBox = gpItem.querySelector(`.preview-box[data-preview="${previewBase}-text"] .preview-content`);
+                            if (previewBox) {
+                                textField.addEventListener('input', () => {
+                                    previewBox.innerHTML = renderPreview(textField.value);
+                                });
+                            }
+                        }
+                        
+                        const optionsField = gpItem.querySelector('textarea.gp-options');
+                        if (optionsField) {
+                            const previewBox = gpItem.querySelector(`.preview-box[data-preview="${previewBase}-options"] .preview-content`);
+                            if (previewBox) {
+                                optionsField.addEventListener('input', () => {
+                                    previewBox.innerHTML = renderPreview(optionsField.value);
+                                });
+                            }
+                        }
+                        
+                        const conditionsField = gpItem.querySelector('textarea.gp-conditions');
+                        if (conditionsField) {
+                            const previewBox = gpItem.querySelector(`.preview-box[data-preview="${previewBase}-conditions"] .preview-content`);
+                            if (previewBox) {
+                                conditionsField.addEventListener('input', () => {
+                                    previewBox.innerHTML = renderPreview(conditionsField.value);
+                                });
+                            }
+                        }
+                        
+                        // 绑定输入字段预览
+                        const msgField = gpItem.querySelector('input.gp-message');
+                        if (msgField) {
+                            const previewBox = gpItem.querySelector(`.preview-box[data-preview="${previewBase}-msg"] .preview-content`);
+                            if (previewBox) {
+                                msgField.addEventListener('input', () => {
+                                    previewBox.innerHTML = renderPreview(msgField.value);
+                                });
+                            }
+                        }
+                        
+                        const onsuccessField = gpItem.querySelector('input.gp-onsuccess-msg');
+                        if (onsuccessField) {
+                            const previewBox = gpItem.querySelector(`.preview-box[data-preview="${previewBase}-onsuccess"] .preview-content`);
+                            if (previewBox) {
+                                onsuccessField.addEventListener('input', () => {
+                                    previewBox.innerHTML = renderPreview(onsuccessField.value);
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        console.error('绑定 gameplay 预览出错:', e);
+                    }
+                });
+            } catch (e) {
+                console.error('查找 gameplayItems 出错:', e);
+            }
+        }
+        
+        // 绑定物品出示反应配置中的所有预览
+        function bindPresentReactionsPreviews(card, itemId) {
+            try {
+                const reactionItems = card.querySelectorAll('.present-reaction-item');
+                reactionItems.forEach((prItem, idx) => {
+                    try {
+                        const previewBase = prItem.getAttribute('data-preview-base');
+                        if (!previewBase) return;
+
+                        // 绑定文本字段预览 - 直接查找 preview-box 内的 preview-content
+                        const textField = prItem.querySelector('textarea.pr-text');
+                        if (textField) {
+                            const previewBox = prItem.querySelector(`.preview-box[data-preview="${previewBase}-text"] .preview-content`);
+                            if (previewBox) {
+                                textField.addEventListener('input', () => {
+                                    previewBox.innerHTML = renderPreview(textField.value);
+                                });
+                            }
+                        }
+
+                        // 绑定消息字段预览
+                        const msgField = prItem.querySelector('input.pr-message');
+                        if (msgField) {
+                            const previewBox = prItem.querySelector(`.preview-box[data-preview="${previewBase}-msg"] .preview-content`);
+                            if (previewBox) {
+                                msgField.addEventListener('input', () => {
+                                    previewBox.innerHTML = renderPreview(msgField.value);
+                                });
+                            }
+                        }
+
+                        // 绑定条件标记文本预览
+                        const cfTextField = prItem.querySelector('textarea.cf-text');
+                        if (cfTextField) {
+                            const previewBox = prItem.querySelector(`.preview-box[data-preview="${previewBase}-cf-text"] .preview-content`);
+                            if (previewBox) {
+                                cfTextField.addEventListener('input', () => {
+                                    previewBox.innerHTML = renderPreview(cfTextField.value);
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        console.error('绑定反应预览出错:', e);
+                    }
+                });
+            } catch (e) {
+                console.error('查找 reactionItems 出错:', e);
+            }
+        }
+
+        // ========================== 实时预览功能 End ==========================
+
+        function renderCategory(container, cat) {
+            const catNames = { scenes: '场景', items: '物品' };
+            const header = document.createElement('div');
+            header.className = 'list-header';
+            header.innerHTML = `<h3>${catNames[cat]}管理</h3>`;
+            
+            // 使用DocumentFragment优化性能，避免多次innerHTML操作
+            const fragment = document.createDocumentFragment();
+            fragment.appendChild(header);
+            
+            for (let id in projectData[cat]) {
+                const entry = projectData[cat][id];
+                
+                // 物品特有的玩法配置
+                let gameplaySection = '';
+                if (cat === 'items') {
+                    const commands = entry.commands || [];
+                    gameplaySection = `
+                        <div class="config-section" style="margin-top:15px; background: rgba(0,255,65,0.05); border: 1px solid rgba(0,255,65,0.2);">
+                            <label>玩法挂载 (GAMEPLAY)</label>
+                            <div class="gameplay-container" data-item-id="${escapeHtml(id)}">
+                                ${commands.map((cmd, idx) => renderGameplayItem(id, idx, cmd)).join('')}
+                            </div>
+                            <button class="btn btn-ghost btn-small" style="width:100%; margin-top:10px;" onclick="addGameplay('${escapeHtml(id)}')">+ 添加玩法</button>
+                        </div>`;
+                }
+                
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.setAttribute('data-id', id);
+                const previewId = `preview-${cat}-${id}`;
+                
+                // 转义ID用于JavaScript字符串
+                const escapedId = id.replace(/'/g, "\\'");
+                
+                card.innerHTML = `
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <div><label>ID</label><input type="text" value="${escapeHtml(id)}" onblur="renameKey('${cat}', '${escapeHtml(id)}', this.value)"></div>
+                        <div><label>标题/名称</label><input type="text" class="input-title" value="${escapeHtml(entry.title || entry.label || '')}"></div>
+                    </div>
+                    ${cat === 'scenes' ? `
+                    <label>场景描述 (DESC)</label>
+                    <textarea class="input-desc" placeholder="输入场景描述，用于查询和观察显示">${escapeHtml(entry.desc || entry.content || '')}</textarea>
+                    <label style="margin-top:15px;">场景内容 (CONTENT，场景进入时显示的富文本)</label>
+                    <textarea class="input-content" data-preview="${previewId}">${escapeHtml(entry.content || '')}</textarea>
+                    ` : `
+                    <label>物品描述 (DESC)</label>
+                    <textarea class="input-desc" placeholder="输入物品描述，用于查询和观察显示">${escapeHtml(entry.desc || entry.content || '')}</textarea>
+                    `}
+                    <div class="preview-box" id="${previewId}">
+                        <div class="preview-label">实时预览</div>
+                        <div class="preview-content">${renderPreview(entry.content || entry.desc || '')}</div>
+                    </div>
+
+                    <!-- 媒体配置区 -->
+                    <div class="config-section" style="margin-top:15px; background: rgba(102,204,255,0.05); border: 1px solid rgba(102,204,255,0.2);">
+                        <label>媒体配置</label>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                            <div>
+                                <label style="color:#66ccff;">配图 (IMAGE)</label>
+                                <div class="media-upload-preview" style="width:100%; height:120px; border:2px dashed #444; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; background:#111;" onclick="document.getElementById('media-img-${cat}-${id}').click()">
+                                    ${entry.image ? `<img src="${escapeHtml(entry.image)}" style="max-width:100%; max-height:100%; object-fit:contain;">` : '<span style="color:#555;">+ 添加配图</span>'}
+                                </div>
+                                <input type="file" id="media-img-${cat}-${id}" accept="image/*" style="display:none" onchange="handleMediaUpload(this, '${cat}', '${escapeHtml(id)}', 'image')">
+                                ${entry.image ? `<button class="btn btn-danger btn-small" style="width:100%; margin-top:5px;" onclick="removeMedia('${cat}', '${escapeHtml(id)}', 'image')">移除图片</button>` : ''}
+                            </div>
+                            <div>
+                                <label style="color:#66ffcc;">背景音 (AUDIO)</label>
+                                <div style="width:100%; height:120px; border:2px dashed #444; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; background:#111;" onclick="document.getElementById('media-audio-${cat}-${id}').click()">
+                                    ${entry.audio ? `
+                                        <span style="color:#66ffcc;">已添加音频</span>
+                                        <audio controls src="${escapeHtml(entry.audio)}" style="width:90%; margin-top:5px; height:30px;"></audio>
+                                    ` : '<span style="color:#555;">+ 添加背景音</span>'}
+                                </div>
+                                <input type="file" id="media-audio-${cat}-${id}" accept="audio/*" style="display:none" onchange="handleMediaUpload(this, '${cat}', '${escapeHtml(id)}', 'audio')">
+                                ${entry.audio ? `<button class="btn btn-danger btn-small" style="width:100%; margin-top:5px;" onclick="removeMedia('${cat}', '${escapeHtml(id)}', 'audio')">移除音频</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="opt-toggle" style="margin-top:15px;">
+                        <div style="margin-bottom:10px;">
+                            <label style="display:flex; align-items:center; cursor:pointer;">
+                                <input type="checkbox" style="width:auto; margin-right:8px;" ${entry.canBePicked?'checked':''} onchange="toggleCanBePicked('${cat}', '${escapeHtml(id)}', this.checked)">
+                                可记录
+                            </label>
+                            <div style="font-size:11px; color:#888; margin-left:24px; margin-top:4px;">
+                                勾选后，玩家可以将该物品记录到物品档案中
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style="display:flex; align-items:center; cursor:pointer;">
+                                <input type="checkbox" style="width:auto; margin-right:8px;" ${entry.hiddenClue?'checked':''} onchange="toggleHiddenClue('${cat}', '${escapeHtml(id)}', this.checked)">
+                                启用隐藏因果
+                            </label>
+                        </div>
+                    </div>
+
+                    ${gameplaySection}
+                    
+                    <!-- 出示反应配置 -->
+                    ${cat === 'items' ? `
+                    <div class="config-section" style="margin-top:15px; background: rgba(255,204,0,0.05); border: 1px solid rgba(255,204,0,0.2);">
+                        <label>出示反应配置 (PRESENT_REACTIONS)</label>
+                        <div class="present-reactions-container" data-item-id="${escapeHtml(id)}">
+                            ${Object.entries(entry.presentReactions || {}).map(([keyItemId, reaction], idx) => renderPresentReaction(id, idx, keyItemId, reaction, entry.conditionFlags?.[keyItemId])).join('')}
+                        </div>
+                        <button class="btn btn-ghost btn-small" style="width:100%; margin-top:10px;" onclick="addPresentReaction('${escapeHtml(id)}')">+ 添加出示反应</button>
+                    </div>` : ''}
+                    
+                        ${entry.hiddenClue ? `
+                        <div class="config-section">
+                            <label>捕获叙事</label>
+                            <textarea class="hidden-clue-text" data-id="${escapeHtml(id)}" data-cat="${cat}" onchange="setHiddenClue('${cat}', '${escapeHtml(id)}', this.value)">${escapeHtml(entry.hiddenClue.text || '')}</textarea>
+                            <div class="preview-box" data-hidden-preview="${cat}-${id}">
+                                <div class="preview-label">实时预览</div>
+                                <div class="preview-content">${renderPreview(entry.hiddenClue.text || '')}</div>
+                            </div>
+                        </div>` : ''}
+                    </div>
+                    <button class="btn btn-danger" style="margin-top:15px;" onclick="deleteItem('${cat}', '${escapeHtml(id)}')">删除此项</button>
+                `;
+                fragment.appendChild(card);
+
+                // 绑定预览功能
+                setTimeout(() => {
+                    try {
+                        // 场景有 input-content，物品没有，需要区分处理
+                        const textarea = cat === 'scenes' ? card.querySelector('.input-content') : null;
+                        const previewContent = card.querySelector(`#${previewId} .preview-content`);
+                        if (textarea && previewContent) {
+                            textarea.addEventListener('input', () => {
+                                previewContent.innerHTML = renderPreview(textarea.value);
+                            });
+                            previewContent.innerHTML = renderPreview(textarea.value);
+                        }
+                        
+                        // 绑定物品玩法配置中的预览
+                        if (cat === 'items') {
+                            bindGameplayPreviews(card, id);
+                            // 绑定物品出示反应配置中的预览（含条件触发）
+                            bindPresentReactionsPreviews(card, id);
+                        }
+                        
+                        // 绑定隐藏因果预览
+                        const hiddenTextarea = card.querySelector('.hidden-clue-text');
+                        const hiddenPreviewBox = card.querySelector(`[data-hidden-preview="${cat}-${id}"] .preview-content`);
+                        if (hiddenTextarea && hiddenPreviewBox) {
+                            hiddenTextarea.addEventListener('input', () => {
+                                hiddenPreviewBox.innerHTML = renderPreview(hiddenTextarea.value);
+                            });
+                        }
+                    } catch (e) {
+                        console.error('绑定预览功能出错:', e);
+                    }
+                }, 0);
+            }
+            
+            container.appendChild(fragment);
+        }
+        
+        // 渲染单个玩法配置项
+        function renderGameplayItem(itemId, idx, cmd) {
+            const typeOptions = [
+                { value: 'password', label: '密码/组合解锁' },
+                { value: 'text', label: '文本显示' },
+                { value: 'choice', label: '选择分支' },
+                { value: 'useItem', label: '物品使用' },
+                { value: 'conditional', label: '条件触发' }
+            ];
+            
+            const typeSelect = typeOptions.map(opt => 
+                `<option value="${opt.value}" ${cmd.type === opt.value ? 'selected' : ''}>${opt.label}</option>`
+            ).join('');
+            
+            // 唯一预览ID前缀
+            const previewBase = `gp-${itemId}-${idx}`;
+            
+            // 根据玩法类型显示不同的配置字段
+            let extraFields = '';
+            
+            if (cmd.type === 'password') {
+                extraFields = `
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-top:8px;">
+                        <div><label>密码值</label><input type="text" class="gp-value" value="${cmd.value || ''}" placeholder="如: 1109"></div>
+                        <div><label>位数</label><input type="number" class="gp-digits" value="${cmd.digits || ''}" placeholder="如: 4" min="1" max="20"></div>
+                        <div><label>成功消息</label>
+                            <input type="text" class="gp-message" value="${cmd.onSuccess?.message || ''}" placeholder="解锁成功提示">
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;">
+                        <label>解锁标记 (flags)</label>
+                        <input type="text" class="gp-flags" value="${cmd.onSuccess?.flags?.join(',') || ''}" placeholder="如: LEDGER_OPENED">
+                        <div style="font-size:11px; color:#888; margin-top:4px;">
+                            成功后设置的标记，用逗号分隔多个标记
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;">
+                        <label>自动记录物品</label>
+                        <input type="text" class="gp-items" value="${cmd.onSuccess?.items?.join(',') || ''}" placeholder="如: KEY_001,TOOL_001">
+                        <div style="font-size:11px; color:#888; margin-top:4px;">
+                            成功后自动记录的物品ID，用逗号分隔多个物品
+                        </div>
+                    </div>`;
+            } else if (cmd.type === 'text') {
+                extraFields = `
+                    <div style="margin-top:8px;"><label>显示文本</label>
+                        <textarea class="gp-text" rows="2" placeholder="显示的文本...">${escapeHtml(cmd.value || '')}</textarea>
+                        <div class="preview-box" data-preview="${previewBase}-text"><div class="preview-content">${renderPreview(cmd.value || '')}</div></div>
+                    </div>
+                    <div style="margin-top:8px;">
+                        <label>触发标记 (flags)</label>
+                        <input type="text" class="gp-flags" value="${cmd.results?.flags?.join(',') || ''}" placeholder="如: FLAG_NAME">
+                        <div style="font-size:11px; color:#888; margin-top:4px;">
+                            显示文本后设置的标记，用逗号分隔多个标记
+                        </div>
+                    </div>`;
+            } else if (cmd.type === 'choice') {
+                const options = cmd.options || [];
+                const optionsText = options.map(o => `${o.label}|${o.results?.scene || ''}|${o.message || ''}`).join('\n');
+                extraFields = `
+                    <div style="margin-top:8px;"><label>弹窗标题</label><input type="text" class="gp-title" value="${cmd.title || ''}" placeholder="选择标题"></div>
+                    <div style="margin-top:8px;"><label>提示文本</label><input type="text" class="gp-prompt" value="${cmd.prompt || ''}" placeholder="请选择..."></div>
+                    <div style="margin-top:8px;"><label>选项配置 (格式: 选项文本|场景ID|消息)</label>
+                        <textarea class="gp-options" rows="3" placeholder="前往梅林|SCENE_START|你决定返回梅林&#10;前往祭坛|SCENE_ALTAR|你决定前往祭坛">${escapeHtml(optionsText)}</textarea>
+                        <div class="preview-box" data-preview="${previewBase}-options"><div class="preview-content">${renderPreview(optionsText)}</div></div>
+                    </div>`;
+            } else if (cmd.type === 'useItem') {
+                // 获取所有可记录的物品ID用于下拉选择
+                const itemIds = projectData.items ? Object.keys(projectData.items) : [];
+                // 只显示可记录的物品
+                const pickableItems = itemIds.filter(id => projectData.items[id]?.canBePicked);
+                const itemOptions = pickableItems.map(id => `<option value="${escapeHtml(id)}" ${cmd.requiredItem === id ? 'selected' : ''}>${escapeHtml(id)} (${escapeHtml(projectData.items[id].label || '无标签')})</option>`).join('');
+                const itemSelect = `<select class="gp-required" style="width:100%; background:#111; border:1px solid #444; color:white; padding:8px; border-radius:4px;">
+                    <option value="">选择可使用的物品...</option>
+                    ${itemOptions}
+                    ${pickableItems.length === 0 ? '<option value="" disabled>暂无可记录物品，请在物品编辑中勾选"可记录"</option>' : ''}
+                </select>`;
+                
+                extraFields = `
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:8px;">
+                        <div>
+                            <label>所需物品</label>
+                            ${itemSelect}
+                            <div style="font-size:11px; color:#888; margin-top:4px;">
+                                仅显示在物品编辑中勾选了"可记录"的物品
+                            </div>
+                        </div>
+                        <div><label>成功消息</label>
+                            <input type="text" class="gp-message" value="${cmd.successMessage || ''}" placeholder="使用成功时显示的消息">
+                            <div class="preview-box" data-preview="${previewBase}-msg"><div class="preview-content">${renderPreview(cmd.successMessage || '')}</div></div>
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;">
+                        <label>失败消息 (可选)</label>
+                        <input type="text" class="gp-fail-message" value="${cmd.failMessage || ''}" placeholder="使用失败时显示的消息，留空使用默认">
+                        <div style="font-size:11px; color:#888; margin-top:4px;">
+                            自定义失败提示，留空则使用默认："物品档案中没有[物品名]。"
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;">
+                        <label>成功后设置的标记 (flags)</label>
+                        <input type="text" class="gp-flags" value="${cmd.onSuccess?.flags?.join(',') || ''}" placeholder="如: DOOR_OPENED">
+                        <div style="font-size:11px; color:#888; margin-top:4px;">
+                            使用成功后自动设置的标记，用逗号分隔多个标记
+                        </div>
+                    </div>
+                    <div style="margin-top:12px; padding:8px; background:rgba(0,255,65,0.1); border:1px dashed rgba(0,255,65,0.3); border-radius:4px; font-size:11px;">
+                        <strong>简化使用流程：</strong>
+                        <ul style="margin:4px 0 0 16px; padding:0;">
+                            <li>1. 在物品编辑界面勾选"可记录"</li>
+                            <li>2. 在这里选择该物品</li>
+                            <li>3. 填写成功消息、失败消息（可选）和触发标记</li>
+                            <li>无需手动设置 <code>has_</code> 标记，系统自动处理</li>
+                        </ul>
+                    </div>`;
+
+            } else if (cmd.type === 'conditional') {
+                const conditions = cmd.conditions || [];
+                const conditionsText = conditions.map(c => {
+                    if (c.flag) return `flag:${c.flag}|${c.failMessage || ''}`;
+                    if (c.clue) return `clue:${c.clue}|${c.failMessage || ''}`;
+                    return '';
+                }).join('\n');
+                extraFields = `
+                    <div style="margin-top:8px;"><label>条件配置 (格式: 类型:值|失败消息)</label>
+                        <textarea class="gp-conditions" rows="2" placeholder="flag:LEDGER_OPENED|需要先解开账本&#10;clue:DATA_T_CONTRACT|需要契约">${escapeHtml(conditionsText)}</textarea>
+                        <div class="preview-box" data-preview="${previewBase}-conditions"><div class="preview-content">${renderPreview(conditionsText)}</div></div>
+                    </div>
+                    <div style="margin-top:8px;"><label>条件满足消息 (conditionMetLog)</label>
+                        <input type="text" class="gp-message" value="${cmd.successMessage || ''}" placeholder="条件满足时显示">
+                        <div class="preview-box" data-preview="${previewBase}-msg"><div class="preview-content">${renderPreview(cmd.successMessage || '')}</div></div>
+                    </div>
+                    <div style="margin-top:8px;"><label>触发成功消息 (onSuccess.message)</label>
+                        <input type="text" class="gp-onsuccess-msg" value="${cmd.onSuccess?.message || ''}" placeholder="成功后额外显示的消息">
+                        <div class="preview-box" data-preview="${previewBase}-onsuccess"><div class="preview-content">${renderPreview(cmd.onSuccess?.message || '')}</div></div>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:8px;">
+                        <div>
+                            <label>触发标记 (flags)</label>
+                            <input type="text" class="gp-flags" value="${cmd.onSuccess?.flags?.join(',') || ''}" placeholder="如: BOX_OPENED">
+                            <div style="font-size:11px; color:#888; margin-top:4px;">
+                                用逗号分隔多个标记
+                            </div>
+                        </div>
+                        <div>
+                            <label>跳转场景 (gotoScene)</label>
+                            <input type="text" class="gp-goto-scene" value="${cmd.onSuccess?.gotoScene || ''}" placeholder="如: SCENE_SECRET">
+                            <div style="font-size:11px; color:#888; margin-top:4px;">
+                                条件满足后跳转的场景ID
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:12px; padding:8px; background:rgba(0,255,65,0.1); border:1px dashed rgba(0,255,65,0.3); border-radius:4px; font-size:11px;">
+                        <strong>条件格式说明：</strong>
+                        <ul style="margin:4px 0 0 16px; padding:0;">
+                            <li><code>flag:标记名|失败消息</code> - 检查标记是否为 true</li>
+                            <li><code>clue:线索ID|失败消息</code> - 检查线索是否已获得</li>
+                            <li>示例：<code>flag:DOOR_OPENED|需要先打开门</code></li>
+                        </ul>
+                    </div>`;
+            }
+            
+            return `
+                <div class="gameplay-item" style="background:rgba(0,0,0,0.3); padding:12px; border-radius:4px; margin-bottom:10px; border:1px dashed #444;" data-preview-base="${previewBase}">
+                    <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px;">
+                        <select class="gp-type" style="flex:1;" onchange="updateGameplayType('${itemId}', ${idx}, this.value)">
+                            <option value="">选择玩法类型...</option>
+                            ${typeSelect}
+                        </select>
+                        <input type="text" class="gp-label" style="flex:1;" value="${cmd.label || ''}" placeholder="按钮文本">
+                        <button class="btn btn-danger btn-small" onclick="removeGameplay('${itemId}', ${idx})">×</button>
+                    </div>
+                    ${extraFields}
+                </div>`;
+        }
+        
+        // 添加新玩法
+        function addGameplay(itemId) {
+            if (!projectData.items[itemId].commands) {
+                projectData.items[itemId].commands = [];
+            }
+            projectData.items[itemId].commands.push({ label: '新玩法', type: 'text', value: '' });
+            renderCurrentTab();
+        }
+        
+        // 移除玩法
+        function removeGameplay(itemId, idx) {
+            if (projectData.items[itemId].commands) {
+                projectData.items[itemId].commands.splice(idx, 1);
+                if (projectData.items[itemId].commands.length === 0) {
+                    delete projectData.items[itemId].commands;
+                }
+            }
+            renderCurrentTab();
+        }
+        
+        // 更新玩法类型（重新渲染）
+        function updateGameplayType(itemId, idx, newType) {
+            if (projectData.items[itemId].commands && projectData.items[itemId].commands[idx]) {
+                projectData.items[itemId].commands[idx].type = newType;
+                // 清空特定字段以适应新类型
+                const cmd = projectData.items[itemId].commands[idx];
+                delete cmd.value;
+                delete cmd.onSuccess;
+                delete cmd.results;
+                delete cmd.options;
+                delete cmd.conditions;
+            }
+            renderCurrentTab();
+        }
+
+        // --- 出示反应配置函数 ---
+        
+        // 渲染单个出示反应配置项
+        function renderPresentReaction(itemId, idx, keyItemId, reaction, condition) {
+            // 获取所有可记录的物品ID用于下拉选择
+            const itemIds = projectData.items ? Object.keys(projectData.items) : [];
+            const pickableItems = itemIds.filter(id => projectData.items[id]?.canBePicked);
+            const itemOptions = pickableItems.map(id => `<option value="${escapeHtml(id)}" ${keyItemId === id ? 'selected' : ''}>${escapeHtml(id)} (${escapeHtml(projectData.items[id].label || '无标签')})</option>`).join('');
+            const itemSelect = `<select class="pr-key-item" style="width:100%; background:#111; border:1px solid #444; color:white; padding:8px; border-radius:4px;">
+                <option value="">选择出示的物品...</option>
+                ${itemOptions}
+                ${pickableItems.length === 0 ? '<option value="" disabled>暂无可记录物品，请在物品编辑中勾选"可记录"</option>' : ''}
+            </select>`;
+
+            // 生成唯一预览ID前缀
+            const previewBase = `pr-${itemId}-${idx}`;
+
+            // 条件触发配置（始终显示，作为可折叠区域）
+            const hasCondition = condition && condition.flag;
+            // 获取所有场景ID用于下拉选择
+            const sceneIds = projectData.scenes ? Object.keys(projectData.scenes) : [];
+            const sceneOptions = sceneIds.map(id => `<option value="${escapeHtml(id)}" ${condition?.scene === id ? 'selected' : ''}>${escapeHtml(id)} (${escapeHtml(projectData.scenes[id].title || '无标题')})</option>`).join('');
+            const conditionHtml = `
+                <div style="margin-top:12px;">
+                    <div class="toggle-header" style="display:flex; align-items:center; cursor:pointer; padding:8px; background:rgba(102,204,255,0.1); border-radius:4px;" 
+                         onclick="toggleCollapse('${previewBase}-condition')">
+                        <span style="color:#66ccff; font-weight:bold;">▸ 条件触发配置</span>
+                        <span style="flex:1;"></span>
+                        <span style="font-size:11px; color:#888;">${hasCondition ? '已配置' : '未配置'}</span>
+                    </div>
+                    <div id="${previewBase}-condition" style="margin-top:8px; padding-left:12px; display:none;">
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <div>
+                                <label>需要满足的标记</label>
+                                <input type="text" class="cf-flag" value="${condition?.flag || ''}" placeholder="如: doorHasTongue">
+                                <div style="font-size:10px; color:#888; margin-top:2px;">
+                                    当此标记为true时，显示下方的特殊反应文本
+                                </div>
+                            </div>
+                            <div>
+                                <label>条件满足时的特殊文本</label>
+                                <textarea class="cf-text" rows="2" placeholder="满足条件时显示的文本...">${escapeHtml(condition?.text || '')}</textarea>
+                                <div class="preview-box" data-preview="${previewBase}-cf-text">
+                                    <div class="preview-label">实时预览</div>
+                                    <div class="preview-content">${renderPreview(condition?.text || '')}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top:8px;">
+                            <label>跳转场景</label>
+                            <select class="cf-scene" style="width:100%; background:#111; border:1px solid #444; color:white; padding:8px; border-radius:4px;">
+                                <option value="">不跳转</option>
+                                ${sceneOptions}
+                                ${sceneIds.length === 0 ? '<option value="" disabled>暂无场景，请先创建场景</option>' : ''}
+                            </select>
+                            <div style="font-size:10px; color:#888; margin-top:2px;">
+                                当条件满足时跳转的场景
+                            </div>
+                        </div>
+                        <div style="margin-top:8px; padding:8px; background:rgba(102,204,255,0.05); border-radius:4px; font-size:11px; color:#888;">
+                            <strong>逻辑说明：</strong>
+                            <br>• 当标记为 true 时，显示"条件满足时的特殊文本"并跳转场景
+                            <br>• 当标记为 false 或未设置时，显示上方的"反应文本（默认）"
+                        </div>
+                    </div>
+                </div>`;
+
+            return `
+                <div class="present-reaction-item" style="background:rgba(255,204,0,0.1); padding:12px; border-radius:4px; margin-bottom:10px; border:1px dashed rgba(255,204,0,0.3);" data-preview-base="${previewBase}">
+                    <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px;">
+                        <div style="flex:1;">
+                            <label>出示的物品</label>
+                            ${itemSelect}
+                        </div>
+                        <button class="btn btn-danger btn-small" onclick="removePresentReaction('${escapeHtml(itemId)}', ${idx})">×</button>
+                    </div>
+
+                    <div style="margin-top:8px;">
+                        <label>反应文本（默认）</label>
+                        <textarea class="pr-text" rows="2" placeholder="当出示该物品时的默认反应文本..." data-preview="${previewBase}-text">${escapeHtml(reaction.text || '')}</textarea>
+                        <div class="preview-box" data-preview="${previewBase}-text">
+                            <div class="preview-label">实时预览</div>
+                            <div class="preview-content">${renderPreview(reaction.text || '')}</div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:8px;">
+                        <div>
+                            <label>触发标记 (flags)</label>
+                            <input type="text" class="pr-flags" value="${reaction.results?.flags?.join(',') || ''}" placeholder="如: DOOR_UNLOCKED, FLAG_NAME">
+                            <div style="font-size:11px; color:#888; margin-top:4px;">
+                                反应后设置的标记，用逗号分隔多个标记
+                            </div>
+                        </div>
+                        <div>
+                            <label>跳转场景 (scene)</label>
+                            <select class="pr-scene" style="width:100%; background:#111; border:1px solid #444; color:white; padding:8px; border-radius:4px;">
+                                <option value="">无跳转</option>
+                                ${Object.keys(projectData.scenes || {}).map(sceneId =>
+                                    `<option value="${escapeHtml(sceneId)}" ${reaction.results?.scene === sceneId ? 'selected' : ''}>${escapeHtml(sceneId)} (${escapeHtml(projectData.scenes[sceneId].title || '无标题')})</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:8px;">
+                        <label>额外消息 (message，可选)</label>
+                        <input type="text" class="pr-message" value="${reaction.results?.message || ''}" placeholder="反应后显示的额外消息，可选">
+                        <div class="preview-box" data-preview="${previewBase}-msg">
+                            <div class="preview-label">实时预览</div>
+                            <div class="preview-content">${renderPreview(reaction.results?.message || '')}</div>
+                        </div>
+                    </div>
+                    
+                    ${conditionHtml}
+                </div>`;
+        }
+        
+        // 折叠/展开功能
+        function toggleCollapse(elementId) {
+            const el = document.getElementById(elementId);
+            const header = el?.previousElementSibling;
+            if (el) {
+                if (el.style.display === 'none') {
+                    el.style.display = 'block';
+                    if (header) {
+                        header.querySelector('span:first-child').innerHTML = '▾ 条件触发配置';
+                    }
+                } else {
+                    el.style.display = 'none';
+                    if (header) {
+                        header.querySelector('span:first-child').innerHTML = '▸ 条件触发配置';
+                    }
+                }
+            }
+        }
+
+        // 添加新出示反应
+        function addPresentReaction(itemId) {
+            if (!projectData.items[itemId].presentReactions) {
+                projectData.items[itemId].presentReactions = {};
+            }
+            // 使用一个临时key，保存时会更新
+            const tempKey = `TEMP_${Date.now()}`;
+            projectData.items[itemId].presentReactions[tempKey] = {
+                text: '',
+                results: {}
+            };
+            renderCurrentTab();
+        }
+        
+        // 移除出示反应
+        function removePresentReaction(itemId, idx) {
+            if (projectData.items[itemId].presentReactions) {
+                const keys = Object.keys(projectData.items[itemId].presentReactions);
+                if (idx >= 0 && idx < keys.length) {
+                    const keyToRemove = keys[idx];
+                    delete projectData.items[itemId].presentReactions[keyToRemove];
+                    if (Object.keys(projectData.items[itemId].presentReactions).length === 0) {
+                        delete projectData.items[itemId].presentReactions;
+                    }
+                }
+            }
+            renderCurrentTab();
+        }
+
+        // --- 角色专用渲染器 (修正 talkQueue / reactions 的对象结构读取) ---
+        function renderChars(container) {
+            const header = document.createElement('div');
+            header.className = 'list-header';
+            header.innerHTML = `<h3>角色库 (CHARS)</h3>`;
+            
+            // 使用DocumentFragment优化性能
+            const fragment = document.createDocumentFragment();
+            fragment.appendChild(header);
+            
+            for (let id in projectData.chars) {
+                const c = projectData.chars[id];
+                
+                // 【核心修正】读取逻辑：将对象数组 [{text: "..."}] 转为文本行
+                const rawTalk = c.talkQueue || c.lines || [];
+                const talkLines = rawTalk.map(item => typeof item === 'object' ? item.text : item);
+                
+                // 读取默认对话
+                const rawDefaultTalk = c.defaultTalks || [];
+                const defaultTalkLines = rawDefaultTalk.map(item => typeof item === 'object' ? item.text : item);
+                
+                // 【核心修正】线索反应：将 { ID: {text: "..."} } 转为文本
+                const rawReactions = c.reactions || c.logicResponse || {};
+                const reactionsProcessed = {};
+                for (let key in rawReactions) {
+                    const val = rawReactions[key];
+                    reactionsProcessed[key] = typeof val === 'object' ? val.text : val;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.setAttribute('data-id', id);
+                const talkPreviewId = `preview-talk-${id}`;
+                card.innerHTML = `
+                    <div style="display:grid; grid-template-columns: 80px 1fr 1fr; gap:15px; margin-bottom:10px; align-items:end;">
+                        <div>
+                            <label>头像</label>
+                            <div class="avatar-upload" style="width:70px; height:70px; border:2px dashed #444; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; background:#111;" onclick="document.getElementById('avatar-upload-${escapeHtml(id)}').click()">
+                                ${c.avatar ? `<img src="${escapeHtml(c.avatar)}" style="width:100%; height:100%; object-fit:cover;">` : '<span style="font-size:24px; color:#555;">+</span>'}
+                            </div>
+                            <input type="file" id="avatar-upload-${escapeHtml(id)}" accept="image/*" style="display:none" onchange="handleAvatarUpload(this, '${escapeHtml(id)}')">
+                            ${c.avatar ? `<button class="btn btn-danger btn-small" style="width:100%; margin-top:5px;" onclick="removeAvatar('${escapeHtml(id)}')">移除</button>` : ''}
+                        </div>
+                        <div><label>角色 ID</label><input type="text" value="${escapeHtml(id)}" onblur="renameKey('chars', '${escapeHtml(id)}', this.value)"></div>
+                        <div><label>姓名</label><input type="text" class="char-name" value="${escapeHtml(c.name)}"></div>
+                    </div>
+                    <label>简介</label>
+                    <textarea class="char-desc">${escapeHtml(c.desc)}</textarea>
+
+                    <!-- 媒体配置区 -->
+                    <div class="config-section" style="margin-top:15px; background: rgba(102,204,255,0.05); border: 1px solid rgba(102,204,255,0.2);">
+                        <label>媒体配置</label>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                            <div>
+                                <label style="color:#66ccff;">配图 (IMAGE)</label>
+                                <div class="media-upload-preview" style="width:100%; height:120px; border:2px dashed #444; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; background:#111;" onclick="document.getElementById('media-img-chars-${id}').click()">
+                                    ${c.image ? `<img src="${escapeHtml(c.image)}" style="max-width:100%; max-height:100%; object-fit:contain;">` : '<span style="color:#555;">+ 添加配图</span>'}
+                                </div>
+                                <input type="file" id="media-img-chars-${id}" accept="image/*" style="display:none" onchange="handleMediaUpload(this, 'chars', '${escapeHtml(id)}', 'image')">
+                                ${c.image ? `<button class="btn btn-danger btn-small" style="width:100%; margin-top:5px;" onclick="removeMedia('chars', '${escapeHtml(id)}', 'image')">移除图片</button>` : ''}
+                            </div>
+                            <div>
+                                <label style="color:#66ffcc;">背景音 (AUDIO)</label>
+                                <div style="width:100%; height:120px; border:2px dashed #444; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; background:#111;" onclick="document.getElementById('media-audio-chars-${id}').click()">
+                                    ${c.audio ? `
+                                        <span style="color:#66ffcc;">已添加音频</span>
+                                        <audio controls src="${escapeHtml(c.audio)}" style="width:90%; margin-top:5px; height:30px;"></audio>
+                                    ` : '<span style="color:#555;">+ 添加背景音</span>'}
+                                </div>
+                                <input type="file" id="media-audio-chars-${id}" accept="audio/*" style="display:none" onchange="handleMediaUpload(this, 'chars', '${escapeHtml(id)}', 'audio')">
+                                ${c.audio ? `<button class="btn btn-danger btn-small" style="width:100%; margin-top:5px;" onclick="removeMedia('chars', '${escapeHtml(id)}', 'audio')">移除音频</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 默认对话编辑区 (defaultTalks 映射) -->
+                    <div class="config-section" style="margin-top:15px; background: rgba(0,255,65,0.05); border: 1px solid rgba(0,255,65,0.2);">
+                        <label>默认对话序列 (DEFAULT_TALKS)</label>
+                        <textarea class="default-dialogue-area" id="default-${talkPreviewId}" placeholder="你好... (每行一条)">${escapeHtml(defaultTalkLines.length > 0 ? defaultTalkLines.join('\n') : talkLines.join('\n'))}</textarea>
+                        <div class="preview-box" style="margin-top:8px;">
+                            <div class="preview-label">实时预览</div>
+                            <div class="preview-content">${renderPreview(defaultTalkLines.length > 0 ? defaultTalkLines.join('\n') : talkLines.join('\n'))}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 场景绑定对话编辑区 (sceneTalks 映射) -->
+                    <div class="config-section" style="margin-top:15px; background: rgba(255,255,0,0.05); border: 1px solid rgba(255,255,0,0.2);">
+                        <label>场景绑定对话 (SCENE_TALKS)</label>
+                        <div class="scene-talk-container">
+                            ${Object.entries(c.sceneTalks || {}).map(([sceneId, talks], idx) => {
+                                const sceneTalkPreviewId = `preview-scenetalk-${id}-${idx}`;
+                                const talkLinesForScene = talks.map(item => typeof item === 'object' ? item.text : item);
+                                return `
+                                <div class="scene-talk-row" data-scene-talk-preview="${sceneTalkPreviewId}">
+                                    <input type="text" class="scene-talk-key" style="flex:0.4" placeholder="场景 ID" value="${escapeHtml(sceneId)}">
+                                    <textarea class="scene-talk-val" style="flex:1; height:60px;" data-preview="${sceneTalkPreviewId}" placeholder="该场景下的对话... (每行一条)">${escapeHtml(talkLinesForScene.join('\n'))}</textarea>
+                                    <button class="btn btn-danger btn-small" onclick="removeSceneTalkRow(this)">×</button>
+                                </div>
+                                <div class="preview-box" style="margin-bottom:8px;" data-preview-box="${sceneTalkPreviewId}">
+                                    <div class="preview-label">实时预览</div>
+                                    <div class="preview-content">${renderPreview(talkLinesForScene.join('\n'))}</div>
+                                </div>`;
+                            }).join('')}
+                        </div>
+                        <button class="btn btn-ghost btn-small" style="width:100%" onclick="addSceneTalkRow(this)">+ 添加场景对话</button>
+                    </div>
+
+                    <!-- 线索响应区 (reactions 映射) -->
+                    <div class="config-section" style="margin-top:15px; background: rgba(0,255,65,0.05); border: 1px solid rgba(0,255,65,0.2);">
+                        <label>线索反应映射 (REACTIONS)</label>
+                        <div class="logic-container">
+                            ${Object.entries(reactionsProcessed).map(([clueId, resp], idx) => {
+                                const reactionPreviewId = `preview-reaction-${id}-${idx}`;
+                                return `
+                                <div class="logic-row" data-reaction-preview="${reactionPreviewId}">
+                                    <input type="text" class="logic-key" style="flex:0.4" placeholder="线索 ID" value="${escapeHtml(clueId)}">
+                                    <textarea class="logic-val" style="flex:1; height:40px;" data-preview="${reactionPreviewId}" placeholder="回答内容...">${escapeHtml(resp)}</textarea>
+                                    <button class="btn btn-danger btn-small" onclick="this.parentElement.remove()">×</button>
+                                </div>
+                                <div class="preview-box" style="margin-bottom:8px;" data-preview-box="${reactionPreviewId}">
+                                    <div class="preview-label">实时预览</div>
+                                    <div class="preview-content">${renderPreview(resp)}</div>
+                                </div>`;
+                            }).join('')}
+                        </div>
+                        <button class="btn btn-ghost btn-small" style="width:100%" onclick="addReactionRow(this)">+ 添加新反应</button>
+                    </div>
+
+                    <!-- 物品反应映射区 (itemReactions) -->
+                    <div class="config-section" style="margin-top:15px; background: rgba(255,153,0,0.05); border: 1px solid rgba(255,153,0,0.2);">
+                        <label>物品反应映射 (ITEM_REACTIONS)</label>
+                        <div class="item-reaction-container">
+                            ${Object.entries(c.itemReactions || {}).map(([itemId, resp], idx) => {
+                                const itemReactionPreviewId = `preview-item-reaction-${id}-${idx}`;
+                                return `
+                                <div class="logic-row" data-item-reaction-preview="${itemReactionPreviewId}">
+                                    <input type="text" class="item-reaction-key" style="flex:0.4" placeholder="物品 ID" value="${escapeHtml(itemId)}">
+                                    <textarea class="item-reaction-val" style="flex:1; height:40px;" data-preview="${itemReactionPreviewId}" placeholder="回答内容，支持 [clue:ID] 格式">${escapeHtml(typeof resp === 'object' ? resp.text : resp)}</textarea>
+                                    <button class="btn btn-danger btn-small" onclick="this.parentElement.remove()">×</button>
+                                </div>
+                                <div class="preview-box" style="margin-bottom:8px;" data-preview-box="${itemReactionPreviewId}">
+                                    <div class="preview-label">实时预览</div>
+                                    <div class="preview-content">${renderPreview(typeof resp === 'object' ? resp.text : resp)}</div>
+                                </div>`;
+                            }).join('')}
+                        </div>
+                        <button class="btn btn-ghost btn-small" style="width:100%" onclick="addItemReactionRow(this)">+ 添加物品反应</button>
+                    </div>
+
+                    <div class="opt-toggle">
+                        <label style="display:flex; align-items:center; cursor:pointer;">
+                            <input type="checkbox" style="width:auto; margin-right:8px;" ${c.hiddenClue?'checked':''} onchange="toggleHiddenClue('chars', '${escapeHtml(id)}', this.checked)">
+                            启用角色隐藏因果
+                        </label>
+                        ${c.hiddenClue ? `
+                        <div class="config-section">
+                            <label>捕获叙事</label>
+                            <textarea class="hidden-clue-text" data-id="${escapeHtml(id)}" data-cat="chars" onchange="setHiddenClue('chars', '${escapeHtml(id)}', this.value)">${escapeHtml(c.hiddenClue.text || '')}</textarea>
+                            <div class="preview-box" data-hidden-preview="chars-${id}">
+                                <div class="preview-label">实时预览</div>
+                                <div class="preview-content">${renderPreview(c.hiddenClue.text || '')}</div>
+                            </div>
+                        </div>` : ''}
+                    </div>
+
+                    <button class="btn btn-danger" style="margin-top:15px;" onclick="deleteItem('chars', '${escapeHtml(id)}')">删除角色</button>
+                `;
+                fragment.appendChild(card);
+
+                // 绑定对话预览
+                setTimeout(() => {
+                    const textarea = card.querySelector(`#${talkPreviewId}`);
+                    const previewContent = card.querySelector(`#${talkPreviewId}`).nextElementSibling.querySelector('.preview-content');
+                    if (textarea && previewContent) {
+                        textarea.addEventListener('input', () => {
+                            previewContent.innerHTML = renderPreview(textarea.value);
+                        });
+                    }
+                    
+                    // 绑定线索反应预览
+                    const reactionRows = card.querySelectorAll('.logic-row[data-reaction-preview]');
+                    reactionRows.forEach(row => {
+                        const previewId = row.getAttribute('data-reaction-preview');
+                        const textarea = row.querySelector(`[data-preview="${previewId}"]`);
+                        const previewBox = card.querySelector(`[data-preview-box="${previewId}"] .preview-content`);
+                        if (textarea && previewBox) {
+                            textarea.addEventListener('input', () => {
+                                previewBox.innerHTML = renderPreview(textarea.value);
+                            });
+                        }
+                    });
+                    
+                    // 绑定角色隐藏因果预览
+                    const hiddenTextarea = card.querySelector('.hidden-clue-text');
+                    const hiddenPreviewBox = card.querySelector(`[data-hidden-preview="chars-${id}"] .preview-content`);
+                    if (hiddenTextarea && hiddenPreviewBox) {
+                        hiddenTextarea.addEventListener('input', () => {
+                            hiddenPreviewBox.innerHTML = renderPreview(hiddenTextarea.value);
+                        });
+                    }
+                }, 0);
+            }
+            
+            container.appendChild(fragment);
+        }
+
+        function addReactionRow(btn) {
+            const container = btn.previousElementSibling;
+            const tempId = 'new-reaction-' + Date.now();
+            const row = document.createElement('div');
+            row.className = 'logic-row';
+            row.setAttribute('data-reaction-preview', tempId);
+            row.innerHTML = `
+                <input type="text" class="logic-key" style="flex:0.4" placeholder="线索 ID" value="NEW_CLUE">
+                <textarea class="logic-val" style="flex:1; height:40px;" data-preview="${tempId}" placeholder="回答内容..."></textarea>
+                <button class="btn btn-danger btn-small" onclick="this.parentElement.remove(); this.parentElement.nextElementSibling?.remove();">×</button>
+            `;
+            const previewBox = document.createElement('div');
+            previewBox.className = 'preview-box';
+            previewBox.setAttribute('data-preview-box', tempId);
+            previewBox.innerHTML = `
+                <div class="preview-label">实时预览</div>
+                <div class="preview-content"><span style="color:#555;">预览区域...</span></div>
+            `;
+            container.appendChild(row);
+            container.appendChild(previewBox);
+
+            // 绑定新行的预览
+            const textarea = row.querySelector(`[data-preview="${tempId}"]`);
+            const previewContent = previewBox.querySelector('.preview-content');
+            if (textarea && previewContent) {
+                textarea.addEventListener('input', () => {
+                    previewContent.innerHTML = renderPreview(textarea.value);
+                });
+            }
+        }
+
+        function addItemReactionRow(btn) {
+            const container = btn.previousElementSibling;
+            const tempId = 'new-item-reaction-' + Date.now();
+            const row = document.createElement('div');
+            row.className = 'logic-row';
+            row.setAttribute('data-item-reaction-preview', tempId);
+            row.innerHTML = `
+                <input type="text" class="item-reaction-key" style="flex:0.4" placeholder="物品 ID" value="NEW_ITEM">
+                <textarea class="item-reaction-val" style="flex:1; height:40px;" data-preview="${tempId}" placeholder="回答内容，支持 [clue:ID] 格式"></textarea>
+                <button class="btn btn-danger btn-small" onclick="this.parentElement.remove(); this.parentElement.nextElementSibling?.remove();">×</button>
+            `;
+            const previewBox = document.createElement('div');
+            previewBox.className = 'preview-box';
+            previewBox.setAttribute('data-preview-box', tempId);
+            previewBox.innerHTML = `
+                <div class="preview-label">实时预览</div>
+                <div class="preview-content"><span style="color:#555;">预览区域...</span></div>
+            `;
+            container.appendChild(row);
+            container.appendChild(previewBox);
+
+            // 绑定新行的预览
+            const textarea = row.querySelector(`[data-preview="${tempId}"]`);
+            const previewContent = previewBox.querySelector('.preview-content');
+            if (textarea && previewContent) {
+                textarea.addEventListener('input', () => {
+                    previewContent.innerHTML = renderPreview(textarea.value);
+                });
+            }
+        }
+        
+        function addSceneTalkRow(btn) {
+            const container = btn.previousElementSibling;
+            const tempId = 'new-scenetalk-' + Date.now();
+            const row = document.createElement('div');
+            row.className = 'scene-talk-row';
+            row.setAttribute('data-scene-talk-preview', tempId);
+            row.innerHTML = `
+                <input type="text" class="scene-talk-key" style="flex:0.4" placeholder="场景 ID" value="NEW_SCENE">
+                <textarea class="scene-talk-val" style="flex:1; height:60px;" data-preview="${tempId}" placeholder="该场景下的对话... (每行一条)"></textarea>
+                <button class="btn btn-danger btn-small" onclick="removeSceneTalkRow(this)">×</button>
+            `;
+            const previewBox = document.createElement('div');
+            previewBox.className = 'preview-box';
+            previewBox.setAttribute('data-preview-box', tempId);
+            previewBox.innerHTML = `
+                <div class="preview-label">实时预览</div>
+                <div class="preview-content"><span style="color:#555;">预览区域...</span></div>
+            `;
+            container.appendChild(row);
+            container.appendChild(previewBox);
+
+            // 绑定新行的预览
+            const textarea = row.querySelector(`[data-preview="${tempId}"]`);
+            const previewContent = previewBox.querySelector('.preview-content');
+            if (textarea && previewContent) {
+                textarea.addEventListener('input', () => {
+                    previewContent.innerHTML = renderPreview(textarea.value);
+                });
+            }
+        }
+        
+        function removeSceneTalkRow(btn) {
+            const row = btn.parentElement;
+            const nextElement = row.nextElementSibling;
+            row.remove();
+            if (nextElement && nextElement.classList.contains('preview-box')) {
+                nextElement.remove();
+            }
+        }
+
+        function renderClues(container) {
+            const header = document.createElement('div');
+            header.className = 'list-header';
+            header.innerHTML = `<h3>线索定义</h3>`;
+            
+            // 使用DocumentFragment优化性能
+            const fragment = document.createDocumentFragment();
+            fragment.appendChild(header);
+            
+            for (let id in projectData.clues) {
+                const c = projectData.clues[id];
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.setAttribute('data-id', id);
+                card.innerHTML = `
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+                        <div><label>ID</label><input type="text" value="${escapeHtml(id)}" onblur="renameKey('clues', '${escapeHtml(id)}', this.value)"></div>
+                        <div><label>标签</label><input type="text" class="clue-label" value="${escapeHtml(c.label)}"></div>
+                        <div>
+                            <label>感官</label>
+                            <select class="clue-type">
+                                <option value="vision" ${c.type==='vision'?'selected':''}>视觉</option>
+                                <option value="hearing" ${c.type==='hearing'?'selected':''}>听觉</option>
+                                <option value="touch" ${c.type==='touch'?'selected':''}>触觉</option>
+                                <option value="smell" ${c.type==='smell'?'selected':''}>嗅觉</option>
+                                <option value="taste" ${c.type==='taste'?'selected':''}>味觉</option>
+                            </select>
+                        </div>
+                    </div>
+                    <label style="margin-top:10px;">扫描描述</label>
+                    <textarea class="clue-desc">${escapeHtml(c.desc)}</textarea>
+                    
+                    <!-- 媒体配置区 -->
+                    <div class="config-section" style="margin-top:15px; background: rgba(102,204,255,0.05); border: 1px solid rgba(102,204,255,0.2);">
+                        <label>媒体配置</label>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                            <div>
+                                <label style="color:#66ccff;">配图 (IMAGE)</label>
+                                <div class="media-upload-preview" style="width:100%; height:100px; border:2px dashed #444; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; background:#111;" onclick="document.getElementById('media-img-clues-${id}').click()">
+                                    ${c.image ? `<img src="${escapeHtml(c.image)}" style="max-width:100%; max-height:100%; object-fit:contain;">` : '<span style="color:#555; font-size:12px;">+ 添加配图</span>'}
+                                </div>
+                                <input type="file" id="media-img-clues-${id}" accept="image/*" style="display:none" onchange="handleMediaUpload(this, 'clues', '${escapeHtml(id)}', 'image')">
+                                ${c.image ? `<button class="btn btn-danger btn-small" style="width:100%; margin-top:5px;" onclick="removeMedia('clues', '${escapeHtml(id)}', 'image')">移除图片</button>` : ''}
+                            </div>
+                            <div>
+                                <label style="color:#66ffcc;">音频 (AUDIO)</label>
+                                <div style="width:100%; height:100px; border:2px dashed #444; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; background:#111;" onclick="document.getElementById('media-audio-clues-${id}').click()">
+                                    ${c.audio ? `
+                                        <span style="color:#66ffcc; font-size:12px;">已添加音频</span>
+                                        <audio controls src="${escapeHtml(c.audio)}" style="width:90%; margin-top:5px; height:30px;"></audio>
+                                    ` : '<span style="color:#555; font-size:12px;">+ 添加音频</span>'}
+                                </div>
+                                <input type="file" id="media-audio-clues-${id}" accept="audio/*" style="display:none" onchange="handleMediaUpload(this, 'clues', '${escapeHtml(id)}', 'audio')">
+                                ${c.audio ? `<button class="btn btn-danger btn-small" style="width:100%; margin-top:5px;" onclick="removeMedia('clues', '${escapeHtml(id)}', 'audio')">移除音频</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-danger" style="margin-top:15px;" onclick="deleteItem('clues', '${escapeHtml(id)}')">删除</button>
+                `;
+                fragment.appendChild(card);
+            }
+            
+            container.appendChild(fragment);
+        }
+
+        function renderEndings(container) {
+            const header = document.createElement('div');
+            header.className = 'list-header';
+            header.innerHTML = `<h3>结局配置</h3>`;
+            
+            // 使用DocumentFragment优化性能
+            const fragment = document.createDocumentFragment();
+            fragment.appendChild(header);
+            
+            projectData.endings.forEach((e, idx) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.setAttribute('data-idx', idx);
+                const previewId = `preview-end-${idx}`;
+                card.innerHTML = `
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div><label>结局 ID</label><input type="text" class="end-id" value="${escapeHtml(e.id)}"></div>
+                        <div><label>名称</label><input type="text" class="end-name" value="${escapeHtml(e.name)}"></div>
+                    </div>
+                    <label style="margin-top:10px;">因果配方 (线索 ID 逗号分隔)</label>
+                    <input type="text" class="end-recipe" value="${escapeHtml(e.recipe.join(','))}">
+                    <label style="margin-top:10px;">结局叙事</label>
+                    <textarea class="end-msg" id="${previewId}">${escapeHtml(e.message || '')}</textarea>
+                    <div class="preview-box" style="margin-top:8px;">
+                        <div class="preview-label">实时预览</div>
+                        <div class="preview-content">${renderPreview(e.message || '')}</div>
+                    </div>
+                    <button class="btn btn-danger" style="margin-top:10px;" onclick="projectData.endings.splice(${idx},1); renderCurrentTab();">删除</button>
+                `;
+                fragment.appendChild(card);
+                
+                // 绑定结局叙事预览
+                setTimeout(() => {
+                    const textarea = card.querySelector(`#${previewId}`);
+                    const previewContent = textarea.nextElementSibling.querySelector('.preview-content');
+                    if (textarea && previewContent) {
+                        textarea.addEventListener('input', () => {
+                            previewContent.innerHTML = renderPreview(textarea.value);
+                        });
+                    }
+                }, 0);
+            });
+            
+            container.appendChild(fragment);
+        }
+
+        // --- 逻辑函数 ---
+
+        function toggleCanBePicked(cat, id, enabled) {
+            projectData[cat][id].canBePicked = enabled;
+        }
+
+        function toggleHiddenClue(cat, id, enabled) {
+            if (enabled) {
+                projectData[cat][id].hiddenClue = { text: "", ids: [] };
+            } else {
+                delete projectData[cat][id].hiddenClue;
+            }
+            renderCurrentTab();
+        }
+
+        function setHiddenClue(cat, id, text) {
+            if (!projectData[cat][id].hiddenClue) return;
+            projectData[cat][id].hiddenClue.text = text;
+            const matches = text.match(/\[clue:(.+?)\]/g);
+            projectData[cat][id].hiddenClue.ids = matches ? matches.map(m => m.match(/\[clue:(.+?)\]/)[1]) : [];
+        }
+
+        function renameKey(cat, oldKey, newKey) {
+            if (oldKey === newKey || !newKey) return;
+            
+            // 验证新ID格式
+            if (!validateId(newKey)) {
+                alert("ID格式无效！仅允许字母、数字、下划线，长度3-50个字符");
+                renderCurrentTab();
+                return;
+            }
+            
+            if (projectData[cat][newKey]) { 
+                alert("ID 已存在"); 
+                renderCurrentTab(); 
+                return; 
+            }
+            projectData[cat][newKey] = projectData[cat][oldKey];
+            delete projectData[cat][oldKey];
+            renderCurrentTab();
+        }
+
+        function addItem(cat) {
+            // 生成唯一ID，确保不冲突
+            let id;
+            let attempts = 0;
+            do {
+                id = cat.toUpperCase() + "_" + Date.now().toString().slice(-4) + (attempts > 0 ? '_' + attempts : '');
+                attempts++;
+            } while (projectData[cat][id] && attempts < 100);
+            
+            if (projectData[cat][id]) {
+                alert("创建失败：ID已满，请稍后重试");
+                return;
+            }
+            
+            const templates = {
+                scenes: { title: "新场景", content: "描述..." },
+                items: { label: "新物品", desc: "描述..." },
+                clues: { label: "新线索", type: "vision", desc: "描述..." },
+                chars: { name: "新角色", desc: "描述...", talkQueue: [], reactions: {} }
+            };
+            projectData[cat][id] = templates[cat];
+            renderCurrentTab();
+            // 滚动到新添加的卡片
+            setTimeout(() => {
+                const newCard = document.querySelector(`[data-id="${id}"]`);
+                if (newCard) newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+
+        function addEnding() {
+            projectData.endings.push({ id: "END_"+Date.now(), name: "新结局", recipe: [], message: "" });
+            renderCurrentTab();
+        }
+
+        function deleteItem(cat, id) {
+            if (confirm("确定删除？")) { 
+                delete projectData[cat][id]; 
+                renderCurrentTab(); 
+            }
+        }
+    </script>
+</body>
+</html>

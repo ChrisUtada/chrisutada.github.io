@@ -27,17 +27,37 @@ window.__GAME_FRESH__ = urlParams.fresh;
 // ========================== 游戏数据加载器 ==========================
 
 /**
+ * 获取当前页面对应的游戏数据文件名
+ */
+function getDataFileName() {
+    const pathname = window.location.pathname;
+    const filename = pathname.split('/').pop();
+    
+    // 根据HTML文件名映射到对应的数据文件
+    const dataMap = {
+        'garden.html': 'game.json',
+        'unknown.html': 'game01.json'
+    };
+    
+    return dataMap[filename] || 'game.json';
+}
+
+/**
  * 加载游戏数据
  * 支持从外部JSON文件或内联数据加载
  */
 async function loadGameData() {
+    // 根据当前HTML文件名确定数据文件
+    const dataFile = getDataFileName();
+    const dataPath = `./data/${dataFile}`;
+    
     // 尝试从外部JSON文件加载
     try {
-        const response = await fetch('./data/game.json');
+        const response = await fetch(dataPath);
         if (response.ok) {
             const text = await response.text();
             const data = JSON.parse(text);
-            console.log('[游戏] 已从外部文件加载游戏数据');
+            console.log('[游戏] 已从外部文件加载游戏数据:', dataFile);
             console.log('[游戏] 场景数量:', Object.keys(data.scenes || {}).length);
             return data;
         }

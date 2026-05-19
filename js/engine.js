@@ -673,7 +673,9 @@ function createEngine(projectData) {
         applyResults(results) {
             if (!results) return;
             if (results.flags) results.flags.forEach(f => this.state.gameFlags[f] = true);
-            if (results.scene) this.switchScene(results.scene);
+            // 支持 scene 和 gotoScene 两种属性名
+            const targetScene = results.scene || results.gotoScene;
+            if (targetScene) this.switchScene(targetScene);
             else this.renderScene();
             if (results.message) this.addLog(this.processTextWithClues(results.message), "info");
             if (results.items) {
@@ -993,6 +995,24 @@ function createEngine(projectData) {
 
             if (sceneItem?.presentReactions?.[itemId]) {
                 const react = sceneItem.presentReactions[itemId];
+
+                if (sceneItem.conditionFlags?.[itemId]) {
+                    const condition = sceneItem.conditionFlags[itemId];
+                    if (condition.flag && this.state.gameFlags[condition.flag]) {
+                        this.addLog(this.processTextWithClues(condition.text), "info", {
+                            image: condition.image || sceneItem.image || null,
+                            audio: condition.audio || sceneItem.audio || null
+                        });
+                        if (condition.results) {
+                            this.applyResults(condition.results);
+                        } else if (condition.scene) {
+                            // 直接跳转场景（简化版）
+                            this.switchScene(condition.scene);
+                        }
+                        return true;
+                    }
+                }
+
                 this.addLog(this.processTextWithClues(react.text), "info", {
                     image: react.image || sceneItem.image || null,
                     audio: react.audio || sceneItem.audio || null

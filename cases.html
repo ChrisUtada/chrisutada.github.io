@@ -350,7 +350,7 @@
                 </div>
             </a>
 
-            <a class="case-card" data-case="A-002">
+            <a class="case-card" data-case="A-002" href="unknown.html?case=B-002&fresh=1">
                 <div class="card-header">
                     <div class="card-tags">
                         <span class="card-tag tag-type">区域</span>
@@ -487,8 +487,8 @@
         }
 
         // 进入案件
-        function enterCase(caseId, fresh = false) {
-            let url = `garden.html?case=${caseId}`;
+        function enterCase(caseId, fresh = false, baseUrl = 'garden.html') {
+            let url = `${baseUrl}?case=${caseId}`;
             if (fresh) url += '&fresh=1';
             window.location.href = url;
         }
@@ -529,7 +529,9 @@
                     // 点击卡片继续游戏
                     card.onclick = (e) => {
                         e.preventDefault();
-                        enterCase(caseId, false);
+                        const href = card.getAttribute('href') || 'garden.html';
+                        const baseUrl = href.split('?')[0];
+                        enterCase(caseId, false, baseUrl);
                     };
                     card.style.cursor = 'pointer';
                 } else {
@@ -543,7 +545,9 @@
                     // 点击卡片开始新游戏
                     card.onclick = (e) => {
                         e.preventDefault();
-                        enterCase(caseId, true);
+                        const href = card.getAttribute('href') || 'garden.html';
+                        const baseUrl = href.split('?')[0];
+                        enterCase(caseId, true, baseUrl);
                     };
                     card.style.cursor = 'pointer';
                 }

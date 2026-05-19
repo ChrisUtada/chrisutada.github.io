@@ -20,6 +20,15 @@ class GameplayManager {
     }
 
     /**
+     * 获取已注册的玩法处理器
+     * @param {string} type - 玩法类型
+     * @returns {Object} 玩法处理器
+     */
+    getHandler(type) {
+        return this.handlers[type];
+    }
+
+    /**
      * 执行玩法
      * @param {Object} engine - 引擎实例
      * @param {string} targetId - 目标ID
@@ -51,25 +60,34 @@ const gameplayManager = new GameplayManager();
 
 // ========================== 注册内置玩法 ==========================
 
-// 密码解锁玩法
+// 密码/组合解锁玩法（合并版）
 gameplayManager.register('password', {
     execute(engine, targetId, cmd) {
+        // 根据是否设置了digits来判断是"组合锁"还是"密码解锁"
+        const isComboLock = cmd.digits && cmd.digits > 0;
+        const digits = cmd.digits || null;
+        
         engine.showModal({
-            title: `加密锁定: ${escapeHtml(engine.state.data.items[targetId].label)}`,
-            body: "输入授权密钥进行逻辑解构：",
+            title: `${isComboLock ? '组合锁' : '加密锁定'}: ${escapeHtml(engine.state.data.items[targetId].label)}`,
+            body: isComboLock 
+                ? `输入${digits}位组合码：` 
+                : "输入授权密钥进行逻辑解构：",
             hasInput: true,
             confirm: (val) => {
                 if (val === cmd.value) {
-                    engine.addLog(`[密钥匹配成功]`, "sys");
+                    engine.addLog(`[${isComboLock ? '组合匹配成功' : '密钥匹配成功'}]`, "sys");
                     engine.closeModal();
                     if (cmd.onSuccess) engine.applyResults(cmd.onSuccess);
                 } else {
-                    engine.addLog("密钥校验失败：访问被拒绝。", "error");
+                    engine.addLog(isComboLock ? "组合错误，请重试。" : "密钥校验失败：访问被拒绝。", "error");
                 }
             }
         });
     }
 });
+
+// 兼容旧版comboLock（建议更新数据文件后移除）
+gameplayManager.register('comboLock', gameplayManager.getHandler('password'));
 
 // 文本显示玩法
 gameplayManager.register('text', {
@@ -220,7 +238,7 @@ gameplayManager.register('useItem', {
             engine.addLog(`[使用成功] ${engine.processTextWithClues(successMessage)}`, "sys");
             if (cmd.onSuccess) engine.applyResults(cmd.onSuccess);
         } else {
-            const failMessage = cmd.failMessage || `物品档案中没有"${requiredItem}"。`;
+            const failMessage = cmd.failMessage || `没有合适的物品。`;
             engine.addLog(`[使用失败] ${escapeHtml(failMessage)}`, "error");
         }
     }
