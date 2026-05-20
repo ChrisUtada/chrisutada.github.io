@@ -765,7 +765,7 @@
             return div.innerHTML;
         }
         
-        // 处理头像上传（转换为Base64）
+        // 处理头像上传（存储为路径）
         function handleAvatarUpload(input, charId) {
             const file = input.files[0];
             if (!file) return;
@@ -782,9 +782,17 @@
                         alert('数据异常，请刷新页面后重试');
                         return;
                     }
-                    projectData.chars[charId].avatar = e.target.result;
+                    // 生成文件名：avatar_角色ID_时间戳.扩展名
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    const fileName = `avatar_${charId}_${Date.now()}.${ext}`;
+                    const filePath = `images/${fileName}`;
+                    
+                    // 存储路径（图片文件需要手动复制到images文件夹）
+                    projectData.chars[charId].avatar = filePath;
                     renderCurrentTab();
-                    showToast('头像已上传（请保存后同步到游戏）');
+                    showToast('头像路径已设置（请将图片文件复制到images文件夹）');
+                    console.log('[编辑器] 头像路径:', filePath);
+                    console.log('[编辑器] 请手动将图片文件保存到项目的images文件夹');
                 } catch (err) {
                     console.error('头像上传后处理失败:', err);
                     alert('上传处理失败，请重试');
@@ -794,6 +802,14 @@
                 alert('文件读取失败，请重试');
             };
             reader.readAsDataURL(file);
+        }
+        
+        // 更新头像路径（手动输入）
+        function updateAvatarPath(charId, path) {
+            if (!projectData.chars[charId]) return;
+            projectData.chars[charId].avatar = path.trim();
+            renderCurrentTab();
+            showToast('头像路径已更新');
         }
         
         // 移除头像
@@ -1626,7 +1642,8 @@
                                 ${c.avatar ? `<img src="${escapeHtml(c.avatar)}" style="width:100%; height:100%; object-fit:cover;">` : '<span style="font-size:24px; color:#555;">+</span>'}
                             </div>
                             <input type="file" id="avatar-upload-${escapeHtml(id)}" accept="image/*" style="display:none" onchange="handleAvatarUpload(this, '${escapeHtml(id)}')">
-                            ${c.avatar ? `<button class="btn btn-danger btn-small" style="width:100%; margin-top:5px;" onclick="removeAvatar('${escapeHtml(id)}')">移除</button>` : ''}
+                            <input type="text" value="${escapeHtml(c.avatar || '')}" placeholder="images/xxx.png" style="width:70px; margin-top:5px; background:#111; border:1px solid #444; color:white; padding:4px; border-radius:4px; font-size:10px;" onchange="updateAvatarPath('${escapeHtml(id)}', this.value)">
+                            ${c.avatar ? `<button class="btn btn-danger btn-small" style="width:70px; margin-top:5px;" onclick="removeAvatar('${escapeHtml(id)}')">移除</button>` : ''}
                         </div>
                         <div><label>角色 ID</label><input type="text" value="${escapeHtml(id)}" onblur="renameKey('chars', '${escapeHtml(id)}', this.value)"></div>
                         <div><label>姓名</label><input type="text" class="char-name" value="${escapeHtml(c.name)}"></div>

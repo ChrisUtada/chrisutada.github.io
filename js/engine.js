@@ -894,66 +894,151 @@ function createEngine(projectData) {
 
         /**
          * 执行出示
-         * 格式：出示 [物品] [目标] 或 出示 [目标] [物品]
+         * 格式：出示 [物品A] [物品B]
+         * 支持双向匹配：出示 A B 和 出示 B A 效果相同
          */
         executePresent(content) {
-            // 解析输入：尝试两种格式
+            // 解析输入
             const parts = content.split(/\s+/);
             if (parts.length < 2) {
-                this.addLog(`指令格式错误。正确格式：出示 [物品] [目标]`, "error");
+                this.addLog(`指令格式错误。正确格式：出示 [物品A] [物品B]`, "error");
                 return;
             }
 
-            let itemName, targetName;
-            let itemObj = null, targetObj = null;
+            const name1 = parts[0];
+            const name2 = parts.slice(1).join(' ');
+
+            // 查找两个对象（物品或角色）
+            const obj1 = this.findPresentableObject(name1);
+            const obj2 = this.findPresentableObject(name2);
+
+            if (!obj1 && !obj2) {
+                this.addLog(`未找到 "${escapeHtml(name1)}" 和 "${escapeHtml(name2)}"。`, "error");
+                return;
+            }
+            if (!obj1) {
+                this.addLog(`未找到 "${escapeHtml(name1)}"。`, "error");
+                return;
+            }
+            if (!obj2) {
+                this.addLog(`未找到 "${escapeHtml(name2)}"。`, "error");
+                return;
+            }
+
+            // 检查玩家是否拥有物品（角色作为目标不需要在inventory中）
+            // obj1是物品的条件：不是角色，且在inventory中
+            const obj1IsItem = obj1.type !== 'char' && this.state.inventory.includes(obj1.id);
+            // obj2是物品的条件：不是角色，且在inventory中
+            const obj2IsItem = obj2.type !== 'char' && this.state.inventory.includes(obj2.id);
+
+            // 确定哪个是物品（玩家拥有的），哪个是目标
+            let itemObj, targetObj;
             let isTargetChar = false;
 
-            // 尝试格式1：出示 物品 目标
-            itemName = parts[0];
-            targetName = parts.slice(1).join(' ');
-            
-            // 查找物品
-            itemObj = this.findItem(itemName);
-            
-            if (!itemObj) {
-                // 尝试格式2：出示 目标 物品
-                itemName = parts[parts.length - 1];
-                targetName = parts.slice(0, -1).join(' ');
-                itemObj = this.findItem(itemName);
-            }
-
-            if (!itemObj) {
-                this.addLog(`未找到物品 "${escapeHtml(itemName)}"。`, "error");
-                return;
-            }
-
-            // 检查是否有这个物品
-            if (!this.state.foundClueIds.includes(itemObj.id) && 
-                !this.state.inventory.includes(itemObj.id)) {
-                this.addLog(`你还没有 "${escapeHtml(itemObj.data.label)}"。`, "error");
-                return;
-            }
-
-            // 查找目标（优先角色）
-            targetObj = this.findCharacter(targetName);
-            if (targetObj) {
-                isTargetChar = true;
+            if (obj1IsItem && !obj2IsItem) {
+                // obj1是物品，obj2是目标
+                itemObj = obj1;
+                targetObj = obj2;
+            } else if (obj2IsItem && !obj1IsItem) {
+                // obj2是物品，obj1是目标
+                itemObj = obj2;
+                targetObj = obj1;
+            } else if (obj1IsItem && obj2IsItem) {
+                // 玩家拥有两个物品，尝试两种顺序
+                const reaction1 = this.findPresentReaction(obj2, obj1.id);
+                if (reaction1) {
+                    itemObj = obj1;
+                    targetObj = obj2;
+                } else {
+                    const reaction2 = this.findPresentReaction(obj1, obj2.id);
+                    if (reaction2) {
+                        itemObj = obj2;
+                        targetObj = obj1;
+                    } else {
+                        this.addLog(`"${escapeHtml(obj1.data.label)}" 和 "${escapeHtml(obj2.data.label)}" 之间没有交互效果。`, "info");
+                        return;
+                    }
+                }
             } else {
-                // 查找场景物品
-                targetObj = this.findSceneItem(targetName);
+                // 两个都不是inventory中的物品
+                const obj1IsChar = obj1.type === 'char';
+                const obj2IsChar = obj2.type === 'char';
+                
+                if (obj1IsChar && obj2IsChar) {
+                    this.addLog(`不能对两个角色使用出示命令。`, "error");
+                } else if (obj1IsChar) {
+                    // obj1是角色，obj2不是物品也不是角色（说明obj2不存在或未找到）
+                    this.addLog(`未找到 "${escapeHtml(name2)}"。`, "error");
+                } else if (obj2IsChar) {
+                    // obj2是角色，obj1不是物品也不是角色
+                    this.addLog(`未找到 "${escapeHtml(name1)}"。`, "error");
+                } else {
+                    // 两个都不是角色也不在inventory中
+                    this.addLog(`你还没有 "${escapeHtml(obj1.data.label)}" 和 "${escapeHtml(obj2.data.label)}"。`, "error");
+                }
+                return;
             }
 
-            if (!targetObj) {
-                this.addLog(`未找到目标 "${escapeHtml(targetName)}"。`, "error");
-                return;
+            // 判断目标类型
+            if (targetObj.type === 'char') {
+                isTargetChar = true;
             }
 
             // 执行出示
             if (isTargetChar) {
-                this.executePresentToChar(itemObj, targetObj);
+                this.executePresentToChar(itemObj, { id: targetObj.id, data: targetObj.data });
             } else {
-                this.executePresentToSceneItem(itemObj, targetObj);
+                this.executePresentToSceneItem(itemObj, { id: targetObj.id, data: targetObj.data });
             }
+        },
+
+        /**
+         * 查找可出示的对象（物品或角色）
+         */
+        findPresentableObject(name) {
+            // 先查找物品
+            const item = this.findItem(name);
+            if (item) {
+                return { id: item.id, data: item.data, type: 'item' };
+            }
+
+            // 再查找角色
+            const char = this.findCharacter(name);
+            if (char) {
+                return { id: char.id, data: char.data, type: 'char' };
+            }
+
+            // 查找场景中的物品
+            const sceneItem = this.findSceneItem(name);
+            if (sceneItem) {
+                return { id: sceneItem.id, data: sceneItem.data, type: 'sceneItem' };
+            }
+
+            return null;
+        },
+
+        /**
+         * 查找出示反应
+         * 支持角色的 itemReactions/reactions 字段和场景物品的 presentReactions 字段
+         */
+        findPresentReaction(targetObj, itemId) {
+            const data = targetObj.data;
+            
+            // 角色使用 itemReactions 或 reactions
+            if (targetObj.type === 'char') {
+                if (data.itemReactions && data.itemReactions[itemId]) {
+                    return data.itemReactions[itemId];
+                } else if (data.reactions && data.reactions[itemId]) {
+                    return data.reactions[itemId];
+                }
+            }
+            
+            // 场景物品使用 presentReactions
+            if (data.presentReactions && data.presentReactions[itemId]) {
+                return data.presentReactions[itemId];
+            }
+            
+            return null;
         },
 
         /**
