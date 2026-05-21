@@ -1,187 +1,194 @@
-# T.E.C-OS v5.0.0 更新记录
+# T.E.C-OS v5.0.0
 
-## 📁 当前目录结构
+> **因果重构系统 | 异动区域锁定协议**
 
-```
-tecats.github.io/
-├── index.html              # ✅ 新网站入口（原 welcome.html）
-├── cases.html             # ✅ 案件档案库页面
-├── garden.html            # ✅ A-001 游戏页面
-├── unknown.html           # ✅ A-002 游戏页面
-├── README.md               # ✅ 本文档
-│
-├── css/                    # ✅ CSS目录
-│   └── main.css            # ✅ 抽取的样式文件
-│
-├── js/                     # ✅ JavaScript目录
-│   ├── config.js           # ✅ 配置常量
-│   ├── utils.js           # ✅ 工具函数
-│   ├── gameplay.js         # ✅ 玩法管理器
-│   ├── engine.js           # ✅ 核心引擎
-│   └── main.js             # ✅ 主入口
-│
-├── data/                   # ⚠️ 游戏数据目录
-│   ├── game.json           # ⚠️ A-001 游戏数据
-│   └── game01.json         # ⚠️ A-002 游戏数据
-│
-├── images/                  # ✅ 游戏图片目录
-│   ├── scenes/             # ✅ 场景图片
-│   ├── clues/              # ✅ 线索图片
-│   └── chars/              # ✅ 角色图片
-│
-├── server.js               # ✅ 本地服务器脚本
-│
-└── scripts/                # ✅ 辅助脚本目录
-    └── extract-data.js     # ✅ 数据提取脚本
-```
+一个基于 Web 的交互式叙事游戏引擎，支持多案件架构、线索收集、真名捕获等核心玩法。
 
-## 🖼️ 图片管理
+---
 
-### 图片分离架构
+## 📖 项目简介
 
-为了优化性能和可维护性，游戏图片不再嵌入JSON数据中，而是存储在独立的 `images/` 文件夹中。
+T.E.C-OS（Tactical Evidence Collection - Operating System）是一款沉浸式探案解谜游戏的运行时系统。玩家扮演调查员，通过指令交互、线索出示、矩阵归因等方式揭示真相，完成对"真名"的捕获。
 
-**JSON数据格式**：
-```json
-{
-  "scenes": {
-    "S_ENTRANCE": {
-      "title": "入口",
-      "image": "images/scenes/entrance.png",
-      "content": "..."
-    }
-  },
-  "clues": {
-    "CLUE_001": {
-      "name": "神秘钥匙",
-      "image": "images/clues/key.png"
-    }
-  }
-}
-```
+### 核心特性
 
-### 目录结构建议
+- 🎮 **指令驱动交互**：使用自然语言命令与游戏世界互动
+- 🔍 **线索收集系统**：探索场景、发现隐藏线索
+- 🧩 **矩阵归因玩法**：将线索按五感类型归类，解锁结局
+- 🎭 **多案件架构**：支持独立案件页面和存档隔离
+- 🖼️ **图片外置优化**：头像和场景图片独立存储，JSON 数据压缩率达 99.4%
+- 💾 **本地存档**：基于 localStorage 的案件进度保存
 
-```
-images/
-├── scenes/
-│   ├── entrance.png
-│   ├── corridor.png
-│   └── ...
-├── clues/
-│   ├── key.png
-│   ├── note.png
-│   └── ...
-└── chars/
-    ├── character_1.png
-    └── ...
-```
+---
 
-### 优势
+## 🚀 快速开始
 
-| 方面 | 内嵌Base64 | 独立图片文件 |
-|------|-----------|-------------|
-| JSON文件大小 | 很大 | 小很多 |
-| 浏览器缓存 | ❌ 无效 | ✅ 可独立缓存 |
-| 按需加载 | ❌ 一次性加载 | ✅ 可按需加载 |
-| 可维护性 | ❌ 难以管理 | ✅ 易于管理 |
-| CDN支持 | ❌ 不支持 | ✅ 可使用CDN |
+### 环境要求
 
-### 编辑工具使用
+- 现代浏览器（Chrome、Firefox、Edge 等）
+- 本地 HTTP 服务器（用于开发调试）
 
-在剧情编辑工具中配置图片：
-1. 将图片文件放入 `images/` 文件夹
-2. 在编辑工具中填写图片路径（如 `images/scenes/entrance.png`）
-3. 保存后导出JSON
+### 启动方式
 
-## 🚀 使用方法
-
-### 快速启动
-
-1. 启动本地服务器：
-```bash
-node server.js
-```
-
-2. 访问：`http://127.0.0.1:3000/index.html`
-
-### 游戏流程
-
-```
-index.html (欢迎页)
-  ↓
-cases.html (案件档案库 - 选择案件)
-  ↓
-garden.html (游戏页面 - A-001)
-```
-
-### 多案件架构
-
-每个案件都是独立的 HTML 页面，通过 `caseId` 参数区分存档：
-- `A-001` → garden.html
-- `A-002` → （待创建）
-- 存档键格式：`causal_os_case_{caseId}`
-
-### 启动本地服务器
+#### 方法一：Node.js 服务器（推荐）
 
 ```bash
-# Node.js (推荐)
+# 进入项目目录
+cd /workspace
+
+# 启动服务器
 node server.js
 
+# 访问游戏
+# 打开浏览器访问 http://127.0.0.1:3000/index.html
+```
+
+#### 方法二：Python 内置服务器
+
+```bash
 # Python 3
 python -m http.server 3000
 
-# PHP
+# 访问 http://localhost:3000/index.html
+```
+
+#### 方法三：PHP 内置服务器
+
+```bash
 php -S localhost:3000
+
+# 访问 http://localhost:3000/index.html
 ```
 
-然后访问 `http://localhost:3000/index.html`
+---
 
-## 📝 手动提取命令 (PowerShell)
+## 📁 项目结构
 
-```powershell
-# 复制以下代码到 PowerShell
-
-$html = Get-Content "index.html" -Raw -Encoding UTF8
-$start = $html.IndexOf("const initialProjectData = {")
-$end = $html.LastIndexOf("};")
-$start = $start + "const initialProjectData = ".Length - 1
-$data = $html.Substring($start, $end - $start + 1)
-$data = $data -replace '\/\*[\s\S]*?\*\/', ''
-$data = $data -replace '\/\/.*$', ''
-$data = $data.Trim()
-$data = '{' + $data
-Set-Content "data\game.json" -Value $data -Encoding UTF8
-Write-Host "完成！"
+```
+/workspace/
+├── index.html                 # 网站入口（欢迎页）
+├── cases.html                 # 案件档案库页面
+├── garden.html                # A-001 案件游戏页面
+├── unknown.html               # A-002 案件游戏页面
+├── 剧情编辑工具 ver2.0.html   # 可视化剧情编辑器
+│
+├── css/
+│   └── main.css               # 全局样式表
+│
+├── js/
+│   ├── config.js              # 配置常量（版本号、颜色、延迟等）
+│   ├── utils.js               # 工具函数（HTML 转义、正则处理等）
+│   ├── gameplay.js            # 玩法管理器（密码锁、矩阵等）
+│   ├── engine.js              # 核心引擎（状态管理、指令解析）
+│   └── main.js                # 主入口初始化
+│
+├── data/
+│   ├── game.json              # A-001 案件数据（场景、角色、线索等）
+│   └── game01.json            # A-002 案件数据
+│
+├── images/
+│   ├── avatar_CHARS_JS.png    # 角色头像：槿杉
+│   ├── avatar_CHARS_TEC.png   # 角色头像：TEC
+│   ├── avatar_CHARS_luhengs.png # 角色头像：陆珅松
+│   └── avatar_CHARS_zs.png    # 角色头像：助手
+│
+├── scripts/
+│   ├── extract-data.js        # 数据提取脚本
+│   └── extract-avatars.js     # 头像提取脚本
+│
+├── 游戏数据总览.md             # 游戏数据文档
+└── README.md                  # 本文档
 ```
 
-## 🎯 模块化优势
+---
 
-| 原始 (index.html) | 模块化 (index.modular.html) |
-|-------------------|---------------------------|
-| ~10 MB 单文件 | CSS/JS 分开加载 |
-| 修改需搜索整个文件 | 模块化编辑 |
-| 无法共享数据 | JSON 数据可被多个页面使用 |
-| 难以自动化构建 | 支持构建工具集成 |
+## 🎮 游戏玩法
 
-## 🔧 扩展游戏内容
+### 基础指令
+
+| 指令格式 | 说明 | 示例 |
+|---------|------|------|
+| `查询 <对象>` | 查看对象信息 | `查询 真名` |
+| `捕获 <线索>` | 收集线索到矩阵 | `捕获 初级调查员证` |
+| `出示 <物品> <目标>` | 向目标出示物品 | `出示 手电筒 黑影` |
+| `前往 <地点>` | 移动到指定场景 | `前往 植物学家的花园` |
+| `查询 cmd` | 查看帮助信息 | `查询 cmd` |
+
+### 高级功能
+
+#### 双向出示支持
+```
+出示 手电筒 黑影   ✅
+出示 黑影 手电筒   ✅ （效果相同）
+```
+
+#### 矩阵归因
+将捕获的线索按五感类型（视觉、听觉、触觉、嗅觉、味觉）归类，完成归因后可解锁不同结局。
+
+#### 真名捕获
+通过线索组合揭示事件真相，完成真名捕获（True Capture）。
+
+---
+
+## 🛠️ 开发指南
+
+### 创建新案件
+
+#### 步骤 1：准备游戏数据
+
+使用**剧情编辑工具**（`剧情编辑工具 ver2.0.html`）：
+1. 在浏览器中打开编辑工具
+2. 读取现有 JSON 或从头创建
+3. 添加场景、角色、物品、线索、结局
+4. 导出为新的 JSON 文件（如 `data/game-a002.json`）
+
+#### 步骤 2：创建案件页面
+
+复制 `garden.html` 并重命名（如 `case-a002.html`），修改数据加载：
+
+```html
+<script type="module">
+import { Engine } from './js/engine.js';
+
+// 加载对应数据文件
+const data = await fetch('./data/game-a002.json').then(r => r.json());
+
+// 初始化引擎，指定案件 ID
+const game = new Engine(data, { caseId: 'A-002' });
+game.init();
+</script>
+```
+
+#### 步骤 3：更新案件档案库
+
+在 `cases.html` 中添加新案件入口：
+
+```html
+<div class="case-item" onclick="selectCase('A-002')">
+    <div class="case-id">A-002</div>
+    <div class="case-title">新案件名称</div>
+    <div class="case-status unlocked">已解密</div>
+</div>
+```
 
 ### 添加新场景
+
 在 `data/game.json` 的 `scenes` 对象中添加：
 
 ```json
 "SCENE_NEW": {
     "title": "场景名称",
-    "content": "场景内容 [item:ITEM_id]...",
+    "content": "场景描述内容 [item:ITEM_id][char:CHAR_id]...",
     "desc": "简短描述",
     "hiddenClue": {
-        "text": "隐藏线索 [clue:CLUE_id]",
+        "text": "隐藏线索文本 [clue:CLUE_id]",
         "ids": ["CLUE_id"]
     }
 }
 ```
 
 ### 添加新结局
+
 在 `data/game.json` 的 `endings` 数组中添加：
 
 ```json
@@ -194,189 +201,157 @@ Write-Host "完成！"
 }
 ```
 
-### 创建新案件
-
-#### 步骤1：准备数据
-```
-1. 使用剧情编辑工具读取现有的 data/game.json
-2. 修改或添加新的场景、物品、角色、线索、结局
-3. 导出为新的 JSON 文件（如 data/game-a002.json）
-```
-
-#### 步骤2：创建案件页面
-复制 `garden.html` 并重命名为 `case-a002.html`，修改数据加载部分：
-
-```html
-<script type="module">
-import { Engine } from './js/engine.js';
-
-// 修改数据路径
-const data = await fetch('./data/game-a002.json').then(r => r.json());
-
-// 修改案件ID
-const game = new Engine(data, { caseId: 'A-002' });
-</script>
-```
-
-#### 步骤3：更新案件档案库
-在 `cases.html` 中添加新案件入口：
-
-```html
-<div class="case-item" onclick="selectCase('A-002')">
-    <div class="case-id">A-002</div>
-    <div class="case-title">新案件名称</div>
-    <div class="case-status unlocked">已解密</div>
-</div>
-```
-
-#### 数据关联流程
-```
-剧情编辑工具 → 导出 JSON → data/game-a002.json → case-a002.html → cases.html
-```
-
-## 📋 版本信息
-
-- **游戏版本**: v5.1.0
-- **更新日期**: 2026年5月19日
-- **前版本**: v5.0.0
-- **重构日期**: 2026年5月11日
-
-## 🆕 v5.1.1 更新内容 (2026-05-20)
-
-### 图片存储优化
-
-#### 头像图片外置
-- ✅ 将角色头像从 Base64 内联存储改为外部文件路径存储
-- ✅ `game01.json` 文件体积从 ~10MB 压缩至 ~60KB（约 99.4% 压缩率）
-- ✅ 头像文件提取到 `images/` 文件夹（如 `avatar_CHARS_JS.png`）
-- ✅ 剧情编辑工具上传头像时自动生成路径引用
+### 图片资源管理
 
 #### 图片路径格式
+
 ```json
 {
-  "chars": {
-    "CHARS_JS": {
-      "name": "角色名",
-      "avatar": "images/avatar_CHARS_JS.png"
+    "chars": {
+        "CHARS_JS": {
+            "name": "槿杉",
+            "avatar": "images/avatar_CHARS_JS.png"
+        }
+    },
+    "scenes": {
+        "SCENE_START": {
+            "image": "images/scenes/start.png"
+        }
     }
-  }
 }
 ```
 
-### 出示命令优化
+#### 提取头像脚本
 
-#### 双向匹配支持
-- ✅ `出示 手电筒 黑影` 和 `出示 黑影 手电筒` 效果相同
-- ✅ 系统自动判断哪个是物品（玩家拥有），哪个是目标
-- ✅ 支持对角色和场景物品使用
-
-#### 逻辑修复
-- ✅ 修复角色反应字段不一致问题（支持 `itemReactions`/`reactions` 字段）
-- ✅ 修复错误提示逻辑，正确区分"对象不存在"和"未拥有"
-
-#### 支持的交互类型
-| 物品类型 | 作为物品 | 作为目标 |
-|---------|---------|---------|
-| inventory 物品 | ✅ | ✅ |
-| 角色 (char) | ❌ | ✅ |
-| 场景物品 | ❌ | ✅ |
-
-## 🆕 v5.1.0 更新内容 (2026-05-19)
-
-### 玩法系统优化
-
-#### 密码/组合解锁合并
-- ✅ 将 `password`（密码解锁）和 `comboLock`（组合锁）合并为统一的 `password` 玩法
-- ✅ 通过 `digits` 参数自动区分显示样式：
-  - 不设置位数 → "加密锁定" + "输入授权密钥进行逻辑解构"
-  - 设置位数 → "组合锁" + "输入X位组合码"
-- ✅ 保留旧数据兼容性：`comboLock` 类型自动使用新逻辑
-- ✅ 编辑工具中整合为"密码/组合解锁"选项
-
-#### 条件触发跳转场景
-- ✅ 在物品的"出示反应"条件触发配置中添加了"跳转场景"功能
-- ✅ 支持在条件满足时自动跳转到指定场景
-- ✅ 与触发标记、特殊文本组合使用
-
-**条件触发配置示例**：
-```json
-{
-  "conditionFlags": {
-    "ITEM_KEY": {
-      "flag": "door_tie",
-      "text": "太亮了！！！",
-      "scene": "SCENE_SECRET"
-    }
-  }
-}
-```
-
-### 数据文件自动加载
-- ✅ 根据HTML文件名自动加载对应的游戏数据
-- ✅ `garden.html` → `data/game.json`
-- ✅ `unknown.html` → `data/game01.json`
-- ✅ 其他文件 → 默认加载 `data/game.json`
-
-### 服务器优化
-- ✅ 修复URL查询参数处理问题（?case=xxx&fresh=1）
-- ✅ 添加路径安全检查，防止路径遍历攻击
-
-### 案件链接优化
-- ✅ 修复案件档案库中的跳转问题
-- ✅ 每个案件可指定不同的HTML文件和数据
-
-## 🆕 v5.0.0 更新内容 (2026-05-13)
-
-### 文件结构重构
-| 原文件名 | 新文件名 | 说明 |
-|---------|---------|------|
-| welcome.html | index.html | 新网站入口 |
-| index.html | garden.html | A-001 游戏页面 |
-
-### 页面优化
-- ✅ 按钮中文化："CONNECT_CORE" → "接入因果核心"
-- ✅ 按钮样式统一：移除加粗、统一间距
-- ✅ 新增"返回档案库"按钮
-- ✅ 案件档案库：保留前2个案件，其他显示"档案未解密"
-- ✅ 标签颜色优化：初级标签改为绿色 (#669933)
-
-### 游戏内容优化
-- ✅ 真名捕获提示：`[ ! FATAL_ERROR: GHOST_SHELL_DECOUPLING ! ]` → `[ ! 因果已锚定：主体正在解离 ! ]`
-
-### 多案件架构
-- ✅ 支持多案件独立页面
-- ✅ 存档通过 `caseId` 区分，互不干扰
-- ✅ URL 参数：`?case=A-001&fresh=1`
-
-### 矩阵状态提示优化
-- ✅ 新增 `analyzeMatrixState()` 方法，实时分析矩阵状态
-- ✅ 线索放入/移除时自动显示进度提示
-- ✅ 显示各结局的匹配进度和未归因类型
-- ✅ 真名捕获始终显示在第一位
-- ✅ 支持重复类型提示（如"未归因类型：视觉、视觉"）
-- ✅ 文案优化："五感已完全归因" → "已完全归因"
-
-**提示格式示例**：
-```
-[逻辑节点同步完成]
-→ 真名捕获：2/5，未归因类型：触觉、嗅觉、味觉
-→ 因果链#1：1/3，未归因类型：视觉
-→ 因果链#2：2/5，未归因类型：听觉、触觉、嗅觉
-```
-
-## ⚠️ 已知问题
-
-1. **数据提取**: Base64 图片数据导致自动提取脚本失败，需要手动提取
-2. **CORS 限制**: 本地直接打开 `index.modular.html` 会因 ES Modules 跨域限制失败，需要本地服务器
-
-## 🔄 后续优化方向
-
-- [ ] 添加构建工具 (Vite)
-- [ ] 数据拆分为多个 JSON 文件
-- [ ] TypeScript 支持
-- [ ] 开发专用编辑器
-- [ ] 添加单元测试
+使用 `scripts/extract-avatars.js` 自动从 JSON 中提取 Base64 头像为独立文件。
 
 ---
 
-*重构完成！如有问题请提交 Issue。*
+## 📊 数据格式
+
+### 场景数据结构
+
+```json
+{
+    "scenes": {
+        "SCENE_ID": {
+            "title": "场景标题",
+            "content": "场景内容（支持[item:]、[char:]、[loc:]标签）",
+            "desc": "简短描述",
+            "hiddenClue": {
+                "text": "发现线索时的提示文本",
+                "ids": ["CLUE_ID"]
+            },
+            "canBePicked": true
+        }
+    }
+}
+```
+
+### 角色数据结构
+
+```json
+{
+    "chars": {
+        "CHAR_ID": {
+            "name": "角色名称",
+            "avatar": "images/avatar_CHAR_ID.png",
+            "dialogues": [...],
+            "itemReactions": {...}
+        }
+    }
+}
+```
+
+### 线索数据结构
+
+```json
+{
+    "clues": {
+        "CLUE_ID": {
+            "name": "线索名称",
+            "type": "visual|hearing|touch|smell|taste",
+            "description": "线索描述"
+        }
+    }
+}
+```
+
+---
+
+## 🔧 配置说明
+
+### config.js 核心配置
+
+```javascript
+{
+    VERSION: 'v5.0.0',           // 版本号
+    SAVE_KEY: 'causal_os_save',  // 存档键前缀
+    COLORS: {...},               // UI 颜色配置
+    DELAYS: {...},               // 动画延迟（毫秒）
+    LOG: {...},                  // 日志配置
+    MENU: {...},                 // 菜单配置
+    EDITOR_SYNC: {...}           // 编辑器同步配置
+}
+```
+
+### 存档机制
+
+- 存档键格式：`causal_os_case_{caseId}`
+- 每个案件独立存档，互不干扰
+- URL 参数支持：`?case=A-001&fresh=1`（强制新游戏）
+
+---
+
+## 🆕 版本历史
+
+### v5.1.1 (2026-05-20)
+- ✅ 头像图片外置，JSON 体积压缩 99.4%
+- ✅ 出示命令支持双向匹配
+- ✅ 修复角色反应字段兼容性问题
+
+### v5.1.0 (2026-05-19)
+- ✅ 密码/组合解锁玩法合并
+- ✅ 条件触发跳转场景功能
+- ✅ 数据文件自动加载（根据 HTML 文件名）
+- ✅ 服务器 URL 参数处理优化
+
+### v5.0.0 (2026-05-13)
+- ✅ 文件结构重构（welcome.html → index.html）
+- ✅ 多案件架构支持
+- ✅ 矩阵状态实时提示
+- ✅ UI 中文化优化
+
+---
+
+## ⚠️ 已知问题
+
+1. **数据提取**：Base64 图片数据导致自动提取脚本可能失败，建议手动提取
+2. **CORS 限制**：直接打开 HTML 文件会因 ES Modules 跨域限制失败，必须使用本地服务器
+
+---
+
+## 🔮 后续优化方向
+
+- [ ] 引入构建工具（Vite/Webpack）
+- [ ] 数据拆分为多个 JSON 文件按需加载
+- [ ] TypeScript 类型支持
+- [ ] 专用剧情编辑器 IDE
+- [ ] 单元测试覆盖
+- [ ] 移动端适配优化
+
+---
+
+## 📄 许可证
+
+本项目仅供学习和研究使用。
+
+---
+
+## 👥 贡献指南
+
+如有问题或建议，请提交 Issue 或 Pull Request。
+
+---
+
+*最后更新：2026 年 5 月 20 日 | 版本：v5.1.1*
