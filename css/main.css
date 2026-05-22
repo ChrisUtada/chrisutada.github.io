@@ -201,19 +201,20 @@ header {
 }
 
 .slot {
-    border: 1px solid #e8eaed;
+    border: none;
     padding: 12px;
     display: flex;
     flex-direction: column;
     min-height: 85px;
-    background: #fafbfc;
+    background: #ffffff;
     border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     transition: all 0.2s;
 }
 
 .slot:hover {
-    border-color: #d0d7de;
-    background: #ffffff;
+    background: #fafbfc;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 .slot-label {

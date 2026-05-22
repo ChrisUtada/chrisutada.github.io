@@ -1,20 +1,86 @@
-# T.E.C-OS v5.0.0 更新记录
+# T.E.C-OS v5.2.0 更新记录
+
+## 🆕 v5.2.0 更新内容 (2026-05-22)
+
+### 全面UI风格统一（浅色明亮主题）
+
+#### 游戏页面全新设计
+- ✅ **index.html** - 首页启动界面：白色卡片 + 蓝色按钮
+- ✅ **cases.html** - 案件档案库：卡片化设计，圆角阴影
+- ✅ **garden.html** - 主游戏界面：GitHub 风格浅色主题
+- ✅ **unknown.html** - 未知案件：统一浅色明亮设计
+- ✅ **css/main.css** - 主样式文件：全面重构
+
+#### 配色方案更新（GitHub 风格）
+| 元素 | 旧颜色 | 新颜色 |
+|------|--------|--------|
+| 背景 | #e0e0e0（灰色） | #f6f8fa（浅灰） |
+| 强调色 | #0066cc | #0969da（GitHub 蓝） |
+| 卡片 | 无边框 | 白色 + 圆角 + 阴影 |
+| 文字 | #333 | #24292f（深灰黑） |
+| 警告 | #cc3333 | #cf222e（红色） |
+
+#### 场景文字可读性优化
+- ✅ 字号增大：15px → 16px（PC端）/ 17px（移动端）
+- ✅ 行高增加：1.9 → 2.0（更易阅读）
+- ✅ 背景渐变优化：多段渐变，更平滑过渡
+- ✅ 文字阴影增强：0 1px 2px → 0 1px 3px + 透明度 0.95
+- ✅ 颜色加深：#1a1a1a → #111827
+
+#### 结局条目样式优化
+- ✅ 字号增大：13px → 15px
+- ✅ 添加淡蓝色背景：rgba(9, 105, 218, 0.04)
+- ✅ 左侧蓝色装饰线：border-left: 3px solid #0969da
+- ✅ 圆角：6px
+- ✅ 字重调整：font-weight: 500
+
+#### 面板标题对齐修复
+- ✅ 所有面板标题固定高度：48px
+- ✅ 按钮 line-height: 1（消除额外高度）
+- ✅ 圆角统一：8px（大卡片）
+- ✅ 阴影统一：0 1px 3px rgba(0, 0, 0, 0.08)
+
+#### 移动端适配优化
+- ✅ 场景文字独立优化（17px 字号）
+- ✅ 背景渐变方向调整（垂直渐变）
+- ✅ Tab 切换布局完善
+
+#### 代码清理
+- ✅ 移除无用的测试文件（generate-test-image.html）
+- ✅ 移除无用的脚本（generate-scene-image.js）
+- ✅ 更新 config.js 颜色配置为新配色方案
+- ✅ 修复 JS 中硬编码的 CSS 变量引用
+
+#### 剧情编辑工具
+- ✅ **保持暗色赛博朋克风格**（#00ff41 荧光绿）
+- ✅ 功能完整，无需调整
+
+### 技术改进
+- ✅ 固定高度 vs 最小高度：从 min-height 改为 height 确保严格对齐
+- ✅ CSS Grid 布局优化
+- ✅ Flexbox 垂直居中统一
+- ✅ 响应式设计完善
+
+---
+
+*(以下为历史版本记录)*
 
 ## 📁 当前目录结构
 
 ```
 tecats.github.io/
-├── index.html              # ✅ 新网站入口（原 welcome.html）
-├── cases.html             # ✅ 案件档案库页面
-├── garden.html            # ✅ A-001 游戏页面
-├── unknown.html           # ✅ A-002 游戏页面
+├── index.html              # ✅ 网站入口（浅色明亮主题）
+├── cases.html             # ✅ 案件档案库页面（浅色明亮主题）
+├── garden.html            # ✅ A-001 游戏页面（浅色明亮主题）
+├── unknown.html           # ✅ A-002 游戏页面（浅色明亮主题）
+├── 剧情编辑工具ver2.0.html  # ✅ 剧情编辑器（暗色赛博朋克风格）
 ├── README.md               # ✅ 本文档
 │
 ├── css/                    # ✅ CSS目录
-│   └── main.css            # ✅ 抽取的样式文件
+│   └── main.css            # ✅ 主样式文件（浅色明亮主题）
 │
 ├── js/                     # ✅ JavaScript目录
-│   ├── config.js           # ✅ 配置常量
+│   ├── config.js           # ✅ 配置常量（v5.2.0 配色方案）
 │   ├── utils.js           # ✅ 工具函数
 │   ├── gameplay.js         # ✅ 玩法管理器
 │   ├── engine.js           # ✅ 核心引擎
@@ -25,74 +91,11 @@ tecats.github.io/
 │   └── game01.json         # ⚠️ A-002 游戏数据
 │
 ├── images/                  # ✅ 游戏图片目录
-│   ├── scenes/             # ✅ 场景图片
-│   ├── clues/              # ✅ 线索图片
-│   └── chars/              # ✅ 角色图片
-│
-├── server.js               # ✅ 本地服务器脚本
+│   └── （场景、角色、线索图片）
 │
 └── scripts/                # ✅ 辅助脚本目录
     └── extract-data.js     # ✅ 数据提取脚本
 ```
-
-## 🖼️ 图片管理
-
-### 图片分离架构
-
-为了优化性能和可维护性，游戏图片不再嵌入JSON数据中，而是存储在独立的 `images/` 文件夹中。
-
-**JSON数据格式**：
-```json
-{
-  "scenes": {
-    "S_ENTRANCE": {
-      "title": "入口",
-      "image": "images/scenes/entrance.png",
-      "content": "..."
-    }
-  },
-  "clues": {
-    "CLUE_001": {
-      "name": "神秘钥匙",
-      "image": "images/clues/key.png"
-    }
-  }
-}
-```
-
-### 目录结构建议
-
-```
-images/
-├── scenes/
-│   ├── entrance.png
-│   ├── corridor.png
-│   └── ...
-├── clues/
-│   ├── key.png
-│   ├── note.png
-│   └── ...
-└── chars/
-    ├── character_1.png
-    └── ...
-```
-
-### 优势
-
-| 方面 | 内嵌Base64 | 独立图片文件 |
-|------|-----------|-------------|
-| JSON文件大小 | 很大 | 小很多 |
-| 浏览器缓存 | ❌ 无效 | ✅ 可独立缓存 |
-| 按需加载 | ❌ 一次性加载 | ✅ 可按需加载 |
-| 可维护性 | ❌ 难以管理 | ✅ 易于管理 |
-| CDN支持 | ❌ 不支持 | ✅ 可使用CDN |
-
-### 编辑工具使用
-
-在剧情编辑工具中配置图片：
-1. 将图片文件放入 `images/` 文件夹
-2. 在编辑工具中填写图片路径（如 `images/scenes/entrance.png`）
-3. 保存后导出JSON
 
 ## 🚀 使用方法
 
@@ -119,7 +122,7 @@ garden.html (游戏页面 - A-001)
 
 每个案件都是独立的 HTML 页面，通过 `caseId` 参数区分存档：
 - `A-001` → garden.html
-- `A-002` → （待创建）
+- `A-002` → unknown.html
 - 存档键格式：`causal_os_case_{caseId}`
 
 ### 启动本地服务器
@@ -136,24 +139,6 @@ php -S localhost:3000
 ```
 
 然后访问 `http://localhost:3000/index.html`
-
-## 📝 手动提取命令 (PowerShell)
-
-```powershell
-# 复制以下代码到 PowerShell
-
-$html = Get-Content "index.html" -Raw -Encoding UTF8
-$start = $html.IndexOf("const initialProjectData = {")
-$end = $html.LastIndexOf("};")
-$start = $start + "const initialProjectData = ".Length - 1
-$data = $html.Substring($start, $end - $start + 1)
-$data = $data -replace '\/\*[\s\S]*?\*\/', ''
-$data = $data -replace '\/\/.*$', ''
-$data = $data.Trim()
-$data = '{' + $data
-Set-Content "data\game.json" -Value $data -Encoding UTF8
-Write-Host "完成！"
-```
 
 ## 🎯 模块化优势
 
@@ -234,11 +219,11 @@ const game = new Engine(data, { caseId: 'A-002' });
 剧情编辑工具 → 导出 JSON → data/game-a002.json → case-a002.html → cases.html
 ```
 
-## 📋 版本信息
+##  版本信息
 
-- **游戏版本**: v5.1.0
-- **更新日期**: 2026年5月19日
-- **前版本**: v5.0.0
+- **游戏版本**: v5.2.0
+- **更新日期**: 2026年5月22日
+- **前一版本**: v5.1.1
 - **重构日期**: 2026年5月11日
 
 ## 🆕 v5.1.1 更新内容 (2026-05-20)
@@ -272,7 +257,7 @@ const game = new Engine(data, { caseId: 'A-002' });
 
 #### 逻辑修复
 - ✅ 修复角色反应字段不一致问题（支持 `itemReactions`/`reactions` 字段）
-- ✅ 修复错误提示逻辑，正确区分"对象不存在"和"未拥有"
+- ✅ 修复错误提示逻辑，正确区分“对象不存在”和“未拥有”
 
 #### 支持的交互类型
 | 物品类型 | 作为物品 | 作为目标 |
@@ -288,13 +273,13 @@ const game = new Engine(data, { caseId: 'A-002' });
 #### 密码/组合解锁合并
 - ✅ 将 `password`（密码解锁）和 `comboLock`（组合锁）合并为统一的 `password` 玩法
 - ✅ 通过 `digits` 参数自动区分显示样式：
-  - 不设置位数 → "加密锁定" + "输入授权密钥进行逻辑解构"
-  - 设置位数 → "组合锁" + "输入X位组合码"
+  - 不设置位数 → “加密锁定” + “输入授权密钥进行逻辑解构”
+  - 设置位数 → “组合锁” + “输入X位组合码”
 - ✅ 保留旧数据兼容性：`comboLock` 类型自动使用新逻辑
-- ✅ 编辑工具中整合为"密码/组合解锁"选项
+- ✅ 编辑工具中整合为“密码/组合解锁”选项
 
 #### 条件触发跳转场景
-- ✅ 在物品的"出示反应"条件触发配置中添加了"跳转场景"功能
+- ✅ 在物品的“出示反应”条件触发配置中添加了“跳转场景”功能
 - ✅ 支持在条件满足时自动跳转到指定场景
 - ✅ 与触发标记、特殊文本组合使用
 
@@ -334,10 +319,10 @@ const game = new Engine(data, { caseId: 'A-002' });
 | index.html | garden.html | A-001 游戏页面 |
 
 ### 页面优化
-- ✅ 按钮中文化："CONNECT_CORE" → "接入因果核心"
+- ✅ 按钮中文化：“CONNECT_CORE” → “接入因果核心”
 - ✅ 按钮样式统一：移除加粗、统一间距
-- ✅ 新增"返回档案库"按钮
-- ✅ 案件档案库：保留前2个案件，其他显示"档案未解密"
+- ✅ 新增“返回档案库”按钮
+- ✅ 案件档案库：保留前2个案件，其他显示“档案未解密”
 - ✅ 标签颜色优化：初级标签改为绿色 (#669933)
 
 ### 游戏内容优化
@@ -353,8 +338,8 @@ const game = new Engine(data, { caseId: 'A-002' });
 - ✅ 线索放入/移除时自动显示进度提示
 - ✅ 显示各结局的匹配进度和未归因类型
 - ✅ 真名捕获始终显示在第一位
-- ✅ 支持重复类型提示（如"未归因类型：视觉、视觉"）
-- ✅ 文案优化："五感已完全归因" → "已完全归因"
+- ✅ 支持重复类型提示（如“未归因类型：视觉、视觉”）
+- ✅ 文案优化：“五感已完全归因” → “已完全归因”
 
 **提示格式示例**：
 ```
@@ -380,3 +365,4 @@ const game = new Engine(data, { caseId: 'A-002' });
 ---
 
 *重构完成！如有问题请提交 Issue。*
+
