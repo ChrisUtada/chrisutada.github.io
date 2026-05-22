@@ -11,60 +11,64 @@
         body {
             margin: 0;
             padding: 0;
-            background: #e0e0e0;
+            background: #f6f8fa;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
         }
 
         /* 启动界面 */
         .boot-screen {
             text-align: center;
+            background: #ffffff;
+            padding: 60px 80px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .boot-title {
             font-size: 32px;
             font-weight: bold;
             letter-spacing: 8px;
-            color: #000;
+            color: #0969da;
             margin-bottom: 20px;
         }
 
         .boot-subtitle {
             font-size: 14px;
-            color: #666;
+            color: #656d76;
             letter-spacing: 3px;
             margin-bottom: 40px;
         }
 
         .boot-btn {
-            background: #c0c0c0;
-            border: 2px outset #ffffff;
-            color: #333333;
+            background: #0969da;
+            border: none;
+            color: #ffffff;
             padding: 14px 48px;
             font-family: inherit;
             font-size: 15px;
-            font-weight: 500;
+            font-weight: 600;
             letter-spacing: 2px;
             cursor: pointer;
             transition: all 0.2s;
-            border-radius: 4px;
+            border-radius: 6px;
         }
 
         .boot-btn:hover {
-            background: #d0d0d0;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            background: #0550ae;
+            box-shadow: 0 2px 8px rgba(9, 105, 218, 0.3);
         }
 
         .boot-btn:active {
-            border-style: inset;
+            transform: scale(0.98);
         }
 
         .boot-note {
             font-size: 12px;
-            color: #999;
+            color: #8b949e;
             margin-top: 30px;
             letter-spacing: 1px;
         }

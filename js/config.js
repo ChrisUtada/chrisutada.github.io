@@ -17,19 +17,19 @@ export const CONFIG = {
         return `causal_os_case_${caseId}`;
     },
 
-    // 颜色配置
+    // 颜色配置（浅色明亮主题）
     COLORS: {
-        GREEN: '#0066cc',
-        DARK: '#808080',
-        WARN: '#cc6600',
-        CRIT: '#cc3333',
-        TRUENAME: '#9966cc',
-        BG: '#e0e0e0',
-        CHAR: '#0066cc',
-        ITEM: '#669933',
-        LOC: '#9966cc',
-        CYAN: '#0066cc',
-        PINK: '#cc6699'
+        GREEN: '#0969da',       /* GitHub 蓝色 */
+        DARK: '#656d76',        /* 中性灰 */
+        WARN: '#bf8700',        /* 橙色 */
+        CRIT: '#cf222e',        /* 红色 */
+        TRUENAME: '#8250df',    /* 紫色 */
+        BG: '#f6f8fa',          /* 浅灰背景 */
+        CHAR: '#0969da',        /* 角色蓝 */
+        ITEM: '#1a7f37',        /* 物品绿 */
+        LOC: '#8250df',         /* 场景紫 */
+        CYAN: '#0891b2',        /* 青色 */
+        PINK: '#be185d'         /* 粉色 */
     },
 
     // 动画延迟配置（毫秒）

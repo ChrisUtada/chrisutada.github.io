@@ -39,31 +39,32 @@ function createEngine(projectData) {
         init() {
             window.Engine = this;
             this.state.data = projectData;
-            
-            // 从URL参数读取案件ID
+                    
+            // 从 URL参数读取案件ID
             this.state.caseId = window.__GAME_CASE_ID__ || 'default';
             this.state.fresh = window.__GAME_FRESH__ || false;
-
+        
             // 设置版本号显示
             const bootTitle = document.getElementById('boot-title');
             if (bootTitle) {
                 bootTitle.textContent = `T.E.C-OS [${CONFIG.VERSION.toUpperCase()}]`;
             }
-
+        
             this.initBroadcastChannel();
             this.initCommandLine();
             this.initContextMenu();
             this.initLogContainer();
-
+            this.initKeyboardShortcuts();
+        
             // 根据案件ID加载存档（仅读取，不自动恢复）
             const saveKey = this.state.caseId === 'default' 
                 ? CONFIG.SAVE_KEY 
                 : CONFIG.getCaseSaveKey(this.state.caseId);
             this.savedState = localStorage.getItem(saveKey);
-
+        
             // 显示启动界面按钮
             this.showBootButtons();
-
+        
             this.checkEditorUpdate();
         },
 
@@ -170,6 +171,20 @@ function createEngine(projectData) {
         },
 
         /**
+         * 初始化键盘快捷键
+         */
+        initKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // H 键切换纯观图模式（当焦点不在输入框时）
+                if ((e.key === 'h' || e.key === 'H') && 
+                    document.activeElement.tagName !== 'INPUT' &&
+                    document.activeElement.tagName !== 'TEXTAREA') {
+                    this.togglePureView();
+                }
+            });
+        },
+
+        /**
          * 初始化 BroadcastChannel
          */
         initBroadcastChannel() {
@@ -269,8 +284,7 @@ function createEngine(projectData) {
                 if (ending) {
                     const div = document.createElement('div');
                     div.id = `hist-${CSS.escape(ending.id)}`;
-                    div.style.color = CONFIG.COLORS.WARN;
-                    div.style.marginBottom = "8px";
+                    // 移除内联样式，使用 CSS 样式
                     div.innerHTML = `● <b>达成</b>：${escapeHtml(ending.name)}`;
                     history.appendChild(div);
                 }
@@ -287,6 +301,32 @@ function createEngine(projectData) {
             if (!scene) return;
 
             document.getElementById('loc-tag').innerText = `SCANNER // ${escapeHtml(scene.title)}`;
+            
+            // 处理场景背景图片
+            const bgArtwork = document.getElementById('sceneBgArtwork');
+            if (bgArtwork && scene.image) {
+                // 清除旧内容
+                bgArtwork.innerHTML = '';
+                
+                // 创建图片元素
+                const img = new Image();
+                img.alt = escapeHtml(scene.title);
+                img.onload = () => {
+                    bgArtwork.classList.add('loaded');
+                };
+                img.onerror = () => {
+                    console.warn(`[场景图片加载失败] ${scene.image}`);
+                    bgArtwork.classList.remove('loaded');
+                };
+                img.src = scene.image;
+                bgArtwork.appendChild(img);
+            } else if (bgArtwork) {
+                // 没有图片时，移除 loaded 类
+                bgArtwork.classList.remove('loaded');
+                bgArtwork.innerHTML = '';
+            }
+            
+            // 渲染场景文字内容
             const container = document.getElementById('text-scene');
             let rawText = scene.content;
 
@@ -1118,7 +1158,7 @@ function createEngine(projectData) {
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-body').innerHTML = this.processTextWithClues(body);
             const container = document.getElementById('modal-input-container');
-            container.innerHTML = hasInput ? `<input type="text" id="modal-val" style="width:100%; background:transparent; border:1px solid var(--os-green); color:var(--os-green); padding:10px; font-family:inherit;">` : "";
+            container.innerHTML = hasInput ? `<input type="text" id="modal-val" style="width:100%; background:transparent; border:1px solid #0969da; color:#0969da; padding:10px; font-family:inherit; border-radius:4px;">` : "";
             modal.style.display = "block";
             document.getElementById('modal-confirm').onclick = () => {
                 confirm(hasInput ? document.getElementById('modal-val').value : null);
@@ -1158,11 +1198,11 @@ function createEngine(projectData) {
 
             const container = document.getElementById('log-container');
             const colors = {
-                sys: CONFIG.COLORS.GREEN,
-                error: CONFIG.COLORS.CRIT,
-                cmd: CONFIG.COLORS.WARN,
-                info: "#333333",
-                hint: "#8b7355"
+                sys: "#0969da",
+                error: "#cf222e",
+                cmd: "#bf8700",
+                info: "#24292f",
+                hint: "#656d76"
             };
 
             const fragment = document.createDocumentFragment();
@@ -1396,8 +1436,7 @@ function createEngine(projectData) {
                     if (!document.getElementById(`hist-${CSS.escape(matched.id)}`)) {
                         const div = document.createElement('div');
                         div.id = `hist-${matched.id}`;
-                        div.style.color = CONFIG.COLORS.WARN;
-                        div.style.marginBottom = "8px";
+                        // 移除内联样式，使用 CSS 样式
                         div.innerHTML = `● <b>达成</b>：${escapeHtml(matched.name)}`;
                         history.appendChild(div);
                     }
@@ -1473,7 +1512,7 @@ function createEngine(projectData) {
 
             document.getElementById('story-container').style.opacity = '0.2';
             document.getElementById('status-line').innerText = "[ ! 因果已锚定：主体正在解离 ! ]";
-            document.getElementById('status-line').style.color = CONFIG.COLORS.CRIT;
+            document.getElementById('status-line').style.color = "#cf222e";
 
             setTimeout(() => {
                 document.getElementById('disconnect-notice').style.display = 'block';
@@ -1494,6 +1533,24 @@ function createEngine(projectData) {
                 btn.classList.toggle('active', isActive);
                 btn.setAttribute('aria-selected', isActive.toString());
             });
+        },
+
+        /**
+         * 切换纯观图模式 / 图文混合模式
+         */
+        togglePureView() {
+            const container = document.getElementById('sceneContainer');
+            const btn = document.querySelector('.btn-view-toggle');
+            
+            if (!container || !btn) return;
+            
+            if (container.classList.contains('pure-view-mode')) {
+                container.classList.remove('pure-view-mode');
+                btn.innerText = '[ EYE_LOOK // 独占视域 ]';
+            } else {
+                container.classList.add('pure-view-mode');
+                btn.innerText = '[ TEXT_ON // 恢复文本 ]';
+            }
         }
     };
 

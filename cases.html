@@ -9,11 +9,12 @@
         * { box-sizing: border-box; }
 
         body {
-            background: #e0e0e0;
+            background: #f6f8fa;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
         }
 
         /* ===== 顶部标题区 ===== */
@@ -22,7 +23,8 @@
             padding: 20px 40px 16px;
             text-align: center;
             background: #ffffff;
-            border-bottom: 1px solid #d0d0d0;
+            border-bottom: 1px solid #e8eaed;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
         }
 
         .page-title-wrapper {
@@ -41,41 +43,42 @@
 
         .page-title {
             font-size: 20px;
-            font-weight: bold;
+            font-weight: 600;
             letter-spacing: 4px;
-            color: #000;
+            color: #0969da;
         }
 
         .back-link {
             display: flex;
             align-items: center;
             gap: 6px;
-            color: #555;
+            color: #0969da;
             text-decoration: none;
             padding: 8px 16px;
             margin-left: auto;
             transition: all 0.2s;
             flex-shrink: 0;
             font-size: 13px;
-            font-weight: bold;
+            font-weight: 600;
             letter-spacing: 1px;
-            background: #f0f0f0;
-            border: 2px outset #ffffff;
+            background: transparent;
+            border: 1px solid #0969da;
+            border-radius: 6px;
         }
 
         .back-link:hover {
-            color: #0066cc;
-            border-color: #0066cc;
-            box-shadow: 0 2px 8px rgba(0, 102, 204, 0.2);
+            background: #0969da;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(9, 105, 218, 0.3);
         }
 
         .back-link:active {
-            border-style: inset;
+            transform: scale(0.98);
         }
 
         .page-subtitle {
             font-size: 12px;
-            color: #888;
+            color: #656d76;
             letter-spacing: 2px;
         }
 
@@ -98,31 +101,34 @@
 
         /* 滚动条样式 */
         .page-content::-webkit-scrollbar { height: 8px; }
-        .page-content::-webkit-scrollbar-track { background: transparent; }
-        .page-content::-webkit-scrollbar-thumb { background: #c0c0c0; border-radius: 4px; }
-        .page-content::-webkit-scrollbar-thumb:hover { background: #a0a0a0; }
+        .page-content::-webkit-scrollbar-track { background: #f6f8fa; border-radius: 4px; }
+        .page-content::-webkit-scrollbar-thumb { background: #c8d1da; border-radius: 4px; }
+        .page-content::-webkit-scrollbar-thumb:hover { background: #a8b6c6; }
 
         /* ===== 案件卡片 ===== */
         .case-card {
             width: 240px;
             min-width: 240px;
             background: #ffffff;
-            border: 2px solid #c0c0c0;
+            border: 1px solid #e8eaed;
+            border-radius: 8px;
             padding: 0;
             cursor: pointer;
             text-decoration: none;
             color: inherit;
             transition: all 0.2s;
             flex-shrink: 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
         }
 
         .case-card:hover {
-            border-color: #888;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #d0d7de;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
         }
 
         .case-card:active {
-            box-shadow: none;
+            transform: translateY(0);
         }
 
         /* 卡片顶部标签区 */
@@ -131,8 +137,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #f8f8f8;
-            border-bottom: 1px solid #e0e0e0;
+            background: #f6f8fa;
+            border-bottom: 1px solid #e8eaed;
+            border-radius: 8px 8px 0 0;
         }
 
         .card-tags {
@@ -144,17 +151,18 @@
             font-size: 9px;
             padding: 3px 8px;
             color: #fff;
-            font-weight: bold;
+            font-weight: 600;
             letter-spacing: 1px;
+            border-radius: 4px;
         }
 
-        .tag-type { background: #555; }
-        .tag-level-1 { background: #669933; }
-        .tag-level-2 { background: #0066cc; }
-        .tag-level-3 { background: #cc3333; }
+        .tag-type { background: #656d76; }
+        .tag-level-1 { background: #1a7f37; }
+        .tag-level-2 { background: #0969da; }
+        .tag-level-3 { background: #cf222e; }
 
         .card-warning {
-            color: #cc3333;
+            color: #cf222e;
             font-size: 14px;
         }
 
@@ -166,15 +174,15 @@
 
         .card-name {
             font-size: 15px;
-            font-weight: bold;
-            color: #000;
+            font-weight: 600;
+            color: #24292f;
             margin-bottom: 12px;
             line-height: 1.4;
         }
 
         .card-desc {
             font-size: 11px;
-            color: #999;
+            color: #656d76;
             line-height: 1.6;
         }
 
@@ -184,18 +192,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #f8f8f8;
-            border-top: 1px solid #e0e0e0;
+            background: #f6f8fa;
+            border-top: 1px solid #e8eaed;
+            border-radius: 0 0 8px 8px;
         }
 
         .card-id {
             font-size: 11px;
-            color: #888;
-            font-weight: bold;
+            color: #656d76;
+            font-weight: 600;
         }
 
         .card-arrow {
-            color: #0066cc;
+            color: #0969da;
             font-size: 12px;
             letter-spacing: 1px;
         }
@@ -204,17 +213,18 @@
         .save-status {
             font-size: 9px;
             padding: 3px 8px;
-            font-weight: bold;
+            font-weight: 600;
             letter-spacing: 1px;
+            border-radius: 4px;
         }
 
         .save-status.saved {
-            background: #669933;
+            background: #1a7f37;
             color: #fff;
         }
 
         .save-status.unsaved {
-            background: #888;
+            background: #656d76;
             color: #fff;
         }
 
@@ -223,35 +233,37 @@
             display: inline-block;
             padding: 6px 12px;
             font-size: 11px;
-            font-weight: bold;
+            font-weight: 600;
             letter-spacing: 1px;
             cursor: pointer;
-            transition: all 0.15s;
-            border: 2px solid #c0c0c0;
+            transition: all 0.2s;
+            border: 1px solid #e8eaed;
             background: #ffffff;
-            color: #000;
+            color: #24292f;
             margin: 4px 2px 0;
             font-family: inherit;
+            border-radius: 6px;
         }
 
         .card-btn:hover {
-            border-color: #888;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-color: #d0d7de;
+            background: #f6f8fa;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
         }
 
         .card-btn:active {
-            border-style: inset;
-            box-shadow: none;
+            transform: scale(0.98);
         }
 
         .card-btn-continue {
-            background: #0066cc;
+            background: #0969da;
             color: #fff;
-            border-color: #0055aa;
+            border-color: #0969da;
         }
 
         .card-btn-continue:hover {
-            background: #0055aa;
+            background: #0550ae;
+            border-color: #0550ae;
         }
 
         /* ===== 移动端适配 ===== */
