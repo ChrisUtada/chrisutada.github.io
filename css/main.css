@@ -979,10 +979,6 @@ header {
         border-right: none;
     }
 
-    .mobile-tab-btn:last-child {
-        border-right: none;
-    }
-
     .mobile-tab-btn.active {
         background: #0969da;
         border: none;

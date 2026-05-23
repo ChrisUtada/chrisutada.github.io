@@ -142,27 +142,6 @@ gameplayManager.register('talk', {
     }
 });
 
-// 组合锁玩法
-gameplayManager.register('comboLock', {
-    execute(engine, targetId, cmd) {
-        const digits = cmd.digits || 4;
-        engine.showModal({
-            title: `组合锁: ${escapeHtml(engine.state.data.items[targetId].label)}`,
-            body: `输入${digits}位组合码：`,
-            hasInput: true,
-            confirm: (val) => {
-                if (val === cmd.value) {
-                    engine.addLog(`[组合匹配成功]`, "sys");
-                    engine.closeModal();
-                    if (cmd.onSuccess) engine.applyResults(cmd.onSuccess);
-                } else {
-                    engine.addLog(`组合错误，请重试。`, "error");
-                }
-            }
-        });
-    }
-});
-
 // 选择分支玩法
 gameplayManager.register('choice', {
     execute(engine, targetId, cmd) {

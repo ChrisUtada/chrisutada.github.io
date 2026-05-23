@@ -7,8 +7,7 @@
 #### 游戏页面全新设计
 - ✅ **index.html** - 首页启动界面：白色卡片 + 蓝色按钮
 - ✅ **cases.html** - 案件档案库：卡片化设计，圆角阴影
-- ✅ **garden.html** - 主游戏界面：GitHub 风格浅色主题
-- ✅ **unknown.html** - 未知案件：统一浅色明亮设计
+- ✅ **game.html** - 统一游戏界面（通过 ?case=A-001 / A-002 区分案件）
 - ✅ **css/main.css** - 主样式文件：全面重构
 
 #### 配色方案更新（GitHub 风格）
@@ -71,8 +70,7 @@
 tecats.github.io/
 ├── index.html              # ✅ 网站入口（浅色明亮主题）
 ├── cases.html             # ✅ 案件档案库页面（浅色明亮主题）
-├── garden.html            # ✅ A-001 游戏页面（浅色明亮主题）
-├── unknown.html           # ✅ A-002 游戏页面（浅色明亮主题）
+├── game.html              # ✅ 统一游戏页面（通过 URL 参数区分案件）
 ├── 剧情编辑工具ver2.0.html  # ✅ 剧情编辑器（暗色赛博朋克风格）
 ├── README.md               # ✅ 本文档
 │
@@ -87,14 +85,11 @@ tecats.github.io/
 │   └── main.js             # ✅ 主入口
 │
 ├── data/                   # ⚠️ 游戏数据目录
-│   ├── game.json           # ⚠️ A-001 游戏数据
-│   └── game01.json         # ⚠️ A-002 游戏数据
+│   ├── game-a001.json     # ⚠️ A-001 游戏数据
+│   └── game-a002.json     # ⚠️ A-002 游戏数据
 │
 ├── images/                  # ✅ 游戏图片目录
 │   └── （场景、角色、线索图片）
-│
-└── scripts/                # ✅ 辅助脚本目录
-    └── extract-data.js     # ✅ 数据提取脚本
 ```
 
 ## 🚀 使用方法
@@ -103,10 +98,14 @@ tecats.github.io/
 
 1. 启动本地服务器：
 ```bash
-node server.js
+# Python 3
+python -m http.server 3000
+
+# Node.js (npx)
+npx serve -p 3000
 ```
 
-2. 访问：`http://127.0.0.1:3000/index.html`
+2. 访问：`http://localhost:3000/index.html`
 
 ### 游戏流程
 
@@ -115,44 +114,20 @@ index.html (欢迎页)
   ↓
 cases.html (案件档案库 - 选择案件)
   ↓
-garden.html (游戏页面 - A-001)
+game.html?case=A-001 (游戏页面 - A-001)
 ```
 
 ### 多案件架构
 
-每个案件都是独立的 HTML 页面，通过 `caseId` 参数区分存档：
-- `A-001` → garden.html
-- `A-002` → unknown.html
+统一游戏页面 `game.html` 通过 URL 参数 `case` 区分案件：
+- `A-001` → game.html?case=A-001，数据文件 `data/game-a001.json`
+- `A-002` → game.html?case=A-002，数据文件 `data/game-a002.json`
 - 存档键格式：`causal_os_case_{caseId}`
-
-### 启动本地服务器
-
-```bash
-# Node.js (推荐)
-node server.js
-
-# Python 3
-python -m http.server 3000
-
-# PHP
-php -S localhost:3000
-```
-
-然后访问 `http://localhost:3000/index.html`
-
-## 🎯 模块化优势
-
-| 原始 (index.html) | 模块化 (index.modular.html) |
-|-------------------|---------------------------|
-| ~10 MB 单文件 | CSS/JS 分开加载 |
-| 修改需搜索整个文件 | 模块化编辑 |
-| 无法共享数据 | JSON 数据可被多个页面使用 |
-| 难以自动化构建 | 支持构建工具集成 |
 
 ## 🔧 扩展游戏内容
 
 ### 添加新场景
-在 `data/game.json` 的 `scenes` 对象中添加：
+在 `data/game-a001.json` 的 `scenes` 对象中添加：
 
 ```json
 "SCENE_NEW": {
@@ -167,7 +142,7 @@ php -S localhost:3000
 ```
 
 ### 添加新结局
-在 `data/game.json` 的 `endings` 数组中添加：
+在 `data/game-a001.json` 的 `endings` 数组中添加：
 
 ```json
 {
@@ -181,43 +156,64 @@ php -S localhost:3000
 
 ### 创建新案件
 
-#### 步骤1：准备数据
+增加一个新案件只需改动 3 个文件。
+
+#### 步骤1：准备数据文件 `data/game-a003.json`
+
+在 `data/` 目录下新建 JSON 文件。建议先用剧情编辑器打开现有案件（如 `game-a001.json`），修改内容后用「导出 JSON 数据」保存为新文件。
+
 ```
-1. 使用剧情编辑工具读取现有的 data/game.json
-2. 修改或添加新的场景、物品、角色、线索、结局
-3. 导出为新的 JSON 文件（如 data/game-a002.json）
+data/
+  game-a001.json   ← A-001
+  game-a002.json   ← A-002
+  game-a003.json   ← A-003（新增）
 ```
 
-#### 步骤2：创建案件页面
-复制 `garden.html` 并重命名为 `case-a002.html`，修改数据加载部分：
+#### 步骤2：注册数据路由 `js/main.js`
+
+在 `getDataFileName()` 的 `dataMap` 中添加一行映射：
+
+```javascript
+const dataMap = {
+    'A-001': 'game-a001.json',
+    'A-002': 'game-a002.json',
+    'A-003': 'game-a003.json',   // ← 新增
+};
+```
+
+#### 步骤3：案件档案库添加入口 `cases.html`
+
+把其中一个锁定卡片替换为可用的案件卡片：
 
 ```html
-<script type="module">
-import { Engine } from './js/engine.js';
-
-// 修改数据路径
-const data = await fetch('./data/game-a002.json').then(r => r.json());
-
-// 修改案件ID
-const game = new Engine(data, { caseId: 'A-002' });
-</script>
+<a class="case-card" data-case="A-003" href="game.html?case=A-003&fresh=1">
+    <div class="card-header">
+        <div class="card-tags">
+            <span class="card-tag tag-type">区域</span>
+            <span class="card-tag tag-level-1">初级</span>
+        </div>
+        <span class="card-warning">▼</span>
+    </div>
+    <div class="card-body">
+        <div class="card-name">新案件名称</div>
+        <div class="card-desc">异动区域</div>
+    </div>
+    <div class="card-footer">
+        <span class="card-id">A-003</span>
+        <span class="card-arrow">进入 ▶</span>
+    </div>
+</a>
 ```
 
-#### 步骤3：更新案件档案库
-在 `cases.html` 中添加新案件入口：
+#### 总结
 
-```html
-<div class="case-item" onclick="selectCase('A-002')">
-    <div class="case-id">A-002</div>
-    <div class="case-title">新案件名称</div>
-    <div class="case-status unlocked">已解密</div>
-</div>
-```
+| 文件 | 改动 |
+|------|------|
+| `data/game-a003.json` | 新建 JSON 数据文件 |
+| `js/main.js` | +1 行注册路由 |
+| `cases.html` | 替换一个锁定卡片 |
 
-#### 数据关联流程
-```
-剧情编辑工具 → 导出 JSON → data/game-a002.json → case-a002.html → cases.html
-```
+核心入口统一为 `game.html?case=A-003`，存档自动使用 key `causal_os_case_A-003`，无需额外配置。
 
 ##  版本信息
 
@@ -232,7 +228,7 @@ const game = new Engine(data, { caseId: 'A-002' });
 
 #### 头像图片外置
 - ✅ 将角色头像从 Base64 内联存储改为外部文件路径存储
-- ✅ `game01.json` 文件体积从 ~10MB 压缩至 ~60KB（约 99.4% 压缩率）
+- ✅ `game-a002.json` 文件体积从 ~10MB 压缩至 ~60KB（约 99.4% 压缩率）
 - ✅ 头像文件提取到 `images/` 文件夹（如 `avatar_CHARS_JS.png`）
 - ✅ 剧情编辑工具上传头像时自动生成路径引用
 
@@ -297,41 +293,37 @@ const game = new Engine(data, { caseId: 'A-002' });
 ```
 
 ### 数据文件自动加载
-- ✅ 根据HTML文件名自动加载对应的游戏数据
-- ✅ `garden.html` → `data/game.json`
-- ✅ `unknown.html` → `data/game01.json`
-- ✅ 其他文件 → 默认加载 `data/game.json`
+- ✅ 根据 URL 参数 `case` 自动加载对应的游戏数据
+- ✅ `?case=A-001` → `data/game-a001.json`
+- ✅ `?case=A-002` → `data/game-a002.json`
+- ✅ 默认 → `data/game-a001.json`
 
 ### 服务器优化
 - ✅ 修复URL查询参数处理问题（?case=xxx&fresh=1）
-- ✅ 添加路径安全检查，防止路径遍历攻击
 
 ### 案件链接优化
 - ✅ 修复案件档案库中的跳转问题
-- ✅ 每个案件可指定不同的HTML文件和数据
 
 ## 🆕 v5.0.0 更新内容 (2026-05-13)
 
 ### 文件结构重构
 | 原文件名 | 新文件名 | 说明 |
 |---------|---------|------|
-| welcome.html | index.html | 新网站入口 |
-| index.html | garden.html | A-001 游戏页面 |
+| welcome.html | index.html | 欢迎页改为首页入口 |
+| index.html（旧） | game.html | 游戏逻辑抽取为统一游戏页面，支持 ?case= 多案件 |
 
 ### 页面优化
 - ✅ 按钮中文化：“CONNECT_CORE” → “接入因果核心”
 - ✅ 按钮样式统一：移除加粗、统一间距
 - ✅ 新增“返回档案库”按钮
 - ✅ 案件档案库：保留前2个案件，其他显示“档案未解密”
-- ✅ 标签颜色优化：初级标签改为绿色 (#669933)
 
 ### 游戏内容优化
 - ✅ 真名捕获提示：`[ ! FATAL_ERROR: GHOST_SHELL_DECOUPLING ! ]` → `[ ! 因果已锚定：主体正在解离 ! ]`
 
 ### 多案件架构
-- ✅ 支持多案件独立页面
+- ✅ 统一游戏页面 `game.html`，通过 URL 参数 `?case=` 区分案件
 - ✅ 存档通过 `caseId` 区分，互不干扰
-- ✅ URL 参数：`?case=A-001&fresh=1`
 
 ### 矩阵状态提示优化
 - ✅ 新增 `analyzeMatrixState()` 方法，实时分析矩阵状态
@@ -348,19 +340,6 @@ const game = new Engine(data, { caseId: 'A-002' });
 → 因果链#1：1/3，未归因类型：视觉
 → 因果链#2：2/5，未归因类型：听觉、触觉、嗅觉
 ```
-
-## ⚠️ 已知问题
-
-1. **数据提取**: Base64 图片数据导致自动提取脚本失败，需要手动提取
-2. **CORS 限制**: 本地直接打开 `index.modular.html` 会因 ES Modules 跨域限制失败，需要本地服务器
-
-## 🔄 后续优化方向
-
-- [ ] 添加构建工具 (Vite)
-- [ ] 数据拆分为多个 JSON 文件
-- [ ] TypeScript 支持
-- [ ] 开发专用编辑器
-- [ ] 添加单元测试
 
 ---
 

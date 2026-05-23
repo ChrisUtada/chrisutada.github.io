@@ -344,7 +344,7 @@
     <main class="page-content">
         <div class="cases-wrapper">
 
-            <a class="case-card" data-case="A-001" href="garden.html?case=A-001&fresh=1">
+            <a class="case-card" data-case="A-001" href="game.html?case=A-001&fresh=1">
                 <div class="card-header">
                     <div class="card-tags">
                         <span class="card-tag tag-type">区域</span>
@@ -362,7 +362,7 @@
                 </div>
             </a>
 
-            <a class="case-card" data-case="A-002" href="unknown.html?case=B-002&fresh=1">
+            <a class="case-card" data-case="A-002" href="game.html?case=A-002&fresh=1">
                 <div class="card-header">
                     <div class="card-tags">
                         <span class="card-tag tag-type">区域</span>
@@ -499,7 +499,7 @@
         }
 
         // 进入案件
-        function enterCase(caseId, fresh = false, baseUrl = 'garden.html') {
+        function enterCase(caseId, fresh = false, baseUrl = 'game.html') {
             let url = `${baseUrl}?case=${caseId}`;
             if (fresh) url += '&fresh=1';
             window.location.href = url;
@@ -541,7 +541,7 @@
                     // 点击卡片继续游戏
                     card.onclick = (e) => {
                         e.preventDefault();
-                        const href = card.getAttribute('href') || 'garden.html';
+                        const href = card.getAttribute('href') || 'game.html';
                         const baseUrl = href.split('?')[0];
                         enterCase(caseId, false, baseUrl);
                     };
@@ -557,7 +557,7 @@
                     // 点击卡片开始新游戏
                     card.onclick = (e) => {
                         e.preventDefault();
-                        const href = card.getAttribute('href') || 'garden.html';
+                        const href = card.getAttribute('href') || 'game.html';
                         const baseUrl = href.split('?')[0];
                         enterCase(caseId, true, baseUrl);
                     };

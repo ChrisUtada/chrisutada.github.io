@@ -30,18 +30,14 @@ window.__GAME_FRESH__ = urlParams.fresh;
  * 获取当前页面对应的游戏数据文件名
  */
 function getDataFileName() {
-    const pathname = window.location.pathname;
-    const parts = pathname.split('/').filter(p => p.length > 0);
-    const filename = parts[parts.length - 1] || 'garden.html';
-    
-    // 根据HTML文件名映射到对应的数据文件
+    const caseId = urlParams.caseId;
+
     const dataMap = {
-        'garden.html': 'game.json',
-        'unknown.html': 'game01.json',
-        'index.html': 'game.json'
+        'A-001': 'game-a001.json',
+        'A-002': 'game-a002.json',
     };
-    
-    return dataMap[filename] || 'game.json';
+
+    return dataMap[caseId] || 'game-a001.json';
 }
 
 /**
