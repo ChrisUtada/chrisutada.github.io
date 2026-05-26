@@ -875,6 +875,11 @@ header {
     overflow-y: auto;
 }
 
+#text-scene {
+    line-height: 2.2;
+    font-size: 16px;
+}
+
 .disco-scroll-area p {
     margin-bottom: 18px;
     color: #111827;  /* 更深的文字颜色，提升可读性 */
@@ -1037,8 +1042,8 @@ header {
     #main-system[data-tab="scene"] #text-scene {
         flex: 1;
         padding: 12px;
-        font-size: 15px;
-        line-height: 1.7;
+        font-size: 16px;
+        line-height: 2.2;
         overflow-y: auto;
     }
     
