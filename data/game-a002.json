@@ -205,7 +205,8 @@
                     "onSuccess": {
                         "flags": [
                             "eyes_open"
-                        ]
+                        ],
+                        "scene": "SCENES_xhsdm"
                     }
                 }
             ],
