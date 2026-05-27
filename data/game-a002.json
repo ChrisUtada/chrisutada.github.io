@@ -12,16 +12,6 @@
                 "ids": []
             }
         },
-        "SCENES_choutier": {
-            "title": "右侧抽屉",
-            "content": "[loc:SCENE_shuzhuo]右侧抽屉里摆放着一把锋利的[item:ITEMS_jd]和一个[item:ITEMS_jzmh]。<br><br>问问[char:CHARS_TEC]",
-            "desc": "右侧的抽屉里摆放着一把锋利的剪刀和一个精致的木盒。"
-        },
-        "SCENES_ljt": {
-            "title": "垃圾桶",
-            "content": "[loc:SCENE_shuzhuo]边的垃圾桶中堆积着不知从何而来的灰烬，像是焚烧什么留下的。数量多得让人不解。<br>在灰烬之中，有一片[item:ITEMS_wbfs]。",
-            "desc": "书桌边的垃圾桶中堆积着不知从何而来的灰烬。"
-        },
         "SCENE_wz": {
             "title": "未知地点",
             "desc": "一轮[item:ITEM_cbyg]挂在没有星辰的天空之中，大得夸张，如同一张被贴在黑色墙壁上的纸。<br>这是什么地方？<br>你环顾四周，空空荡荡，不知何时地上躺着一张古怪的[item:ITEM_zxtz]。<br>月光之下，凭空出现的厚厚的[item:ITEM_door]突兀地立在前方。<br>木门的正中有两个简陋的门扣，上面歪歪斜斜地贴着一对睁开的眼睛。<br>门上有一些奇怪的痕迹，或许有一把[item:ITEM_shoudiantong]能够看得更清楚一些。<br><br>问问[char:CHARS_TEC]",
@@ -31,17 +21,32 @@
             "title": "荒宅院落",
             "content": "月光变得暗淡。<br>木门之后一处荒废的老宅院落：久无人居，杂草疯长，几乎盖住整条小腿。<br>你小心翼翼向前，是不是会踢到怪石或散落的树枝。<br>没有完全塌毁的假山与池塘，还能隐约看出一些大户人家的痕迹，如今已变得萧瑟异常。<br>在院落的中心，是一棵巨大的[item:ITEM_xhs]，无从得知，它究竟在这里耸立了多久了。<br>[loc:SCENES_xhsx]似乎有一个人的影子……",
             "canBePicked": false,
-            "desc": "一具被吊死的尸体，你上前仔细查看。"
+            "desc": "木门之后一处荒废的老宅院落。"
         },
         "SCENES_xhsx": {
             "title": "杏花树下",
-            "content": "[item:ITEM_xhs]枝繁叶茂。<br>在一条细长的树枝末端，挂着一张像是[item:ITEMS_bq]的纸片。树干裂开了一处，像是[item:ITEMS_sk]。<br>月光依然黯淡，隐约可见杏花树下坐着一个[item:ITEMS_jzro]。<br>距离人偶不远处，一根扁担斜放着，空无一物的箩筐摆放在一旁。<br>不知为何……总觉得附近还有其他人……<br>是谁？<br>你看到了杏花树后的黑影。",
+            "content": "[item:ITEM_xhs]枝繁叶茂。<br>在一条细长的树枝末端，挂着一张像是[item:ITEMS_bq]的纸片。树干裂开了一处，像是[item:ITEMS_sk]。<br>月光依然黯淡，隐约可见杏花树下坐着一个[item:ITEMS_jzro]。<br>距离人偶不远处，一根扁担斜放着，两个空无一物的箩筐摆放在一旁。<br>不知为何……总觉得附近还有其他人……<br>是谁？<br>你看到了杏花树后的[item:ITEMS_hy]。",
             "desc": "这是一棵巨大的杏花树。枝繁叶茂。"
         },
         "SCENES_xhsdm": {
             "title": "杏花树的一场梦",
-            "content": "一头羊将自己粗壮尖利的羊角插在杏花树的树干之中，一根羽箭深深没入它的身体，鲜血顺着躯体滴落在地上。\n它大口喘着气，挣扎着想要逃离，但羊角却纹丝不动，很快它就丧失了气力。\n一个男人手持弓箭慢慢靠近，从腰间拔出一把利刃刺向羊的心脏……\n羊的瞳孔突然瞪大，接着如同褪色一般失去了神采，而后轰然倒地。\n手持弓箭的人没有停止动作，他将利刃向后拉扯，划出长长的裂口，熟练的剥离羊皮……鲜血从羊的腹部涌出，浸染了杏花树下的土地……",
+            "content": "一头羊将自己粗壮尖利的羊角插在[item:ITEM_xhs]的树干之中，数根[item:ITEMS_yj]深深没入它的身体，鲜血顺着躯体滴落在地上。<br>它大口喘着气，挣扎着想要逃离，但羊角却纹丝不动，很快它就丧失了气力。<br>一个男人手持弓箭慢慢靠近，从腰间拔出一把利刃刺向羊的心脏……<br>羊的瞳孔突然瞪大，接着如同褪色一般失去了神采，而后轰然倒地。<br>手持弓箭的人没有停止动作，他将利刃向后拉扯，划出长长的裂口，熟练的剥离羊皮……鲜血从羊的腹部涌出，浸染了杏花树下的土地……",
             "desc": "杏花树的一场梦。"
+        },
+        "SCENES_wlro": {
+            "title": "无脸人偶",
+            "content": "那个人偶就站在杏花树之后，一身红色的西装外套，脖子上挂着一张[item:ITEMS_kbbq]。<br>与这四周的景色显得格格不入。<br>人偶没有五官，却好像正在默不作声地观察着此地。",
+            "desc": "一个身穿着红色外套的无脸人偶。"
+        },
+        "SCENES_ct": {
+            "title": "池塘",
+            "content": "你拨开绿苔，将手伸进池水之中，很快就摸到了一把长刀，锈迹斑斑，毫无锋利可言。",
+            "desc": "布满绿苔的池水，发出阵阵臭味。"
+        },
+        "SCENES_cddm": {
+            "title": "长刀的梦",
+            "content": "等你再次回头，是一片[item:ITEMS_xhct]。",
+            "desc": "一场梦而已。"
         }
     },
     "items": {
@@ -52,16 +57,6 @@
         "ITEM_shoudiantong": {
             "label": "手电筒",
             "desc": "还能使用的手电筒。",
-            "canBePicked": true
-        },
-        "ITEMS_htys": {
-            "label": "黄铜钥匙",
-            "desc": "一把黄铜打造的钥匙。匙柄处刻着两个英文字母：JS。",
-            "canBePicked": true
-        },
-        "ITEMS_wmhj": {
-            "label": "没有标签的黑胶",
-            "desc": "一张没有任何标签的黑胶唱片，安静地躺在唱机的暗格之中。",
             "canBePicked": true
         },
         "ITEMS_tec": {
@@ -76,22 +71,6 @@
             "label": "真名",
             "desc": "导致区域发生异动的特殊存在的真实身份。异动区域的真名是多个因果链条得以存在的关键因素。真名的捕获需要五感归因。而非真名的结果，组成方式则并不受五感归因限制。当你捕获五感线索成功，并将其归入“逻辑阵列”后，请点击右下角的“SYNC_MATRIX_INFERENCE”按钮进行推演。"
         },
-        "ITEMS_dsc": {
-            "label": "大豕草",
-            "desc": "伞形科独活属多年生草本植物。",
-            "canBePicked": true
-        },
-        "ITEMS_wbfs": {
-            "label": "未被焚烧干净的纸片",
-            "desc": "纸上用潦草的笔记写着：姓名：槿杉 生日：7月4日 症状：前臂出现边界清晰的鲜红色水肿，1分钟后形成鸡蛋大小的张力性大疱，触碰剧痛……",
-            "hiddenClue": {
-                "text": "获得线索：[clue:CLUES_JS]",
-                "ids": [
-                    "CLUES_JS"
-                ]
-            },
-            "canBePicked": true
-        },
         "ITEMS_cjdcy": {
             "label": "初级调查员",
             "desc": "调查员分为初级、中级、高级三个等级，每一个等级能够介入的因果各有不同，获得的T.E.C-OS的权限也不同。",
@@ -102,56 +81,9 @@
                 ]
             }
         },
-        "ITEMS_rxbs": {
-            "label": "染血的美工刀",
-            "desc": "一把染血的美工刀，与陆珩松身上的伤口匹配，看来是正是凶器。",
-            "canBePicked": true,
-            "hiddenClue": {
-                "text": "获得线索：[clue:CLUES_mgd]",
-                "ids": [
-                    "CLUES_mgd"
-                ]
-            }
-        },
-        "ITEMS_zsq": {
-            "label": "注射器",
-            "desc": "一根注射器，针筒内有半管透明的不知名液体。",
-            "commands": [
-                {
-                    "type": "conditional",
-                    "label": "查看内部",
-                    "successMessage": "",
-                    "conditions": [
-                        {
-                            "clue": "CLUES_xds",
-                            "failMessage": "不知名的液体"
-                        },
-                        {
-                            "clue": "CLUES_zhpt",
-                            "failMessage": "不知名的液体"
-                        }
-                    ],
-                    "onSuccess": {
-                        "message": "获得线索：[clue:CLUES_yzs]"
-                    }
-                }
-            ],
-            "canBePicked": true
-        },
         "ITEMS_thanks": {
             "label": "制作信息",
             "desc": "<br>TEC行动组<br>制作/编剧：菠萝油多一点<br>网页制作：Trae、菠萝油多一点<br>特别感谢：哄哄、Ann、Kuma、Kalen<br><br>花魄故事的来源：婺源士人谢某，读书张公山。早起，闻树林鸟声啁啾，有似鹦哥。因近视之，乃一美女，长五寸许，赤身无毛，通体洁白如玉，眉目间有愁苦之状。遂携以归，女无惧色。乃畜笼中，以饭喂之。向人絮语，了不可辨。畜数日，为太阳所照，竟成枯腊而死。洪孝廉字麟闻之曰：\"此名花魄，凡树经三次人缢死者，其冤苦之气结成此物，沃以水，犹可活也。\" 试之果然。里人聚观者，如云而至。谢恐招摇，乃仍送之树上。须臾间，一大怪鸟衔之飞去。<br>——《子不语》卷二十四"
-        },
-        "ITEMS_a4paper": {
-            "label": "A4大小的纸",
-            "desc": "纸上写着：献祭捕获。",
-            "canBePicked": true,
-            "hiddenClue": {
-                "text": "获得线索：[clue:CLUES_a4]",
-                "ids": [
-                    "CLUES_a4"
-                ]
-            }
         },
         "ITEM_zxtz": {
             "label": "嘴型贴纸",
@@ -200,7 +132,7 @@
                     "type": "useItem",
                     "label": "黏贴眼睛",
                     "requiredItem": "ITEMS_eyes",
-                    "successMessage": "",
+                    "successMessage": "杏花树看到了自己的一场梦。",
                     "failMessage": "",
                     "onSuccess": {
                         "flags": [
@@ -209,14 +141,7 @@
                         "scene": "SCENES_xhsdm"
                     }
                 }
-            ],
-            "conditionFlags": {
-                "ITEM_shoudiantong": {
-                    "flag": "eyes_open",
-                    "text": "杏花树看见了自己的一场梦。",
-                    "scene": "SCENES_xhsdm"
-                }
-            }
+            ]
         },
         "ITEMS_bq": {
             "label": "标签",
@@ -259,6 +184,116 @@
         "ITEMS_sk": {
             "label": "正在愈合的伤口",
             "desc": "杏花树树干上的一道裂口。"
+        },
+        "ITEMS_hy": {
+            "label": "黑影",
+            "desc": "人形的黑影就站在杏花树的不远处。",
+            "canBePicked": true,
+            "presentReactions": {
+                "ITEM_shoudiantong": {
+                    "text": "又是一个人偶，一个身穿着红色外套的无脸人偶……",
+                    "results": {
+                        "scene": "SCENES_wlro"
+                    }
+                }
+            }
+        },
+        "ITEMS_kbbq": {
+            "label": "空白的标签",
+            "desc": "没有文字的标签。"
+        },
+        "ITEMS_y": {
+            "label": "羊",
+            "desc": "被猎杀的羊。",
+            "canBePicked": true,
+            "commands": [
+                {
+                    "type": "useItem",
+                    "label": "黏贴眼睛",
+                    "requiredItem": "ITEMS_eyes",
+                    "successMessage": "羊看到：手持弓箭的人浑身是血地站了起来，朝着池塘走去……",
+                    "failMessage": "",
+                    "onSuccess": {
+                        "scene": "SCENES_ct"
+                    }
+                }
+            ]
+        },
+        "ITEMS_cd": {
+            "label": "长刀",
+            "desc": "锈迹斑斑的长刀，不知在池底躺了多久。",
+            "canBePicked": true,
+            "commands": [
+                {
+                    "type": "useItem",
+                    "label": "黏贴嘴部",
+                    "requiredItem": "ITEM_zxtz",
+                    "successMessage": "我杀生太多，唯有沉入池底，才是我的归宿。",
+                    "failMessage": ""
+                },
+                {
+                    "type": "useItem",
+                    "label": "黏贴眼睛",
+                    "requiredItem": "ITEMS_eyes",
+                    "successMessage": "那个人……他锻造出了邪物……",
+                    "failMessage": "",
+                    "onSuccess": {
+                        "scene": "SCENES_cddm"
+                    }
+                }
+            ]
+        },
+        "ITEMS_yj": {
+            "label": "羽箭",
+            "desc": "射出的箭扎进了羊的身体。",
+            "canBePicked": true,
+            "hiddenClue": {
+                "text": "获得：[clue:DATA_jlyt]",
+                "ids": [
+                    "DATA_jlyt"
+                ]
+            }
+        },
+        "ITEMS_js": {
+            "label": "旧书",
+            "desc": "一本空白的旧书，或许能用钢笔写上点什么？",
+            "canBePicked": true,
+            "commands": [
+                {
+                    "type": "conditional",
+                    "label": "写字",
+                    "successMessage": "钢笔灌满了水。",
+                    "conditions": [
+                        {
+                            "flag": "pen_ok",
+                            "failMessage": "钢笔没有水"
+                        }
+                    ],
+                    "onSuccess": {
+                        "message": "旧书上的书名逐渐显现：[clue:DATA_jgl]"
+                    }
+                }
+            ]
+        },
+        "ITEMS_gb": {
+            "label": "钢笔",
+            "desc": "没有墨水的钢笔。",
+            "canBePicked": true,
+            "presentReactions": {
+                "ITEMS_xhct": {
+                    "text": "钢笔吸满了红色的水。",
+                    "results": {
+                        "flags": [
+                            "pen_ok"
+                        ]
+                    }
+                }
+            }
+        },
+        "ITEMS_xhct": {
+            "label": "血红的池塘",
+            "desc": "血红的池塘",
+            "canBePicked": true
         }
     },
     "chars": {
@@ -731,16 +766,6 @@
         }
     },
     "clues": {
-        "DATA_V_huij": {
-            "label": "灰烬",
-            "type": "vision",
-            "desc": "漫天灰烬"
-        },
-        "DATA_H_music": {
-            "label": "G弦上的咏叹调",
-            "type": "hearing",
-            "desc": "《G弦上的咏叹调》是德国作曲家巴赫（Johann Sebastian Bach 1685年3月21日—1750年7月28日）创作的《第三号管弦乐组曲》第二乐章主题。"
-        },
         "CLUES_V_luheng": {
             "label": "植物学家陆珩松",
             "type": "vision",
@@ -830,6 +855,16 @@
             "label": "信号屏蔽装置",
             "type": "vision",
             "desc": "信号屏蔽装置"
+        },
+        "DATA_jlyt": {
+            "label": "精炼硬铁",
+            "type": "vision",
+            "desc": "精炼硬铁，去除杂质、降低含碳量，兼顾硬度与韧性，不易变形。"
+        },
+        "DATA_jgl": {
+            "label": "《羯鼓录》",
+            "type": "vision",
+            "desc": "《G弦上的咏叹调》是德国作曲家巴赫（Johann Sebastian Bach 1685年3月21日—1750年7月28日）创作的《第三号管弦乐组曲》第二乐章主题。"
         }
     },
     "endings": [
