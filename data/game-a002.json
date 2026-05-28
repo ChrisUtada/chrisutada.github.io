@@ -19,18 +19,18 @@
         },
         "SCENES_hzyl": {
             "title": "荒宅院落",
-            "content": "月光变得暗淡。<br>木门之后一处荒废的老宅院落：久无人居，杂草疯长，几乎盖住整条小腿。<br>你小心翼翼向前，是不是会踢到怪石或散落的树枝。<br>没有完全塌毁的假山与池塘，还能隐约看出一些大户人家的痕迹，如今已变得萧瑟异常。<br>在院落的中心，是一棵巨大的[item:ITEM_xhs]，无从得知，它究竟在这里耸立了多久了。<br>[loc:SCENES_xhsx]似乎有一个人的影子……",
+            "content": "月光变得暗淡。<br>木门之后一处荒废的老宅院落：久无人居，[item:ITEMS_zc]疯长，几乎盖住整条小腿，有风吹过时，发出沙沙沙的响动。<br>你小心翼翼向前，时不时会踢到怪石或散落的树枝。<br>没有完全塌毁的[item:ITEMS_jsct]，还能隐约看出一些大户人家的痕迹，如今已变得萧瑟异常。<br>在院落的中心，是一棵巨大的杏花树，无从得知，它究竟在这里耸立了多久了。<br>[loc:SCENES_xhsx]似乎有一个人的影子……",
             "canBePicked": false,
             "desc": "木门之后一处荒废的老宅院落。"
         },
         "SCENES_xhsx": {
             "title": "杏花树下",
-            "content": "[item:ITEM_xhs]枝繁叶茂。<br>在一条细长的树枝末端，挂着一张像是[item:ITEMS_bq]的纸片。树干裂开了一处，像是[item:ITEMS_sk]。<br>月光依然黯淡，隐约可见杏花树下坐着一个[item:ITEMS_jzro]。<br>距离人偶不远处，一根扁担斜放着，两个空无一物的箩筐摆放在一旁。<br>不知为何……总觉得附近还有其他人……<br>是谁？<br>你看到了杏花树后的[item:ITEMS_hy]。",
+            "content": "杏花树枝繁叶茂。<br>在一条细长的树枝末端，挂着一张像是[item:ITEMS_bq]的纸片。树干裂开了一处，像是[item:ITEMS_sk]。<br>月光依然黯淡，隐约可见杏花树下坐着一个[item:ITEMS_jzro]，人偶张开的双手之间似乎缺少了什么东西。<br>距离人偶不远处，一根扁担斜放着，两个空无一物的箩筐摆放在一旁。<br>不知为何……总觉得附近还有其他人……<br>是谁？<br>你看到了[item:ITEM_xhs]后的[item:ITEMS_hy]。",
             "desc": "这是一棵巨大的杏花树。枝繁叶茂。"
         },
         "SCENES_xhsdm": {
-            "title": "杏花树的一场梦",
-            "content": "一头羊将自己粗壮尖利的羊角插在[item:ITEM_xhs]的树干之中，数根[item:ITEMS_yj]深深没入它的身体，鲜血顺着躯体滴落在地上。<br>它大口喘着气，挣扎着想要逃离，但羊角却纹丝不动，很快它就丧失了气力。<br>一个男人手持弓箭慢慢靠近，从腰间拔出一把利刃刺向羊的心脏……<br>羊的瞳孔突然瞪大，接着如同褪色一般失去了神采，而后轰然倒地。<br>手持弓箭的人没有停止动作，他将利刃向后拉扯，划出长长的裂口，熟练的剥离羊皮……鲜血从羊的腹部涌出，浸染了杏花树下的土地……",
+            "title": "杏花树的梦",
+            "content": "一头[item:ITEMS_y]将自己粗壮尖利的羊角插在杏花树的树干之中，数根[item:ITEMS_yj]深深没入它的身体，鲜血顺着躯体滴落在地上。<br>它大口喘着气，挣扎着想要逃离，但羊角却纹丝不动，很快它就丧失了气力。<br>一个[char:CHARS_cgnr]慢慢靠近，从腰间拔出一把[item:ITEMS_lr]刺向羊的心脏……<br>羊的瞳孔突然瞪大，接着如同褪色一般失去了神采，而后轰然倒地。<br>持弓的男人没有停止动作，他把羽箭拔出，取下[item:ITEMS_jt]，而后将利刃向后拉扯，划出长长的裂口，熟练的剥离羊皮……鲜血从羊的腹部涌出，浸染了杏花树下的土地……",
             "desc": "杏花树的一场梦。"
         },
         "SCENES_wlro": {
@@ -40,13 +40,14 @@
         },
         "SCENES_ct": {
             "title": "池塘",
-            "content": "你拨开绿苔，将手伸进池水之中，很快就摸到了一把长刀，锈迹斑斑，毫无锋利可言。",
+            "content": "你拨开绿苔，将手伸进池水之中，很快就摸到了一把[item:ITEMS_cd]，锈迹斑斑，毫无锋利可言。",
             "desc": "布满绿苔的池水，发出阵阵臭味。"
         },
         "SCENES_cddm": {
-            "title": "长刀的梦",
-            "content": "等你再次回头，是一片[item:ITEMS_xhct]。",
-            "desc": "一场梦而已。"
+            "title": "长刀的记忆",
+            "content": "假山之后，架起了熔炉。\n精壮男子挥舞着大锤，锻打着铁砧上的扁铁条，敲击之声响彻整个院落，火星飞溅。\n在铁砧的一侧有一张结实的桌子，上面摆放着正圆形木模。\n锻打完成的铁条被放入木模之中，完成整形。\n之后再次送入炉火之中，直至铁圈被烧成暗红色。\n就在此时，精壮男子身后突然冒出一个人影，人影拿起桌上的利刃，割向男子的咽喉。\n男子颓然倒在水边，鲜血从他的脖颈处不断流出，他最后看到的是一片[item:ITEMS_xhct]。",
+            "desc": "噩梦般的记忆。",
+            "canBePicked": false
         }
     },
     "items": {
@@ -125,6 +126,9 @@
             "presentReactions": {
                 "ITEM_shoudiantong": {
                     "text": "树上的杏花似乎快要开了。"
+                },
+                "ITEMS_bq": {
+                    "text": "标签上浮现出文字：杏花树"
                 }
             },
             "commands": [
@@ -146,11 +150,6 @@
         "ITEMS_bq": {
             "label": "标签",
             "desc": "一张写着什么内容的纸片。",
-            "presentReactions": {
-                "ITEM_shoudiantong": {
-                    "text": "标签上写着：杏花树"
-                }
-            },
             "canBePicked": true
         },
         "ITEMS_jzro": {
@@ -198,10 +197,6 @@
                 }
             }
         },
-        "ITEMS_kbbq": {
-            "label": "空白的标签",
-            "desc": "没有文字的标签。"
-        },
         "ITEMS_y": {
             "label": "羊",
             "desc": "被猎杀的羊。",
@@ -211,7 +206,7 @@
                     "type": "useItem",
                     "label": "黏贴眼睛",
                     "requiredItem": "ITEMS_eyes",
-                    "successMessage": "羊看到：手持弓箭的人浑身是血地站了起来，朝着池塘走去……",
+                    "successMessage": "羊看到手持弓箭的人浑身是血地站了起来，朝着池塘走去……",
                     "failMessage": "",
                     "onSuccess": {
                         "scene": "SCENES_ct"
@@ -235,7 +230,7 @@
                     "type": "useItem",
                     "label": "黏贴眼睛",
                     "requiredItem": "ITEMS_eyes",
-                    "successMessage": "那个人……他锻造出了邪物……",
+                    "successMessage": "那个人……他锻造出了……",
                     "failMessage": "",
                     "onSuccess": {
                         "scene": "SCENES_cddm"
@@ -246,13 +241,7 @@
         "ITEMS_yj": {
             "label": "羽箭",
             "desc": "射出的箭扎进了羊的身体。",
-            "canBePicked": true,
-            "hiddenClue": {
-                "text": "获得：[clue:DATA_jlyt]",
-                "ids": [
-                    "DATA_jlyt"
-                ]
-            }
+            "canBePicked": true
         },
         "ITEMS_js": {
             "label": "旧书",
@@ -294,56 +283,70 @@
             "label": "血红的池塘",
             "desc": "血红的池塘",
             "canBePicked": true
+        },
+        "ITEMS_jsct": {
+            "label": "假山与池塘",
+            "desc": "一人高的假山立在庭院的角落，在加上的正前方是一池水塘，久为打理，长满了绿色的水苔。"
+        },
+        "ITEMS_lr": {
+            "label": "利刃",
+            "desc": "剥离羊皮的工具，但不知所踪。",
+            "canBePicked": true
+        },
+        "ITEMS_zc": {
+            "label": "杂草",
+            "desc": "疯长的杂草，风吹过发出沙沙的声响。",
+            "commands": [
+                {
+                    "type": "conditional",
+                    "label": "仔细聆听",
+                    "successMessage": "",
+                    "conditions": []
+                }
+            ]
+        },
+        "ITEMS_gong": {
+            "label": "弓",
+            "desc": "山桑木制成的弓，通体无纹饰，但强韧耐用。",
+            "hiddenClue": {
+                "text": "获得线索：[clue:CLUES_ssm]",
+                "ids": [
+                    "CLUES_ssm"
+                ]
+            },
+            "canBePicked": true
+        },
+        "ITEMS_jt": {
+            "label": "箭头",
+            "desc": "铁制的箭头，韧性十足，极为致命。",
+            "canBePicked": true,
+            "hiddenClue": {
+                "text": "获得：[clue:DATA_jlyt]",
+                "ids": [
+                    "DATA_jlyt"
+                ]
+            }
+        },
+        "ITEMS_yp": {
+            "label": "羊皮",
+            "desc": "被剥离后的整张羊皮。",
+            "canBePicked": true,
+            "commands": [
+                {
+                    "type": "conditional",
+                    "label": "制作",
+                    "successMessage": "",
+                    "conditions": [
+                        {
+                            "clue": "CLUES_juan",
+                            "failMessage": "没有什么可以制作的物品"
+                        }
+                    ]
+                }
+            ]
         }
     },
     "chars": {
-        "CHARS_JS": {
-            "name": "槿杉",
-            "desc": "在植物领域颇有造诣的年轻植物学家。",
-            "talkQueue": [],
-            "reactions": {
-                "CLUES_yzs": {
-                    "text": "抑制素是我和陆一直在寻找的解决方案的最后一块拼图。这种来自古代文献的方案，或者可以称之为黑魔法。它包含了两道必须执行的步骤：提取物质和献祭生命。在获得抑制素之前，我们一直没有提取到合适的物质以对抗呋喃香豆素。而为了得到这种抑制素，我们反复实验，不断往自己的身体里注射呋喃香豆素，以期望能够得到答案……"
-                },
-                "DATA_H_music": {
-                    "text": "我不太懂音乐，大部分时间我都希望花园能够保持安静，不过朱穗似乎很喜欢这首古典乐。"
-                },
-                "CLUES_wmhj": {
-                    "text": "辛苦了，陆。"
-                }
-            },
-            "lines": [],
-            "logicResponse": {
-                "CLUES_yzs": {
-                    "text": "抑制素是我和陆一直在寻找的解决方案的最后一块拼图。这种来自古代文献的方案，或者可以称之为黑魔法。它包含了两道必须执行的步骤：提取物质和献祭生命。在获得抑制素之前，我们一直没有提取到合适的物质以对抗呋喃香豆素。而为了得到这种抑制素，我们反复实验，不断往自己的身体里注射呋喃香豆素，以期望能够得到答案……"
-                },
-                "DATA_H_music": {
-                    "text": "我不太懂音乐，大部分时间我都希望花园能够保持安静，不过朱穗似乎很喜欢这首古典乐。"
-                },
-                "CLUES_wmhj": {
-                    "text": "辛苦了，陆。"
-                }
-            },
-            "itemReactions": {},
-            "defaultTalks": [],
-            "sceneTalks": {
-                "SCENES_0602": [
-                    {
-                        "text": "“快要成功了，再试试吧。”"
-                    },
-                    {
-                        "text": "“缺少的抑制素，这次有头绪了。”"
-                    }
-                ]
-            },
-            "hiddenClue": {
-                "text": "获得线索：[clue:CLUES_JS]",
-                "ids": [
-                    "CLUES_JS"
-                ]
-            },
-            "avatar": "images/avatar_CHARS_JS.png"
-        },
         "CHARS_luhengs": {
             "name": "陆珩松",
             "desc": "年轻有为的植物学家。",
@@ -763,19 +766,21 @@
             "logicResponse": {},
             "itemReactions": {},
             "avatar": "images/avatar_CHARS_TEC.png"
+        },
+        "CHARS_cgnr": {
+            "name": "持弓的男人",
+            "desc": "猎杀羊的持弓男人。",
+            "talkQueue": [],
+            "reactions": {},
+            "lines": [],
+            "logicResponse": {},
+            "itemReactions": {},
+            "defaultTalks": [],
+            "sceneTalks": {},
+            "avatar": "images/avatar_CHARS_JS.png"
         }
     },
     "clues": {
-        "CLUES_V_luheng": {
-            "label": "植物学家陆珩松",
-            "type": "vision",
-            "desc": "植物学家陆珩松。"
-        },
-        "CLUES_gcs": {
-            "label": "贯穿伤",
-            "type": "vision",
-            "desc": "被利器从下腹部插入，留下了一道深深的伤口。"
-        },
         "CLUES_wmhj": {
             "label": "陆珩松的录音",
             "type": "hearing",
@@ -865,6 +870,16 @@
             "label": "《羯鼓录》",
             "type": "vision",
             "desc": "《G弦上的咏叹调》是德国作曲家巴赫（Johann Sebastian Bach 1685年3月21日—1750年7月28日）创作的《第三号管弦乐组曲》第二乐章主题。"
+        },
+        "CLUES_ssm": {
+            "label": "山桑木",
+            "type": "vision",
+            "desc": "木质致密坚韧，常常用来制作弓或乐器。"
+        },
+        "CLUES_juan": {
+            "label": "棬",
+            "type": "vision",
+            "desc": "由精炼精炼硬铁，厚薄宽窄均匀的正圆形圈体。"
         }
     },
     "endings": [
