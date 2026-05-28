@@ -351,7 +351,7 @@ function createEngine(projectData) {
                 return `<span class="interactive-obj obj-loc" data-scene="${escapeHtml(id)}" role="button" tabindex="0" aria-label="前往: ${escapeHtml(loc.title)}">${escapeHtml(loc.title)}</span>`;
             });
 
-            container.innerHTML = rawText;
+            container.innerHTML = rawText.replace(/\n/g, '<br>');
             this.bindInteractiveEvents(container);
         },
 
@@ -535,6 +535,7 @@ function createEngine(projectData) {
                 return `<span class="clue-link clue-pending-${escapeHtml(id)}" data-clue-id="${escapeHtml(id)}" role="button" tabindex="0" aria-label="发现线索: ${label}">${label}</span>`;
             });
 
+            result = result.replace(/\n/g, '<br>');
             return result;
         },
 
