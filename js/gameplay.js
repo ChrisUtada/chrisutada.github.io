@@ -63,26 +63,43 @@ const gameplayManager = new GameplayManager();
 // 密码/组合解锁玩法（合并版）
 gameplayManager.register('password', {
     execute(engine, targetId, cmd) {
-        // 根据是否设置了digits来判断是"组合锁"还是"密码解锁"
+        if (cmd.requiredItem && !engine.state.inventory.includes(cmd.requiredItem)) {
+            engine.addLog(cmd.failMessage || '缺少必要物品，无法操作。', 'error');
+            return;
+        }
+
         const isComboLock = cmd.digits && cmd.digits > 0;
         const digits = cmd.digits || null;
-        
+        const defaultTitle = `${isComboLock ? '组合锁' : '加密锁定'}: ${escapeHtml(engine.state.data.items[targetId].label)}`;
+        const defaultBody = isComboLock ? `输入${digits}位组合码：` : '输入授权密钥进行逻辑解构：';
+
         engine.showModal({
-            title: `${isComboLock ? '组合锁' : '加密锁定'}: ${escapeHtml(engine.state.data.items[targetId].label)}`,
-            body: isComboLock 
-                ? `输入${digits}位组合码：` 
-                : "输入授权密钥进行逻辑解构：",
+            title: cmd.title || defaultTitle,
+            body: cmd.prompt || defaultBody,
             hasInput: true,
             confirm: (val) => {
                 if (val === cmd.value) {
-                    engine.addLog(`[${isComboLock ? '组合匹配成功' : '密钥匹配成功'}]`, "sys");
+                    engine.addLog(`[${isComboLock ? '组合匹配成功' : '密钥匹配成功'}]`, 'sys');
                     engine.closeModal();
                     if (cmd.onSuccess) engine.applyResults(cmd.onSuccess);
                 } else {
-                    engine.addLog(isComboLock ? "组合错误，请重试。" : "密钥校验失败：访问被拒绝。", "error");
+                    engine.addLog(isComboLock ? '组合错误，请重试。' : '密钥校验失败：访问被拒绝。', 'error');
                 }
             }
         });
+
+        var inputEl = document.getElementById('modal-val');
+        if (inputEl) {
+            var composing = false;
+            inputEl.addEventListener('compositionstart', function() { composing = true; });
+            inputEl.addEventListener('compositionend', function() { composing = false; });
+            inputEl.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !composing) {
+                    e.preventDefault();
+                    document.getElementById('modal-confirm').click();
+                }
+            });
+        }
     }
 });
 
