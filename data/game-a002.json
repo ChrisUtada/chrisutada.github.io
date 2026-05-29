@@ -5,48 +5,53 @@
     "scenes": {
         "SCENE_START": {
             "title": "T.E.C-OS",
-            "content": "你好，[item:ITEMS_cjdcy]。<br>[item:ITEMS_ydqy]已被锁定。欢迎进入[item:ITEMS_tec]。<br>在你的权限范围内能够进入的区域，已经向你开放。<br>[char:CHARS_TEC]将协助你揭示异动区域的[item:ITEMS_turename]。<br><br>接下来你将学习如何使用T.E.C-OS的指令交互：<br>试试使用“查询 真名”命令看看会有什么效果？<br>接着使用“捕获 [item:ITEMS_cjdcy]”，你将获得你的第一个线索。<br>使用“出示 [item:ITEMS_turename] TEC”或“出示 TEC [item:ITEMS_turename]”，你将获得TEC的一些小小提示。<br>可在指令交互框中输入“查询 [item:ITEM_cmd]”获得更多帮助。<br><br>请务必注意安全，避免遭受因果污染。<br>一切就绪后，请点击进入……[loc:SCENE_wz]……系统错误……未知……",
+            "content": "你好，[item:ITEMS_cjdcy]。\n[item:ITEMS_ydqy]已被锁定。欢迎进入[item:ITEMS_tec]。\n在你的权限范围内能够进入的区域，已经向你开放。\n[char:CHARS_TEC]将协助你揭示异动区域的[item:ITEMS_turename]。\n\n接下来你将学习如何使用T.E.C-OS的指令交互：\n试试使用“查询 真名”命令看看会有什么效果？\n接着使用“捕获 [item:ITEMS_cjdcy]”，你将获得你的第一个线索。\n使用“出示 [item:ITEMS_turename] TEC”或“出示 TEC [item:ITEMS_turename]”，你将获得TEC的一些小小提示。\n可在指令交互框中输入“查询 [item:ITEM_cmd]”获得更多帮助。\n\n请务必注意安全，避免遭受因果污染。\n一切就绪后，请点击进入……[loc:SCENE_wz]……系统错误……未知……",
             "desc": "你好，初级调查员，欢迎进入T.E.C-OS。",
             "hiddenClue": {
                 "text": "尝到一股血腥的气味。",
                 "ids": []
-            }
+            },
+            "canBePicked": false
         },
         "SCENE_wz": {
             "title": "未知地点",
             "desc": "一轮[item:ITEM_cbyg]挂在没有星辰的天空之中，大得夸张，如同一张被贴在黑色墙壁上的纸。<br>这是什么地方？<br>你环顾四周，空空荡荡，不知何时地上躺着一张古怪的[item:ITEM_zxtz]。<br>月光之下，凭空出现的厚厚的[item:ITEM_door]突兀地立在前方。<br>木门的正中有两个简陋的门扣，上面歪歪斜斜地贴着一对睁开的眼睛。<br>门上有一些奇怪的痕迹，或许有一把[item:ITEM_shoudiantong]能够看得更清楚一些。<br><br>问问[char:CHARS_TEC]",
-            "content": "一轮[item:ITEM_cbyg]挂在没有星辰的天空之中，大得夸张，如同一张被贴在黑色墙壁上的纸。<br>这是什么地方？<br>你环顾四周，空空荡荡，不知何时地上躺着一张古怪的[item:ITEM_zxtz]。<br>月光之下，凭空出现的厚厚的[item:ITEM_door]突兀地立在前方。<br>木门的正中有两个简陋的[item:ITEMS_mk]，上面歪歪斜斜地贴着一对睁开的[item:ITEMS_eyes]。<br>门上有一些[item:ITEMS_qghj]，或许有一把[item:ITEM_shoudiantong]能够看得更清楚一些。<br><br>问问[char:CHARS_TEC]"
+            "content": "一轮[item:ITEM_cbyg]挂在没有星辰的天空之中，大得夸张，如同一张被贴在黑色墙壁上的纸。\n这是什么地方？\n你环顾四周，空空荡荡，不知何时地上躺着一张古怪的[item:ITEM_zxtz]。\n月光之下，凭空出现的厚厚的[item:ITEM_door]突兀地立在前方。\n木门的正中有两个简陋的[item:ITEMS_mk]，上面歪歪斜斜地贴着一对睁开的[item:ITEMS_eyes]。\n门上有一些[item:ITEMS_qghj]，或许有一把[item:ITEM_shoudiantong]能够看得更清楚一些。\n\n问问[char:CHARS_TEC]",
+            "canBePicked": false
         },
         "SCENES_hzyl": {
             "title": "荒宅院落",
-            "content": "月光变得暗淡。<br>木门之后一处荒废的老宅院落：久无人居，[item:ITEMS_zc]疯长，几乎盖住整条小腿，有风吹过时，发出沙沙沙的响动。<br>你小心翼翼向前，时不时会踢到怪石或散落的树枝。<br>没有完全塌毁的[item:ITEMS_jsct]，还能隐约看出一些大户人家的痕迹，如今已变得萧瑟异常。<br>在院落的中心，是一棵巨大的杏花树，无从得知，它究竟在这里耸立了多久了。<br>[loc:SCENES_xhsx]似乎有一个人的影子……",
+            "content": "月光变得暗淡。\n木门之后一处荒废的老宅院落：久无人居，[item:ITEMS_zc]疯长，几乎盖住整条小腿，有风吹过时，发出沙沙沙的响动。\n你小心翼翼向前，时不时会踢到怪石或散落的树枝。\n没有完全塌毁的[item:ITEMS_jsct]，还能隐约看出一些大户人家的痕迹，如今已变得萧瑟异常。\n在院落的中心，是一棵巨大的杏花树，无从得知，它究竟在这里耸立了多久了。\n[loc:SCENES_xhsx]似乎有一个人的影子……",
             "canBePicked": false,
             "desc": "木门之后一处荒废的老宅院落。"
         },
         "SCENES_xhsx": {
             "title": "杏花树下",
-            "content": "杏花树枝繁叶茂。<br>在一条细长的树枝末端，挂着一张像是[item:ITEMS_bq]的纸片。树干裂开了一处，像是[item:ITEMS_sk]。<br>月光依然黯淡，隐约可见杏花树下坐着一个[item:ITEMS_jzro]，人偶张开的双手之间似乎缺少了什么东西。<br>距离人偶不远处，一根扁担斜放着，两个空无一物的箩筐摆放在一旁。<br>不知为何……总觉得附近还有其他人……<br>是谁？<br>你看到了[item:ITEM_xhs]后的[item:ITEMS_hy]。",
-            "desc": "这是一棵巨大的杏花树。枝繁叶茂。"
+            "content": "杏花树枝繁叶茂。\n在一条细长的树枝末端，挂着一张像是[item:ITEMS_bq]的纸片。树干裂开了一处，像是[item:ITEMS_sk]。\n月光依然黯淡，隐约可见杏花树下坐着一个[item:ITEMS_jzro]，人偶张开的双手之间似乎缺少了什么东西。\n距离人偶不远处，一根扁担斜放着，两个空无一物的箩筐摆放在一旁。\n不知为何……总觉得附近还有其他人……\n是谁？\n你看到了[item:ITEM_xhs]后的[item:ITEMS_hy]。",
+            "desc": "这是一棵巨大的杏花树。枝繁叶茂。",
+            "canBePicked": false
         },
         "SCENES_xhsdm": {
             "title": "杏花树的梦",
-            "content": "一头[item:ITEMS_y]将自己粗壮尖利的羊角插在杏花树的树干之中，数根[item:ITEMS_yj]深深没入它的身体，鲜血顺着躯体滴落在地上。<br>它大口喘着气，挣扎着想要逃离，但羊角却纹丝不动，很快它就丧失了气力。<br>一个[char:CHARS_cgnr]慢慢靠近，从腰间拔出一把[item:ITEMS_lr]刺向羊的心脏……<br>羊的瞳孔突然瞪大，接着如同褪色一般失去了神采，而后轰然倒地。<br>持弓的男人没有停止动作，他把羽箭拔出，取下[item:ITEMS_jt]，而后将利刃向后拉扯，划出长长的裂口，熟练的剥离羊皮……鲜血从羊的腹部涌出，浸染了杏花树下的土地……",
-            "desc": "杏花树的一场梦。"
+            "content": "一头[item:ITEMS_y]将自己粗壮尖利的羊角插在杏花树的树干之中，数根[item:ITEMS_yj]深深没入它的身体，鲜血顺着躯体滴落在地上。\n它大口喘着气，挣扎着想要逃离，但羊角却纹丝不动，很快它就丧失了气力。\n一个[char:CHARS_cgnr]慢慢靠近，从腰间拔出一把[item:ITEMS_lr]刺向羊的心脏……\n羊的瞳孔突然瞪大，接着如同褪色一般失去了神采，而后轰然倒地。\n持弓的男人没有停止动作，他把羽箭拔出，取下[item:ITEMS_jt]，将利刃向后拉扯，划出长长的裂口，熟练的剥离羊皮\n……鲜血从羊的腹部涌出，浸染了[loc:SCENES_xhsx]的土地……",
+            "desc": "杏花树的一场梦。",
+            "canBePicked": false
         },
         "SCENES_wlro": {
             "title": "无脸人偶",
-            "content": "那个人偶就站在杏花树之后，一身红色的西装外套，脖子上挂着一张[item:ITEMS_kbbq]。<br>与这四周的景色显得格格不入。<br>人偶没有五官，却好像正在默不作声地观察着此地。",
-            "desc": "一个身穿着红色外套的无脸人偶。"
+            "content": "那个人偶就站在杏花树之后，一身红色的西装外套。\n与这四周的景色显得格格不入。\n人偶没有[item:ITEM_wg]，却好像正在默不作声地观察着此地。\n\n返回[loc:SCENES_xhsx]",
+            "desc": "一个身穿着红色外套的无脸人偶。",
+            "canBePicked": false
         },
         "SCENES_ct": {
             "title": "池塘",
-            "content": "你拨开绿苔，将手伸进池水之中，很快就摸到了一把[item:ITEMS_cd]，锈迹斑斑，毫无锋利可言。",
+            "content": "你拨开绿苔，将手伸进池水之中，很快就摸到了一把[item:ITEMS_cd]，锈迹斑斑，毫无锋利可言。\n\n返回[loc:SCENES_xhsx]",
             "desc": "布满绿苔的池水，发出阵阵臭味。",
             "canBePicked": false
         },
         "SCENES_cddm": {
             "title": "长刀的记忆",
-            "content": "假山之后，架起了[item:ITEM_rl]。\n精壮男子挥舞着大锤，锻打着铁砧上的扁铁条，敲击之声响彻整个院落，火星飞溅。\n在铁砧的一侧有一张结实的桌子，上面摆放着正圆形木模。\n锻打完成的铁条被放入木模之中，完成整形。\n之后再次送入炉火之中，直至铁圈被烧成暗红色。\n就在此时，精壮男子身后突然冒出一个人影，人影拿起桌上的利刃，割向男子的咽喉。\n男子颓然倒在水边，鲜血从他的脖颈处不断流出，他最后看到的是一片[item:ITEMS_xhct]。",
+            "content": "[item:ITEM_js]之后，架起了[item:ITEM_rl]。\n一个精壮的男子手持大锤，站在铁砧旁边。\n在铁砧的一侧有一张结实的桌子，上面摆放着正圆形木模和一把小锤。\n锻打完成的铁条被放入木模之中，完成整形。\n之后再次送入炉火之中，直至铁圈被烧成暗红色。\n就在此时，精壮男子身后突然冒出一个[char:CHAR_sclr]，那把利刃割向男子的咽喉。\n男子颓然倒在水边，鲜血从他的脖颈处不断流出，他最后看到的是一片[item:ITEMS_xhct]……和放入池水之中淬火的圆形铁圈。\n\n返回[loc:SCENES_ct]",
             "desc": "噩梦般的记忆。",
             "canBePicked": false
         }
@@ -217,7 +222,7 @@
         },
         "ITEMS_cd": {
             "label": "长刀",
-            "desc": "锈迹斑斑的长刀，不知在池底躺了多久。",
+            "desc": "锈迹斑斑的长刀，不知在池底躺了多久。刀柄处贴着两个耳朵形状的贴纸。",
             "canBePicked": true,
             "commands": [
                 {
@@ -287,7 +292,8 @@
         },
         "ITEMS_jsct": {
             "label": "假山与池塘",
-            "desc": "一人高的假山立在庭院的角落，在加上的正前方是一池水塘，久为打理，长满了绿色的水苔。"
+            "desc": "一人高的假山立在庭院的角落，在加上的正前方是一池水塘，久未打理，长满了绿色的水苔。总觉得似乎隐藏了很多秘密。",
+            "canBePicked": false
         },
         "ITEMS_lr": {
             "label": "利刃",
@@ -352,7 +358,7 @@
             "canBePicked": false,
             "presentReactions": {
                 "ITEMS_jt": {
-                    "text": "",
+                    "text": "铁制的箭头被放入熔炉之中。",
                     "results": {
                         "items": [
                             "ITEM_btt"
@@ -365,113 +371,127 @@
             "label": "扁铁条",
             "desc": "扁铁条",
             "canBePicked": true
+        },
+        "ITEM_wg": {
+            "label": "五官",
+            "desc": "听不见，看不到，说不出……",
+            "canBePicked": true,
+            "commands": [
+                {
+                    "type": "conditional",
+                    "label": "查看",
+                    "successMessage": "",
+                    "conditions": [
+                        {
+                            "flag": "pen_ok",
+                            "failMessage": "空无一物"
+                        }
+                    ],
+                    "onSuccess": {
+                        "message": "用[clue:CLUES_rwg]，不知何时出现在人偶的脸上，鲜艳而又诡异。"
+                    }
+                }
+            ]
+        },
+        "ITEM_ro": {
+            "label": "人偶",
+            "desc": "无脸的人偶，仿佛在观察着什么。",
+            "canBePicked": false,
+            "commands": [
+                {
+                    "type": "conditional",
+                    "label": "贴上标签",
+                    "successMessage": "",
+                    "conditions": [
+                        {
+                            "clue": "CLUES_rwg",
+                            "failMessage": "标签上一片空白。"
+                        }
+                    ],
+                    "onSuccess": {
+                        "message": "一行红色的小字慢慢在标签上显现：高级调查员 [clue:CLUES_zs]"
+                    }
+                }
+            ]
+        },
+        "ITEM_js": {
+            "label": "假山",
+            "desc": "",
+            "canBePicked": false,
+            "commands": [
+                {
+                    "type": "useItem",
+                    "label": "黏贴嘴部",
+                    "requiredItem": "ITEM_zxtz",
+                    "successMessage": "假山没有说话，但吐出了一张纸。",
+                    "failMessage": "",
+                    "onSuccess": {
+                        "items": [
+                            "ITEM_paper"
+                        ]
+                    }
+                }
+            ]
+        },
+        "ITEM_paper": {
+            "label": "一张纸",
+            "desc": "备料精炼：铁料烧锻，打成匀厚扁铁条。\n一火弯弧：整料烧红，三十大锤，弯成大半圆。\n二火校圆：整圈复烧，百二小锤，修正正圆。\n入水淬火得之。",
+            "canBePicked": true,
+            "hiddenClue": {
+                "text": "纸的背面写着：[clue:CLUES_xjbh]",
+                "ids": [
+                    "CLUES_xjbh"
+                ]
+            }
+        },
+        "ITEM_dc": {
+            "label": "大锤",
+            "desc": "锻铁所用大锤。",
+            "canBePicked": true,
+            "commands": [
+                {
+                    "type": "password",
+                    "label": "锻打",
+                    "value": "30",
+                    "onSuccess": {
+                        "message": "烧红的扁铁条被弯成大半圆。"
+                    }
+                }
+            ]
+        },
+        "ITEM_xc": {
+            "label": "小锤",
+            "desc": "整形所用小锤。",
+            "canBePicked": true,
+            "commands": [
+                {
+                    "type": "password",
+                    "label": "整形",
+                    "value": "120",
+                    "onSuccess": {
+                        "message": "一百二十次锤击，得到一个正圆。"
+                    }
+                }
+            ]
+        },
+        "ITEM_yxtq": {
+            "label": "圆形铁圈",
+            "desc": "放入池中淬火的圆形铁圈。",
+            "canBePicked": true,
+            "hiddenClue": {
+                "text": "获得线索：[clue:CLUES_juan]",
+                "ids": [
+                    "CLUES_juan"
+                ]
+            }
+        },
+        "ITEM_ed": {
+            "label": "耳朵",
+            "desc": "耳朵形状的贴纸。",
+            "canBePicked": true
         }
     },
     "chars": {
-        "CHARS_zs": {
-            "name": "朱穗",
-            "desc": "陆珩松和槿杉的助手。",
-            "talkQueue": [
-                {
-                    "text": "“对于我而言，每日的任务有点单调，就是将散落的资料摆放好，而后将花园打扫干净，花卉和植物并不需要我来打理，陆老师和槿老师自会处理。”"
-                }
-            ],
-            "reactions": {
-                "DATA_H_music": {
-                    "text": "每次听到这首古典乐都会让我觉得平静，巴赫真是一个伟大的音乐家。"
-                },
-                "DATA_T_sun": {
-                    "text": "阳光会将一切罪恶化作灰烬。"
-                },
-                "DATA_V_huij": {
-                    "text": "而灰烬是罪人最好的归宿。"
-                },
-                "CLUES_qsan": {
-                    "text": "只要按下按钮，一切就会结束。"
-                }
-            },
-            "lines": [
-                {
-                    "text": "“对于我而言，每日的任务有点单调，就是将散落的资料摆放好，而后将花园打扫干净，花卉和植物并不需要我来打理，陆老师和槿老师自会处理。”"
-                }
-            ],
-            "logicResponse": {
-                "DATA_H_music": {
-                    "text": "每次听到这首古典乐都会让我觉得平静，巴赫真是一个伟大的音乐家。"
-                },
-                "DATA_T_sun": {
-                    "text": "阳光会将一切罪恶化作灰烬。"
-                },
-                "DATA_V_huij": {
-                    "text": "而灰烬是罪人最好的归宿。"
-                },
-                "CLUES_qsan": {
-                    "text": "只要按下按钮，一切就会结束。"
-                }
-            },
-            "hiddenClue": {
-                "text": "获得线索：[clue:CLUES_zs]",
-                "ids": [
-                    "CLUES_zs"
-                ]
-            },
-            "itemReactions": {
-                "ITEMS_changji": {
-                    "text": "陆老师和槿老师知道我喜欢听音乐，特意为我准备了黑胶唱机。但两位老师似乎更喜欢安静的环境。"
-                },
-                "ITEMS_hy": {
-                    "text": "6月，天气逐渐炎热了起来，槿老师却依然穿着长袖，偶尔会看到露出衣袖的……绷带？"
-                },
-                "ITEMS_yjh": {
-                    "text": "洋金花……原来如此……那天我忽然困倦得不行，伏在书桌上睡着了……"
-                },
-                "ITEMS_rxbs": {
-                    "text": "是我……将这把匕首插进了陆老师的腹部……"
-                },
-                "ITEMS_ccss": {
-                    "text": "那根被血液浸透的绳索绕过我的脖子，粗糙的毛刺几乎马上扎进我的肉里，疼痛异常，就像一把锯子一样来回切割。"
-                },
-                "ITEMS_a4paper": {
-                    "text": "献祭……捕获……我不知道陆老师和槿老师在忙些什么……这些文字让我非常不安。"
-                }
-            },
-            "defaultTalks": [
-                {
-                    "text": "“对于我而言，每日的任务有点单调，就是将散落的资料摆放好，而后将花园打扫干净，花卉和植物并不需要我来打理，陆老师和槿老师自会处理。”"
-                }
-            ],
-            "sceneTalks": {
-                "SCENES_mdhm": [
-                    {
-                        "text": "“你是谁？”"
-                    },
-                    {
-                        "text": "“请救救我们……”"
-                    },
-                    {
-                        "text": "“陆老师……用绳子把我们勒住……醒来的时候我们就在这里了……”"
-                    },
-                    {
-                        "text": "“那个人是植物所的所长傅柏。”"
-                    },
-                    {
-                        "text": "“按钮……[clue:CLUES_qsan]，按下它我们就能出去了！”（TEC：在收集线索前请务必再次确认，此次选择有可能涉入过深，导致因果崩塌。）"
-                    }
-                ],
-                "SCENES_0704": [
-                    {
-                        "text": "“今天是槿老师的生日。和往常一样，我打开了唱机，在水杯里倒满了水，而后开始整理工作。”"
-                    },
-                    {
-                        "text": "“奇怪，今天的花园里到处都是灰烬，像是好几天没有打扫了一样。”"
-                    },
-                    {
-                        "text": "“突如其来的困倦……我想睡一会儿。”"
-                    }
-                ]
-            },
-            "avatar": "images/avatar_CHARS_zs.png"
-        },
         "CHARS_TEC": {
             "name": "TEC",
             "desc": "您忠实的AI助手！",
@@ -486,7 +506,6 @@
                     "text": "像我“出示”一些物品，或许我会给你一些有用的提示。"
                 }
             ],
-            "reactions": {},
             "defaultTalks": [
                 {
                     "text": "我是您忠实的AI助手！祝您捕获顺利！"
@@ -547,92 +566,53 @@
                 ]
             },
             "logicResponse": {},
-            "itemReactions": {},
             "avatar": "images/avatar_CHARS_TEC.png"
         },
         "CHARS_cgnr": {
             "name": "持弓的男人",
             "desc": "猎杀羊的持弓男人。",
             "talkQueue": [],
-            "reactions": {},
             "lines": [],
-            "logicResponse": {},
-            "itemReactions": {},
+            "logicResponse": {
+                "CHAR_sclr": {
+                    "text": "我究竟献祭了什么？"
+                }
+            },
             "defaultTalks": [],
-            "sceneTalks": {},
-            "avatar": "images/avatar_CHARS_JS.png"
+            "avatar": "images/avatar_CHARS_JS.png",
+            "sceneTalks": {
+                "SCENES_xhsdm": [
+                    {
+                        "text": "[clue:CLUE_cgnr]没有说话，只是默默剥离羊皮……"
+                    }
+                ]
+            },
+            "reactions": {
+                "CHAR_sclr": {
+                    "text": "我究竟献祭了什么？"
+                }
+            }
+        },
+        "CHAR_zs": {
+            "name": "朱穗",
+            "desc": "TEC高级调查员朱穗。",
+            "talkQueue": [],
+            "defaultTalks": [],
+            "lines": []
+        },
+        "CHAR_sclr": {
+            "name": "手持利刃的人影",
+            "desc": "手持利刃的人影。",
+            "talkQueue": [],
+            "defaultTalks": [],
+            "lines": []
         }
     },
     "clues": {
-        "CLUES_wmhj": {
-            "label": "陆珩松的录音",
-            "type": "hearing",
-            "desc": "JS，当你听到这个录音的时候，我距离解开了所有的秘密只有一步之遥了。但我的时间已经不够了……我留下了足够你理解的笔记，也只有你能完成最后的步骤。现在，我可以安静等待死亡，以及与你重逢了。另外，在万事俱备之前，无论如何都不要拉开帘幕。"
-        },
-        "CLUES_JS": {
-            "label": "植物学家槿杉",
-            "type": "vision",
-            "desc": "植物学家槿杉。"
-        },
-        "CLUES_nm": {
-            "label": "鸟鸣",
-            "type": "hearing",
-            "desc": "隐隐约约听到类似鹦哥的鸣叫。"
-        },
-        "CLUES_CBKW": {
-            "label": "草本的苦味",
-            "type": "taste",
-            "desc": "一股淡淡的苦味。"
-        },
-        "CLUES_mc": {
-            "label": "毛刺",
-            "type": "touch",
-            "desc": "绳索上坚硬的毛刺，如同一根根针。"
-        },
-        "CLUES_xds": {
-            "label": "呋喃香豆素",
-            "type": "smell",
-            "desc": "呋喃香豆素"
-        },
-        "CLUES_fb": {
-            "label": "植物研究所所长傅柏",
-            "type": "vision",
-            "desc": "植物研究所所长傅柏"
-        },
         "CLUES_zs": {
             "label": "朱穗",
             "type": "vision",
-            "desc": "助手"
-        },
-        "CLUES_yzs": {
-            "label": "抑制素",
-            "type": "taste",
-            "desc": "从陆珩松体内提取出的特殊物质。"
-        },
-        "CLUES_qsan": {
-            "label": "墙上的按钮",
-            "type": "touch",
-            "desc": "按下墙上的按钮。"
-        },
-        "CLUES_zhpt": {
-            "label": "最后的一块拼图",
-            "type": "touch",
-            "desc": "距离成功只有一步之遥。"
-        },
-        "CLUES_mgd": {
-            "label": "染血的美工刀",
-            "type": "vision",
-            "desc": "一把染血的美工刀，被藏在带着密码锁的木盒之中。"
-        },
-        "CLUES_yjhds": {
-            "label": "洋金花毒素",
-            "type": "taste",
-            "desc": "全株有毒，毒性成分主要是东莨菪碱、阿托品和山莨菪碱等生物碱。"
-        },
-        "CLUES_a4": {
-            "label": "A4大小的纸",
-            "type": "vision",
-            "desc": "一张写着献祭与捕获的纸。"
+            "desc": "高级调查员"
         },
         "CLUES_cjdcy": {
             "label": "初级调查员",
@@ -663,6 +643,21 @@
             "label": "棬",
             "type": "vision",
             "desc": "由精炼精炼硬铁，厚薄宽窄均匀的正圆形圈体。"
+        },
+        "CLUES_rwg": {
+            "label": "红色钢笔描述的五官",
+            "type": "vision",
+            "desc": "用红色钢笔描绘的五官，不知何时出现在无脸人偶的脸上。"
+        },
+        "CLUES_xjbh": {
+            "label": "献祭捕获",
+            "type": "vision",
+            "desc": "纸上写着四个字：献祭捕获"
+        },
+        "CLUE_cgnr": {
+            "label": "持弓的男人",
+            "type": "vision",
+            "desc": "手持弓箭的男人。"
         }
     },
     "endings": [
@@ -670,8 +665,8 @@
             "id": "END_NORMAL",
             "name": "重逢之时",
             "recipe": [
-                "CLUES_JS",
-                "CLUES_wmhj",
+                "CLUES_xjbh",
+                "CLUES_rwg",
                 "CLUES_zhpt"
             ],
             "isTrueCapture": false,
