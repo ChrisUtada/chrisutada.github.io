@@ -1459,6 +1459,20 @@ function createEngine(projectData) {
             const overlay = document.getElementById('capture-overlay');
             overlay.style.display = 'flex';
 
+            // 动态更新真名字体
+            const truenameTitle = document.getElementById('truename-title');
+            if (truenameTitle) {
+                if (ending.truename) {
+                    truenameTitle.innerText = `『${ending.truename}』`;
+                } else {
+                    // 备用方案：从name字段解析
+                    const match = ending.name.match(/真名捕获[：:]\s*(.+)/);
+                    if (match) {
+                        truenameTitle.innerText = `『${match[1]}』`;
+                    }
+                }
+            }
+
             setTimeout(() => {
                 document.getElementById('truename-block').style.display = 'flex';
             }, CONFIG.DELAYS.TRUENAME_BLOCK);
