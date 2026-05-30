@@ -864,6 +864,7 @@
         {
             "id": "TRUE_E",
             "name": "真名捕获：败鼓",
+            "truename": "花魄",
             "recipe": [
                 "CLUE_xhxq",
                 "CLUE_tx",
