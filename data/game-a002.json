@@ -140,7 +140,7 @@
         },
         "ITEM_door": {
             "label": "木门",
-            "desc": "书桌的两个抽屉紧闭着，但没有上锁。",
+            "desc": "一扇木门突兀地出现。",
             "commands": [
                 {
                     "type": "useItem",
