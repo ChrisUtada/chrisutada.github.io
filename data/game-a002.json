@@ -21,7 +21,7 @@
         },
         "SCENES_hzyl": {
             "title": "荒宅院落",
-            "content": "月光变得暗淡。\n木门之后一处荒废的老宅院落：久无人居，[item:ITEMS_zc]疯长，几乎盖住整条小腿，有风吹过时，发出沙沙沙的响动。\n你小心翼翼向前，时不时会踢到“怪石”或散落的粗大“树枝”。\n没有完全塌毁的[item:ITEMS_jsct]，还能隐约看出一些大户人家的痕迹，如今已变得萧瑟异常。\n在院落的中心，是一棵巨大的杏花树，无从得知，它究竟在这里耸立了多久了。\n杏花还未开放，但却隐隐能够问到花香。\n[loc:SCENES_xhsx]似乎有一个人的影子……",
+            "content": "月光变得暗淡。\n木门之后一处荒废的老宅院落：久无人居，[item:ITEMS_zc]疯长，几乎盖住整条小腿，有风吹过时，发出沙沙沙的响动。\n你小心翼翼向前，时不时会踢到“怪石”或散落的粗大“树枝”。\n没有完全塌毁的[item:ITEMS_jsct]，还能隐约看出一些大户人家的痕迹，如今已变得萧瑟异常。\n在院落的中心，是一棵巨大的杏花树，无从得知，它究竟在这里耸立了多久了。\n杏花还未开放，但却隐隐能够闻到花香。\n[loc:SCENES_xhsx]似乎有一个人的影子……",
             "canBePicked": false,
             "desc": "木门之后一处荒废的老宅院落。"
         },
@@ -55,13 +55,13 @@
         },
         "SCENES_cddm": {
             "title": "长刀的记忆",
-            "content": "[item:ITEM_js]之后，架起了[item:ITEM_rl]。\n一个精壮的男子手持[item:ITEM_dc]，站在铁砧旁边。\n在铁砧的一侧有一张结实的桌子，上面摆放着正圆形木模和一把[item:ITEM_xc]。\n锻打完成的铁条被放入木模之中，完成整形。\n之后再次送入炉火之中，直至铁圈被烧成暗红色。\n就在此时，精壮男子身后突然冒出一个[char:CHAR_sclr]，那把利刃割向男子的咽喉。\n男子颓然倒在水边，鲜血从他的脖颈处不断流出，他最后看到的是一片[item:ITEMS_xhct]……和放入池水之中淬火的铁圈。\n\n返回[loc:SCENES_ct]",
+            "content": "[item:ITEM_js]之后，架起了[item:ITEM_rl]。\n一个[item:ITEM_jsnz]手持[item:ITEM_dc]，站在铁砧旁边。\n在铁砧的一侧有一张结实的桌子，上面摆放着正圆形木模和一把[item:ITEM_xc]。\n锻打完成的铁条被放入木模之中，完成整形。\n之后再次送入炉火之中，直至铁圈被烧成暗红色。\n就在此时，精壮男子身后突然冒出一个[char:CHAR_sclr]，那把利刃割向男子的咽喉。\n男子颓然倒在水边，鲜血从他的脖颈处不断流出，他最后看到的是一片[item:ITEMS_xhct]……和放入池水之中淬火的铁圈。\n\n返回[loc:SCENES_ct]",
             "desc": "噩梦般的记忆。",
             "canBePicked": false
         },
         "SCENE_bdjy": {
             "title": "扁担的记忆",
-            "content": "扁担看到的一段记忆：\n披头散发的男人就坐在[loc:SCENES_xhsx]，把手中的木料仔细雕刻成桶状，而后将桶的腰部收束匀圆。\n他仔细观察，雕琢细部，直至满意。\n片刻之后，暗影出现了……\n一把[item:ITEMS_lr]捅入男人的背部，死亡的来临就在顷刻之间，血腥的气息扑面而来。\n[char:CHAR_ay]将男人推开，自己坐了下来，用一支沾满男人鲜血的[item:ITEMS_mb]，在[item:ITEM_mt]上描绘着纹饰。\n而那个[item:ITEMS_jzro]就在暗影的身旁……\n…………\n忽然，如同屏幕突然闪过的雪花一般。\n你看到那个[loc:SCENES_wlro]不知何时，出现在了树下，它试图抢过那支毛笔……",
+            "content": "扁担看到的一段记忆：\n[item:ITEM_ptsf]就坐在[loc:SCENES_xhsx]，把手中的木料仔细雕刻成桶状，而后将桶的腰部收束匀圆。\n他仔细观察，雕琢细部，直至满意。\n片刻之后，暗影出现了……\n一把[item:ITEMS_lr]捅入男人的背部，死亡的来临就在顷刻之间，血腥的气息扑面而来。\n[char:CHAR_ay]将男人推开，自己坐了下来，用一支沾满男人鲜血的[item:ITEMS_mb]，在[item:ITEM_mt]上描绘着纹饰。\n而那个[item:ITEMS_jzro]就在暗影的身旁……\n…………\n忽然，如同屏幕突然闪过的雪花一般。\n你看到那个[loc:SCENES_wlro]不知何时，出现在了树下，它试图抢过那支毛笔……",
             "desc": "扁担看到的一切。",
             "canBePicked": false
         },
@@ -190,6 +190,11 @@
             },
             "commands": [
                 {
+                    "type": "text",
+                    "label": "黏贴嘴部",
+                    "value": "杏花树开口说道：这些花将开未开之时，衣裳褴褛的青年男子，挑着扁担，筐里装着各式各样的工具和材料。\n小孩跟在他的身后，小心翼翼拉着他的衣角，后来他们就在这坐下了。"
+                },
+                {
                     "type": "useItem",
                     "label": "黏贴眼睛",
                     "requiredItem": "ITEMS_eyes",
@@ -201,11 +206,6 @@
                         ],
                         "scene": "SCENES_xhsdm"
                     }
-                },
-                {
-                    "type": "text",
-                    "label": "黏贴嘴部",
-                    "value": "杏花树开口说道：这些花将开未开之时，衣裳褴褛的青年男子，挑着扁担，筐里装着各式各样的工具和材料。\n小孩跟在他的身后，小心翼翼拉着他的衣角，后来他们就在这坐下了。"
                 }
             ]
         },
@@ -275,8 +275,22 @@
                     "type": "useItem",
                     "label": "黏贴眼睛",
                     "requiredItem": "ITEMS_eyes",
-                    "successMessage": "羊看到手持弓箭的人浑身是血地站了起来，朝着池塘走去……",
+                    "successMessage": "羊逐渐模糊的双眼看到手持弓箭的人浑身是血地站了起来，朝着池塘走去……",
                     "failMessage": ""
+                },
+                {
+                    "type": "conditional",
+                    "label": "贴上标签",
+                    "successMessage": "",
+                    "conditions": [
+                        {
+                            "clue": "CLUE_nms",
+                            "failMessage": "身份未明。"
+                        }
+                    ],
+                    "onSuccess": {
+                        "message": "南木生的实验体。"
+                    }
                 }
             ]
         },
@@ -296,7 +310,7 @@
                     "type": "useItem",
                     "label": "黏贴眼睛",
                     "requiredItem": "ITEMS_eyes",
-                    "successMessage": "那个人……他锻造出了……",
+                    "successMessage": "长刀的眼睛看向假山。",
                     "failMessage": "",
                     "onSuccess": {
                         "scene": "SCENES_cddm"
@@ -362,12 +376,12 @@
         },
         "ITEMS_jsct": {
             "label": "假山与池塘",
-            "desc": "一人高的假山立在庭院的角落，在加上的正前方是一池水塘，久未打理，长满了绿色的水苔。总觉得似乎隐藏了很多秘密。",
+            "desc": "高约两米的假山立在庭院的角落，在加上的正前方是一池水塘，久未打理，长满了绿色的水苔。总觉得似乎隐藏了很多秘密。",
             "canBePicked": false
         },
         "ITEMS_lr": {
             "label": "利刃",
-            "desc": "锋利无比。",
+            "desc": "锋利无比，可以轻易割开物品。",
             "canBePicked": true
         },
         "ITEMS_zc": {
@@ -391,6 +405,11 @@
                     "onSuccess": {
                         "message": "那些沙沙的响动，伴随着有节奏的羯鼓声，变为了歌谣：[clue:CLUE_jxc]"
                     }
+                },
+                {
+                    "type": "text",
+                    "label": "黏贴嘴部",
+                    "value": "杏花树，花未开，\n羯羊不见旧时月。\n桶身圆，漆色红，\n哥哥一去无影踪。\n炉火旺，池水绿，\n锻声沉在水波中。"
                 }
             ],
             "canBePicked": false
@@ -604,6 +623,11 @@
             "canBePicked": false,
             "commands": [
                 {
+                    "type": "text",
+                    "label": "黏贴嘴部",
+                    "value": "扁担说道：我来讲一个故事。有兄弟两人，一大一小不知走了多少路，才到了这杏花树下。这一路上，靠着弟弟演奏乐器为生，而兄长则每天忙着照顾弟弟，修复乐器。\n这弟弟天赋异禀，但难就难在，他看不见，听不到，也说不出。看看，就像树下的那个人偶一样。"
+                },
+                {
                     "type": "useItem",
                     "label": "黏贴眼睛",
                     "requiredItem": "ITEMS_eyes",
@@ -612,11 +636,6 @@
                     "onSuccess": {
                         "scene": "SCENE_bdjy"
                     }
-                },
-                {
-                    "type": "text",
-                    "label": "黏贴嘴部",
-                    "value": "扁担说道：我来讲一个故事。有兄弟两人，一大一小不知走了多少路，才到了这杏花树下。这一路上，靠着弟弟演奏乐器为生，而兄长则每天忙着照顾弟弟，修复乐器。\n这弟弟天赋异禀，但难就难在，他看不见，听不到，也说不出。看看，就像树下的那个人偶一样。"
                 }
             ]
         },
@@ -656,6 +675,48 @@
                     "CLUE_rgx"
                 ]
             }
+        },
+        "ITEM_ptsf": {
+            "label": "披头散发的男人",
+            "desc": "披头散发的男人。",
+            "canBePicked": false,
+            "commands": [
+                {
+                    "type": "conditional",
+                    "label": "贴上标签",
+                    "successMessage": "",
+                    "conditions": [
+                        {
+                            "clue": "CLUE_nms",
+                            "failMessage": "身份未明。"
+                        }
+                    ],
+                    "onSuccess": {
+                        "message": "南木生的实验体。"
+                    }
+                }
+            ]
+        },
+        "ITEM_jsnz": {
+            "label": "精瘦的男子",
+            "desc": "精瘦的男子。",
+            "commands": [
+                {
+                    "type": "conditional",
+                    "label": "贴上标签",
+                    "successMessage": "",
+                    "conditions": [
+                        {
+                            "clue": "CLUE_nms",
+                            "failMessage": "身份未明。"
+                        }
+                    ],
+                    "onSuccess": {
+                        "message": "南木生的实验体。"
+                    }
+                }
+            ],
+            "canBePicked": false
         }
     },
     "chars": {
@@ -760,9 +821,10 @@
                 ]
             },
             "hiddenClue": {
-                "text": "获得线索：[clue:CLUES_zs]",
+                "text": "获得线索：[clue:CLUES_zs]，在她消失的瞬间，某样东西掉落在地上——[clue:CLUE_xhzq]]",
                 "ids": [
-                    "CLUES_zs"
+                    "CLUES_zs",
+                    "CLUE_xhzq"
                 ]
             }
         },
@@ -956,9 +1018,9 @@
         {
             "id": "TRUE_E",
             "name": "真名捕获：败鼓",
-            "truename": "花魄",
+            "truename": "败鼓",
             "recipe": [
-                "CLUE_xhxq",
+                "CLUE_rgx",
                 "CLUE_tx",
                 "CLUE_jg",
                 "CLUE_wljs",
@@ -967,15 +1029,15 @@
             "isTrueCapture": true,
             "lines": [
                 {
-                    "text": "献祭吊死之人的灵魂...",
+                    "text": "以血肉之躯打造非人间之物。",
                     "delay": 500
                 },
                 {
-                    "text": "打破阳光的诅咒...躯体将于灰烬之中重生。",
+                    "text": "所失所得皆所执所念",
                     "delay": 1500
                 },
                 {
-                    "text": "于鸟鸣之中重塑因果。",
+                    "text": "于人骨香处重塑因果。",
                     "delay": 2500
                 },
                 {
@@ -1000,7 +1062,8 @@
             "recipe": [
                 "CLUE_nms",
                 "CLUE_nys",
-                "CLUE_jg"
+                "CLUE_jg",
+                "CLUE_xhxq"
             ],
             "message": "南乐生超凡的羯鼓演奏技巧很快就广为人知，坊间传闻南乐生的鼓声能催开花朵。\n而南乐生也只在每年杏花将开时表演。\n人人都想一睹天才鼓手的风姿，演奏会一票难求。\n南木生制作的羯鼓极为畅销，据说由他亲手制作的鼓会散发一股杏花的香味，久久不散。\n很快，他们买下了杏花树附近的土地，建起了庭院小楼。闲时，兄弟二人就在杏花树下饮茶。\n木生看着乐生，两人时不时露出微笑。"
         },
@@ -1011,8 +1074,7 @@
                 "CLUES_xjbh",
                 "CLUE_cgnr",
                 "CLUE_ay",
-                "CLUE_sclr",
-                "CLUE_rgx"
+                "CLUE_sclr"
             ],
             "message": "为了所爱之人，一个人究竟会做到何种程度？\n南木生此生最大的痛苦就是无法为弟弟南乐生提供足够好的羯鼓。他想尽办法学会了制作羯鼓，但离他想要的完美依然差距巨大，他知道他制作的羯鼓根本配不上弟弟的技艺。\n直到……某人交给他一本古老的书籍，以及一瓶神秘的药剂。书籍中记载了，南木生闻所未闻的邪恶工艺：如何去皮，如何制作人骨香，如何用鲜血绘制纹饰……如是种种，令人心惊肉跳。而那瓶神秘的药剂，似乎可以让死者复生——并非复生这么简单，而是不断诞生新的个体。\n南木生深知如果按书中记载行事，必将付出极为惨痛的代价，然而，他非做不可……于是，南木生以自己为实验品，不断复制个体，又不断杀死自己的实验体，以血肉制作完美的羯鼓。\n到了后来，他已经分不清楚究竟是谁杀了谁……\n但这一切已经不重要了，因为当南乐生敲击着用他的血肉制成的羯鼓时，那种前所未有的冲击，让他忘却了一切。\n只是在一个无风的傍晚，杏花树下，当南木生再次举起利刃割向实验体的咽喉时，坐在一旁看不见听不到说不出的南乐生忽然伸出手，按住了那把利刃……而杏花也在此时绽放。"
         }
