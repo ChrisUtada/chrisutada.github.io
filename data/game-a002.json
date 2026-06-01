@@ -15,7 +15,7 @@
         },
         "SCENE_wz": {
             "title": "未知地点",
-            "desc": "一轮[item:ITEM_cbyg]挂在没有星辰的天空之中，大得夸张，如同一张被贴在黑色墙壁上的纸。<br>这是什么地方？<br>你环顾四周，空空荡荡，不知何时地上躺着一张古怪的[item:ITEM_zxtz]。<br>月光之下，凭空出现的厚厚的[item:ITEM_door]突兀地立在前方。<br>木门的正中有两个简陋的门扣，上面歪歪斜斜地贴着一对睁开的眼睛。<br>门上有一些奇怪的痕迹，或许有一把[item:ITEM_shoudiantong]能够看得更清楚一些。<br><br>问问[char:CHARS_TEC]",
+            "desc": "不知身在何处？",
             "content": "一轮[item:ITEM_cbyg]挂在没有星辰的天空之中，大得夸张，如同一张被贴在黑色墙壁上的纸。\n这是什么地方？\n你环顾四周，空空荡荡，不知何时地上躺着一张古怪的[item:ITEM_zxtz]。\n月光之下，凭空出现的厚厚的[item:ITEM_door]突兀地立在前方，门上有一些[item:ITEMS_qghj]。\n木门的正中有两个简陋的[item:ITEMS_mk]，上面歪歪斜斜地贴着一对睁开的[item:ITEMS_eyes]。\n门扣看起来有些古怪，或许有一把[item:ITEM_shoudiantong]能够看得更清楚一些。\n\n问问[char:CHARS_TEC]",
             "canBePicked": false
         },
