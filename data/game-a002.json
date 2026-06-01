@@ -27,7 +27,7 @@
         },
         "SCENES_xhsx": {
             "title": "杏花树下",
-            "content": "杏花树枝繁叶茂。\n在一条细长的树枝末端，挂着一张[item:ITEMS_bq]。树干裂开了一处，像是正在愈合的[item:ITEMS_sk]。\n月光依然黯淡，隐约可见杏花树下坐着一个[item:ITEMS_jzro]，人偶张开的双手之间似乎缺少了什么东西。\n距离人偶不远处，一根[item:ITEM_bd]斜放着。\n不知为何……总觉得附近还有其他人……\n是谁？\n你看到了[item:ITEM_xhs]后的[loc:SCENES_wlro]。\n\n返回[loc:SCENES_hzyl]",
+            "content": "杏花树枝繁叶茂。\n在一条细长的树枝末端，挂着一张[item:ITEMS_bq]。树干裂开了一处，像是正在愈合的[item:ITEMS_sk]。\n月光依然黯淡，隐约可见杏花树下坐着一个[item:ITEMS_jzro]，人偶张开双手似乎要用力敲打什么。\n距离人偶不远处，一根[item:ITEM_bd]斜放着。\n不知为何……总觉得附近还有其他人……\n是谁？\n你看到了[item:ITEM_xhs]后的[loc:SCENES_wlro]。\n\n返回[loc:SCENES_hzyl]",
             "desc": "这是一棵巨大的杏花树。枝繁叶茂。",
             "canBePicked": false
         },
@@ -821,7 +821,7 @@
                 ]
             },
             "hiddenClue": {
-                "text": "获得线索：[clue:CLUES_zs]，在她消失的瞬间，某样东西掉落在地上——[clue:CLUE_xhzq]]",
+                "text": "获得线索：[clue:CLUES_zs]，在她消失的瞬间，某样东西掉落在地上——[clue:CLUE_xhzq]",
                 "ids": [
                     "CLUES_zs",
                     "CLUE_xhzq"
@@ -1022,7 +1022,7 @@
             "recipe": [
                 "CLUE_rgx",
                 "CLUE_tx",
-                "CLUE_jg",
+                "CLUE_gs",
                 "CLUE_wljs",
                 "CLUE_jxc"
             ],
@@ -1033,7 +1033,7 @@
                     "delay": 500
                 },
                 {
-                    "text": "所失所得皆所执所念",
+                    "text": "所失所得皆所执所念。",
                     "delay": 1500
                 },
                 {
