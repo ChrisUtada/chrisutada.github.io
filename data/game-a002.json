@@ -27,7 +27,7 @@
         },
         "SCENES_xhsx": {
             "title": "杏花树下",
-            "content": "杏花树枝繁叶茂。\n在一条细长的树枝末端，挂着一张[item:ITEMS_bq]。树干裂开了一处，像是正在愈合的[item:ITEMS_sk]。\n月光依然黯淡，隐约可见杏花树下坐着一个[item:ITEMS_jzro]，人偶张开双手似乎要用力敲打什么。\n距离人偶不远处，一根[item:ITEM_bd]斜放着。\n不知为何……总觉得附近还有其他人……\n是谁？\n你看到了[item:ITEM_xhs]后的[loc:SCENES_wlro]。\n\n返回[loc:SCENES_hzyl]",
+            "content": "杏花树枝繁叶茂。\n在一条细长的树枝末端，挂着一张[item:ITEMS_bq]。树干裂开了一处，像是正在愈合的[item:ITEMS_sk]。\n月光依然黯淡，隐约可见杏花树下坐着一个身着[item:ITEMS_jzro]，人偶张开双手似乎要用力敲打什么。\n距离人偶不远处，一根[item:ITEM_bd]斜放着。\n不知为何……总觉得附近还有其他人……\n是谁？\n你看到了[item:ITEM_xhs]后的[loc:SCENES_wlro]。\n\n返回[loc:SCENES_hzyl]",
             "desc": "这是一棵巨大的杏花树。枝繁叶茂。",
             "canBePicked": false
         },
@@ -183,16 +183,13 @@
             "presentReactions": {
                 "ITEM_shoudiantong": {
                     "text": "树上的杏花似乎快要开了。"
-                },
-                "ITEMS_bq": {
-                    "text": "标签上浮现出文字：杏花树"
                 }
             },
             "commands": [
                 {
                     "type": "text",
                     "label": "黏贴嘴部",
-                    "value": "杏花树开口说道：这些花将开未开之时，衣裳褴褛的青年男子，挑着扁担，筐里装着各式各样的工具和材料。\n小孩跟在他的身后，小心翼翼拉着他的衣角，后来他们就在这坐下了。"
+                    "value": "杏花树开口说道：这些花将开未开之时，衣裳褴褛的青年男子，挑着扁担，筐里装着各式各样的工具和材料。\n小孩跟在他的身后，小心翼翼拉着他的衣角，后来他们就在这坐下了。那个小孩……不会说话、听不到声音、也看不见东西……"
                 },
                 {
                     "type": "useItem",
@@ -206,6 +203,11 @@
                         ],
                         "scene": "SCENES_xhsdm"
                     }
+                },
+                {
+                    "type": "text",
+                    "label": "贴上标签",
+                    "value": "标签上浮现出文字：杏花树"
                 }
             ]
         },
@@ -215,7 +217,7 @@
             "canBePicked": true
         },
         "ITEMS_jzro": {
-            "label": "身着劲装的人偶",
+            "label": "劲装的人偶",
             "desc": "看不见，听不到，说不出……",
             "canBePicked": false,
             "presentReactions": {
@@ -228,7 +230,14 @@
                         "scene": "SCENE_jgxs"
                     }
                 }
-            }
+            },
+            "commands": [
+                {
+                    "type": "text",
+                    "label": "贴上标签",
+                    "value": "标签上浮现出文字：一个没有五官的人偶。"
+                }
+            ]
         },
         "ITEMS_eyes": {
             "label": "眼睛",
@@ -382,7 +391,14 @@
         "ITEMS_lr": {
             "label": "利刃",
             "desc": "锋利无比，可以轻易割开物品。",
-            "canBePicked": true
+            "canBePicked": true,
+            "commands": [
+                {
+                    "type": "text",
+                    "label": "贴上标签",
+                    "value": "标签上浮现出文字：一把长刀。"
+                }
+            ]
         },
         "ITEMS_zc": {
             "label": "杂草",
@@ -443,7 +459,14 @@
                         ]
                     }
                 }
-            }
+            },
+            "commands": [
+                {
+                    "type": "text",
+                    "label": "贴上标签",
+                    "value": "如果放入铁制的物品就会有所得。"
+                }
+            ]
         },
         "ITEM_btt": {
             "label": "扁铁条",
@@ -582,7 +605,7 @@
         },
         "ITEM_jgl": {
             "label": "羯鼓录",
-            "desc": "一本旧书《羯鼓录》：……鸡娄鼓之上，𣞙如漆桶，山桑木为之。下有小牙床承之，击用两杖，其声焦杀鸣烈，尤宜促曲急破，战杖连碎之声，又宜高楼晚景，明月清风，破一作凌。空透远，特异众乐……",
+            "desc": "一本旧书《羯鼓录》：……鸡娄鼓之上，𣞙如漆桶，山桑木为之。下有小牙床承之，击用两杖，其声焦杀鸣烈，尤宜促曲急破，战杖连碎之声，又宜高楼晚景，明月清风，破一作凌。空透远，特异众乐……那个身着劲装的人偶似乎就在等着此书……",
             "canBePicked": true
         },
         "ITEM_mt": {
@@ -928,6 +951,13 @@
                 "text": "获得线索：[clue:CLUE_nys]",
                 "ids": [
                     "CLUE_nys"
+                ]
+            },
+            "sceneTalks": {
+                "SCENE_xhx": [
+                    {
+                        "text": "听不见、看不到、说不出，但有鼓应该就够了，这震动几乎与心跳同频。"
+                    }
                 ]
             }
         }
