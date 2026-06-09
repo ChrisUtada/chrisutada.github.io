@@ -1,0 +1,71 @@
+:root {
+    --bg-color: #f8f5ef;           /* 浅米灰白纸张色 - 更亮 */
+    --grid-line: #e8e0d8;          /* 浅灰网格线 */
+    --panel-bg: rgba(253, 250, 245, 0.98);  /* 面板背景 - 更亮 */
+    --panel-border: #4a3a2a;       /* 深灰棕边框 - 加深 */
+    --text-muted: #5a4a3a;         /* 次要文字 - 加深 */
+    --text-main: #2a1a0a;          /* 主要文字 - 深棕色 - 加深 */
+    
+    --color-vision: #7a5f3a;       /* 深土黄色 - 加深 */
+    --color-hearing: #6a6a8a;      /* 灰紫色 - 加深 */
+    --color-taste: #a84a3a;        /* 橙红色强调色 - 加深 */
+    --color-touch: #b99217;        /* 低调金色 - 加深 */
+    --color-smell: #5a7a5a;        /* 复古灰绿 - 加深 */
+    
+    --color-item: #f0e8e0;
+    --color-scene: #e8e0d8;
+    --color-char: #e0d8d0;
+    --color-function: #d8d0c8;     /* 功能卡配色 */
+    
+    /* 卡牌尺寸变量 - 与 consts.js 同步 */
+    --card-width: 115px;
+    --card-height: 150px;
+    --card-stack-offset: 24px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+
+body {
+    background-color: var(--bg-color);
+    background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+                      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 40px 40px;
+    color: var(--text-main);
+    font-family: 'Times New Roman', Times, Georgia, serif, "Microsoft YaHei";
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: 50px 1fr; /* 移除日志区，桌面占满剩余空间 */
+    padding: 10px;
+    gap: 10px;
+}
+
+header {
+    background: var(--panel-bg); 
+    border: 1px solid var(--panel-border); 
+    border-radius: 4px;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 0 15px; 
+    z-index: 10;
+}
+
+header h1 { font-size: 14px; color: #1a0a0a; letter-spacing: 1px; font-weight: bold; }
+header .system-status { font-size: 11px; color: #5a4a3a; }
+
+.header-controls { display: flex; gap: 8px; align-items: center; }
+.tidy-btn { background: #e0d8d0; border: 1px solid #5a4a3a; color: #2a1a0a; padding: 4px 12px; border-radius: 3px; cursor: pointer; font-size: 11px; font-family: inherit; }
+.tidy-btn:hover { background: #5a4a3a; border-color: #5a4a3a; color: #fff; }
+
+#board-canvas { 
+    background: rgba(253, 250, 245, 0.9); 
+    border: 1px solid var(--panel-border); 
+    border-radius: 4px; 
+    position: relative; 
+    height: 100%; 
+    overflow: visible;  /*  允许进度条等子元素溢出显示 */
+}
+
+/* 日志面板样式已移除，桌面空间最大化 */
